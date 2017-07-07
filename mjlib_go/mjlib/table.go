@@ -50,5 +50,4 @@ func (this *Table) load(name string){
         key, _ := strconv.Atoi(str)
         this.tbl[key] = 1
     }
-    fmt.Println(this.tbl)
 }
