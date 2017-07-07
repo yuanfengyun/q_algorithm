@@ -143,7 +143,8 @@ namespace gen_feng_table
             {
                 cards[i] = 2;
                 System.Console.WriteLine("将 %d", i + 1);
-                gen_auto_table_sub(cards, 1);
+                parse_table(cards)
+				gen_auto_table_sub(cards, 1);
                 cards[i] = 0;
             }
 

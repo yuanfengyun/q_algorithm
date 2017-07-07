@@ -101,13 +101,13 @@ namespace mjlib {
                 m_check_eye_table[i].load(path + i + ".tbl");
             }
  
-            for(int i=0; i<5; ++i)
+            for(int i=0; i<9; ++i)
             {
                 string path = "tbl/feng_table_";
                 m_check_feng_table[i].load(path + i + ".tbl");
             }
 
-            for(int i=0; i<5; ++i)
+            for(int i=0; i<9; ++i)
             {
                 string path = "tbl/feng_eye_table_";
                 m_check_feng_eye_table[i].load(path + i + ".tbl");
@@ -133,13 +133,13 @@ namespace mjlib {
 
         public bool dump_feng_table()
         {
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < 9; ++i)
             {
                 string path = "tbl/feng_table_";
                 m_check_feng_table[i].dump(path + i + ".tbl");
             }
 
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < 9; ++i)
             {
                 string path = "tbl/feng_eye_table_";
                 m_check_feng_eye_table[i].dump(path + i + ".tbl");
