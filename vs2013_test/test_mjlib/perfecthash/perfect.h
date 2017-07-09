@@ -49,6 +49,10 @@ struct gencode
 };
 typedef  struct gencode  gencode;
 
+//#define STRING_HT 0
+//#define INT_HT 1
+//#define AB_HT 2
+
 /* user directives: perfect hash? minimal perfect hash? input is an int? */
 struct hashform
 {
@@ -118,15 +122,15 @@ struct qstuff
 typedef  struct qstuff  qstuff;
 
 /* return ceiling(log based 2 of x) */
-ub4 mylog2(/*_ ub4 x _*/);
+ub4 mylog2(ub4  val);
 
 /* Given the keys, scramble[], and hash mode, find the perfect hash */
-void findhash(/*_ bstuff **tabb, ub4 *alen, ub4 *blen, ub4 *salt,
+void findhash(bstuff **tabb, ub4 *alen, ub4 *blen, ub4 *salt,
 		gencode *final, ub4 *scramble, ub4 smax, key *keys, ub4 nkeys, 
-		hashform *form _*/);
+		hashform *form);
 
 /* private, but in a different file because it's excessively verbose */
-int inithex(/*_ key *keys, ub4 *alen, ub4 *blen, ub4 smax, ub4 nkeys, 
-	      ub4 salt, gencode *final, gencode *form _*/);
+int inithex(key *keys, ub4 *alen, ub4 *blen, ub4 smax, ub4 nkeys, 
+	      ub4 salt, gencode *final, gencode *form);
 
 #endif /* PERFECT */

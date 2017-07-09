@@ -128,6 +128,7 @@ void gen_auto_table()
     {
         cards[i] = 2;
         printf("将 %d\n", i+1);
+		parse_table(cards);
         gen_auto_table_sub(cards, 1);
         cards[i] = 0;
     }

@@ -18,7 +18,7 @@ Source is http://burtleburtle.net/bob/c/lookupa.h
 #define hashsize(n) ((ub4)1<<(n))
 #define hashmask(n) (hashsize(n)-1)
 
-ub4  lookup(/*_ ub1 *k, ub4 length, ub4 level _*/);
-void checksum(/*_ ub1 *k, ub4 length, ub4 *state _*/);
+ub4  lookup(ub1 *k, ub4 length, ub4 level);
+void checksum(ub1 *k, ub4 length, ub4 *state);
 
 #endif /* LOOKUPA */

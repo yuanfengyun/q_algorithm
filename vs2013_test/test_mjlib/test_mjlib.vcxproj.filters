@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="perfacthash">
+      <UniqueIdentifier>{64a9aab0-18c1-42d4-a4c2-200bc6674110}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -39,6 +42,18 @@
     <ClInclude Include="hash_table.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="perfecthash\lookupa.h">
+      <Filter>perfacthash</Filter>
+    </ClInclude>
+    <ClInclude Include="perfecthash\perfect.h">
+      <Filter>perfacthash</Filter>
+    </ClInclude>
+    <ClInclude Include="perfecthash\recycle.h">
+      <Filter>perfacthash</Filter>
+    </ClInclude>
+    <ClInclude Include="perfecthash\standard.h">
+      <Filter>perfacthash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -58,6 +73,18 @@
     </ClCompile>
     <ClCompile Include="hash_table.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="perfecthash\lookupa.cpp">
+      <Filter>perfacthash</Filter>
+    </ClCompile>
+    <ClCompile Include="perfecthash\perfect.cpp">
+      <Filter>perfacthash</Filter>
+    </ClCompile>
+    <ClCompile Include="perfecthash\perfhex.cpp">
+      <Filter>perfacthash</Filter>
+    </ClCompile>
+    <ClCompile Include="perfecthash\recycle.cpp">
+      <Filter>perfacthash</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

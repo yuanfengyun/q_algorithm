@@ -81,6 +81,10 @@
   <ItemGroup>
     <ClInclude Include="hash_table.h" />
     <ClInclude Include="hulib.h" />
+    <ClInclude Include="perfecthash\lookupa.h" />
+    <ClInclude Include="perfecthash\perfect.h" />
+    <ClInclude Include="perfecthash\recycle.h" />
+    <ClInclude Include="perfecthash\standard.h" />
     <ClInclude Include="set_table.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="table.h" />
@@ -90,6 +94,10 @@
   <ItemGroup>
     <ClCompile Include="hash_table.cpp" />
     <ClCompile Include="hulib.cpp" />
+    <ClCompile Include="perfecthash\lookupa.cpp" />
+    <ClCompile Include="perfecthash\perfect.cpp" />
+    <ClCompile Include="perfecthash\perfhex.cpp" />
+    <ClCompile Include="perfecthash\recycle.cpp" />
     <ClCompile Include="set_table.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

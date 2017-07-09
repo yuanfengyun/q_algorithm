@@ -1,0 +1,11 @@
+*.exe
+*.pdb
+*.obj
+*.sdf
+*.tlog
+*.cache
+*.filters
+*.ipch
+*.suo
+*.log
+*.pch
