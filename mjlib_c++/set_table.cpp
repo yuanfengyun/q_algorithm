@@ -38,12 +38,9 @@ void SetTable::load(char* name)
 {
     FILE *fp = fopen(name, "rb");
 
-    int num = 0;
-
-    for(int i=0; i<num; ++i)
+    int key = 0;
+    while(fscanf(fp, "%d\n", key)!=EOF)
     {
-        int key = 0;
-        fscanf(fp, "%d\n", key);
         m_tbl.insert(key);
     }
 
