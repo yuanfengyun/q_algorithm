@@ -39,7 +39,7 @@ void SetTable::load(char* name)
     FILE *fp = fopen(name, "rb");
 
     int key = 0;
-    while(fscanf(fp, "%d\n", key)!=EOF)
+    while(fscanf(fp, "%d\n", &key)!=EOF)
     {
         m_tbl.insert(key);
     }
