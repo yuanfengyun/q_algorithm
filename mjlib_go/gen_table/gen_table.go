@@ -107,6 +107,7 @@ func gen_table(){
     for i:=0; i<9; i++{
         cards[i] = 2
         fmt.Printf("将 %d \n", i)
+        func parse_table(cards, true) {
         gen_111_3(cards, 1, true)
         cards[i] = 0
     }
