@@ -87,14 +87,26 @@ func (this *TableMgr) DumpTable() {
 
 }
 
-func (this *TableMgr) DumpFengTable() {
+func (this *TableMgr) LoadFengTable() {
 	for i := 0; i < 9; i++ {
 		name := fmt.Sprintf("tbl/feng_table_%d.tbl", i)
-		this.m_tbl[i].dump(name)
+		this.m_feng_tbl[i].load(name)
 	}
 
 	for i := 0; i < 9; i++ {
 		name := fmt.Sprintf("tbl/feng_eye_table_%d.tbl", i)
-		this.m_tbl[i].dump(name)
+		this.m_feng_eye_tbl[i].load(name)
+	}
+}
+
+func (this *TableMgr) DumpFengTable() {
+	for i := 0; i < 9; i++ {
+		name := fmt.Sprintf("tbl/feng_table_%d.tbl", i)
+		this.m_feng_tbl[i].dump(name)
+	}
+
+	for i := 0; i < 9; i++ {
+		name := fmt.Sprintf("tbl/feng_eye_table_%d.tbl", i)
+		this.m_feng_eye_tbl[i].dump(name)
 	}
 }

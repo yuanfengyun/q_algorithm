@@ -28,6 +28,12 @@ func check_add(cards []int, gui_num int, eye bool) bool {
     }
 
     (*m)[key] = true
+
+    for i:=0; i<9; i++{
+        if cards[i] > 4 {
+            return true
+        }
+    }
     mjlib.MTableMgr.Add(key, gui_num, eye, true)
     return true
 }
@@ -62,13 +68,13 @@ func parse_table(cards []int, eye bool) {
 func gen_111_3(cards []int, level int, eye bool) {
     for i:=0; i<16; i++{
         if i <= 8 {
-            if cards[i] > 1 {
+            if cards[i] > 3 {
                 continue
             }
             cards[i] += 3
         } else {
             index := i - 9
-            if cards[index] > 3 || cards[index + 1] > 3 || cards[index + 2] > 3 {
+            if cards[index] > 5 || cards[index + 1] > 5 || cards[index + 2] > 5 {
                 continue
             }
             cards[index] += 1
@@ -107,7 +113,7 @@ func gen_table(){
     for i:=0; i<9; i++{
         cards[i] = 2
         fmt.Printf("将 %d \n", i)
-        func parse_table(cards, true) {
+        parse_table(cards, true)
         gen_111_3(cards, 1, true)
         cards[i] = 0
     }

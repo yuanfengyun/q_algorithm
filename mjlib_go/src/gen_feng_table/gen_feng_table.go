@@ -27,6 +27,12 @@ func check_add(cards []int, gui_num int, eye bool) bool {
     }
 
     (*m)[key] = true
+    for i:=0; i<7; i++ {
+        if cards[i] > 4 {
+            return true
+        }
+    }
+
     mjlib.MTableMgr.Add(key, gui_num, eye, false)
     return true
 }
@@ -60,7 +66,7 @@ func parse_table(cards []int, eye bool) {
 
 func gen_3(cards []int, level int, eye bool) {
     for i:=0; i<7; i++{
-        if cards[i] > 1 {
+        if cards[i] > 3 {
             continue
         }
         cards[i] += 3
@@ -76,7 +82,7 @@ func gen_3(cards []int, level int, eye bool) {
 
 func gen_table(){
     cards := []int{
-        0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,
     }
 
     // 无眼

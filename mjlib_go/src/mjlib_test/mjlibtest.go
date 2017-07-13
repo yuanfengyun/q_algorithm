@@ -145,6 +145,7 @@ func main() {
 
 	mjlib.Init()
 	mjlib.MTableMgr.LoadTable()
+	mjlib.MTableMgr.LoadFengTable()
 
 	test_one_success()
 	test_one_fail()
