@@ -42,18 +42,21 @@ TableMgr.getTable = function( gui_num, eye, chi )
     let tbl = null;
     if ( chi ) 
     {
-        tbl = this.m_tbl[ gui_num ];
         if ( eye ) 
         {
             tbl = this.m_eye_tbl[ gui_num ];
+        }else{
+             tbl = this.m_tbl[ gui_num ];
         }
     } 
     else 
     {
-        tbl = this.m_feng_tbl[ gui_num ];
+      
         if ( eye ) 
         {
             tbl = this.m_feng_eye_tbl[ gui_num ];
+        }else{
+            tbl = this.m_feng_tbl[ gui_num ];
         }
     }
     return tbl;
@@ -83,12 +86,14 @@ TableMgr.LoadTable = function()
     {
         let name = "table_%d.tbl".replace( '%d', i );
         this.m_tbl[ i ].load( name );
+       // console.log("加载文件["+name+"]Size="+this.m_tbl[i].length);
     }
 
     for( let i = 0; i < 9; i ++ )
     {
         let name = "eye_table_%d.tbl".replace( '%d', i );
         this.m_eye_tbl[ i ].load( name );
+        //console.log("加载文件["+name+"]Size="+this.m_tbl[i].length);
     }
 };
 
@@ -106,16 +111,29 @@ TableMgr.DumpTable = function()
     }
 };
 
+TableMgr.LoadFengTable=function()
+{
+    for(let i=0;i<9;i++){
+        let name = "feng_table_%d.tbl".replace( '%d', i );
+        this.m_feng_tbl[i].load(name);
+    }
+     for ( let i = 0; i < 9; i++ )
+    {
+        let name = "feng_eye_table_%d.tbl".replace( '%d', i );
+        this.m_feng_eye_tbl[ i ].load( name );
+    }
+}
+
 TableMgr.DumpFengTable = function() 
 {
     for ( let i = 0; i < 9; i++ )
     {
         let name = "feng_table_%d.tbl".replace( '%d', i );
-        this.m_tbl[ i ].dump( name );
+        this.m_feng_tbl[ i ].dump( name );
     }
     for ( let i = 0; i < 9; i++ )
     {
         let name = "feng_eye_table_%d.tbl".replace( '%d', i );
-        this.m_tbl[ i ].dump( name );
+        this.m_feng_eye_tbl[ i ].dump( name );
     }
 };

@@ -21,13 +21,25 @@ TABLE.prototype.check = function( key )
 
 TABLE.prototype.add = function( key ) 
 {
+    // console.log(key);
     this.tbl[ key ] = 1;
 };
 
 //创建牌型文件
 TABLE.prototype.dump = function( name )
 {
-
+   
+    var fWrite = fs.createWriteStream(__dirname + '/tbl/' + name);  
+    var  c=0;
+    for(let  p  in  this.tbl){
+        console.log(p);
+        fWrite.write(p);
+        fWrite.write('\n');
+        c++;
+        // console.log("打印="+this.tbl[p]);
+    }
+    fWrite.end();
+    console.log("Dump File,FileName="+name+";length="+c);
 };
 
 //加载牌型
@@ -38,6 +50,7 @@ TABLE.prototype.load = function( name )
         console.log( "文件不存在" );
         return;
     }
+    let  c=0;
     const d = fs.readFileSync( __dirname + '/tbl/' + name );
     const n = String( d ).split( '\n' );
     for( let i = 0; i < n.length; i ++ )
@@ -45,8 +58,7 @@ TABLE.prototype.load = function( name )
         if( n[ i ] )
         {
             this.tbl[ n[ i ] ] = 1;
+            c++;
         }
     }
-
-    //console.log( this.tbl );
 };

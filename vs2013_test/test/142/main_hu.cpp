@@ -39,7 +39,7 @@ static BYTE s_HuCardAll[] =
 
 void main()
 {
-	srand(GetTickCount()+time(0));
+	srand(1);
 	CHuTipsMJ		m_cAlgorithm;
 	CPlayerHuTips	cHuTips(&m_cAlgorithm);
 		

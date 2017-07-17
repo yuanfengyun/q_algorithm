@@ -10,7 +10,7 @@ let Gen = module.exports;
 Gen.check_add = function( cards, gui_num, eye )  
 {
     let key = 0;
-    for( let i = 0; i < 7; i++ ) 
+    for( let i = 0; i < 9; i++ ) 
     {
         key = key * 10 + cards[ i ];
     }
@@ -29,20 +29,20 @@ Gen.check_add = function( cards, gui_num, eye )
         return false
     }
     m[ key ] = true;
-    for(let i=0;i<7;i++){
+    for(let i=0;i<9;i++){
         if(cards[i]>4){
             return true;
         } 
     }
     console.log("生成表===="+key);
-    mjlib.MTableMgr.Add( key, gui_num, eye, false );
+    mjlib.MTableMgr.Add( key, gui_num, eye, true );
     return true;
 };
 
 Gen.parse_table_sub = function( cards, num, eye ) 
 {
 
-    for ( let i = 0; i < 7; i++ )
+    for ( let i = 0; i < 9; i++ )
     {
         if ( cards[i] == 0 ) 
         {
@@ -72,49 +72,63 @@ Gen.parse_table = function( cards, eye )
    this.parse_table_sub( cards, 1, eye );
 };
 
-Gen.gen_3 = function( cards, level, eye ) 
+Gen.gen_111_3 = function( cards, level, eye ) 
 {
-    for ( let i = 0; i < 7; i++ )
+    for ( let i = 0; i < 16; i++ )
     {
-        if ( cards[ i ] > 3 ) 
-        {
-            continue;
+        if(i<=8){
+            if(cards[i]>3){
+                continue;
+            }
+            cards[i]+=3;
+        }else{
+            let index=i-9;
+            if (cards[index] > 5 || cards[index + 1] > 5 || cards[index + 2] > 5 ){
+                continue;
+            }
+            cards[index] += 1
+            cards[index + 1] += 1
+            cards[index + 2] += 1
         }
-        cards[ i ] += 3;
-        this.parse_table( cards, eye );
-
-        if ( level < 4 ) 
-        {
-            this.gen_3( cards, level + 1, eye );
+        this.parse_table(cards,eye);
+        if (level < 4) {
+            this.gen_111_3(cards, level + 1, eye);
         }
-        cards[i] -= 3;
+        if (i <= 8 ){
+            cards[i] -= 3
+        } else {
+            let index = i - 9
+            cards[index] -= 1
+            cards[index + 1] -= 1
+            cards[index + 2] -= 1
+        }
     }
 };
 
 Gen.gen_table = function()
 {
-    let cards = [ 0,0,0,0,0,0,0 ];
+    let cards = [ 0,0,0,0,0,0,0,0,0];
     // 无眼
     console.log("无眼表生成开始\n");
-    this.gen_3( cards, 1, false );
+    this.gen_111_3( cards, 1, false );
     console.log("无眼表生成结束\n");
     // 有眼
     console.log("有眼表生成开始\n");
 
-    cards = [ 0,0,0,0,0,0,0 ];
+    cards = [  0,0,0,0,0,0,0,0,0];
 
-    for ( let i = 0; i < 7; i++ )
+    for ( let i = 0; i < 9; i++ )
     {
         cards[ i ] = 2
         console.log("将 %d \n", i)
         this.parse_table( cards, true );
-        this.gen_3( cards, 1, true );
+        this.gen_111_3( cards, 1, true );
         cards[ i ] = 0;
     }
     console.log("有眼表生成结束\n");
     console.log("表数据存储开始\n");
 
-    mjlib.MTableMgr.DumpFengTable();
+    mjlib.MTableMgr.DumpTable();
 
     console.log("表数据存储结束\n");
 };
@@ -126,7 +140,7 @@ Gen.main = function()
         gui_tested[ i ] = {};
         gui_eye_tested[ i ] = {};
     }
-    console.log("generate feng table begin...");
+    console.log("generate table table begin...");
     mjlib.Init();
     this.gen_table();
 };

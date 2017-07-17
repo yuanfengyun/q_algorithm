@@ -26,14 +26,10 @@ void SetTable::dump(char* name)
 {
     FILE *fp = fopen(name, "wb+");
 
-    int num = m_tbl.size();
-
-    fwrite(&num, 4, 1, fp);
 
     for(std::set<int>::iterator it=m_tbl.begin(); it!=m_tbl.end(); ++it)
     {
-        int key = *it;
-        fwrite(&key, 4, 1, fp);
+        fprintf(fp, "%d\n", *it);
     }
 
     fclose(fp);
@@ -42,18 +38,12 @@ void SetTable::dump(char* name)
 void SetTable::load(char* name)
 {
     FILE *fp = fopen(name, "rb");
-
-    int num = 0;
-
-    fread(&num, 4, 1, fp);
-
-    for(int i=0; i<num; ++i)
+	int key = 0;
+	while (fscanf(fp, "%d\n", &key)!=EOF)
     {
-        int key = 0;
-        fread(&key, 4, 1, fp);
         m_tbl.insert(key);
     }
 
-    printf("load %s %d key, set_size = %d\n", name, num, m_tbl.size());
+    printf("load %s, set_size = %d\n", name, m_tbl.size());
     fclose(fp);
 }

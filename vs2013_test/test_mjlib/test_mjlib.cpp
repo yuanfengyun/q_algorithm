@@ -10,10 +10,25 @@ using namespace std;
 #define MAX_COUNT 1000000
 
 static BYTE s_HuCardAll[136];
+
+void test_one()
+{
+	char cards[34] = {
+		0,0,0,0,0,0,0,0,3,
+		0,0,0,0,1,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,
+		0,0,2,0,4,0,4
+	};
+
+	HuLib::get_hu_info(cards, NULL, 34, 34, 33);
+}
+
+
 void main()
 {
 	TableMgr::get_instance()->load();
-	srand(GetTickCount());
+	test_one();
+	srand(1);
 
 	for (int i = 0; i < 34; i++)
 	{
