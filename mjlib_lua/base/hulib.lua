@@ -1,9 +1,4 @@
-package.path = "../../lualib/?.lua;"..package.path
-local utils = require "utils"
-local wave_table = require "auto_table"
-local wave_table_eye = require "auto_table_with_eye"
-local mjlib = require "mjlib"
-
+local table_mgr = require "table_mgr"
 local M = {}
 
 function M.check_7dui(hand_cards, waves)
@@ -22,34 +17,38 @@ function M.check_pengpeng()
 
 end
 
-function M.get_hu_info(hand_cards, waves, self_card, other_card)
-    local hand_cards_tmp = {}
+function M.get_hu_info(hand_cards, waves, cur_card)
+    local cards = {}
     for i,v in ipairs(hand_cards) do
-        hand_cards_tmp[i] = v
+        cards[i] = v
     end
 
-    if other_card then
-        hand_cards_tmp[other_card] = hand_cards_tmp[other_card] + 1
+    if cur_card then
+        cards[cur_card] = cards[cur_card] + 1
     end
 
     local first_info = {
         eye = false,            -- 当前是否有将
-        dui_array = {},
     }
 
-    for color, cfg in pairs(mjlib.CardType) do
-        if cfg.chi and not M.check_color_chi(hand_cards_tmp, cfg, first_info) then
-            return false
-        elseif not cfg.chi and not M.check_color(hand_cards_tmp, cfg, first_info) then
-            return false
-        end
+    -- 字牌（东西南北中发白)
+    if not M.check_color(cards, 28, 34, first_info) then
+        return false
+    -- 万
+    elseif not M.check_color_chi(cards, 1, 9, first_info) then
+        return false
+    -- 筒
+    elseif not M.check_color_chi(cards, 10, 18, first_info) then
+        return false
+    -- 条
+    elseif not M.check_color_chi(cards, 19, 27, first_info) then
+        return false
     end
-
     return true
 end
 
-function M.check_color(cards, cfg, info)
-    for i = cfg.min, cfg.max do
+function M.check_color(cards, min, max, info)
+    for i = min, max do
         local count = cards[i]
 
         if count == 1 or count == 4 then
@@ -68,87 +67,25 @@ function M.check_color(cards, cfg, info)
     return true
 end
 
-function M.check_color_chi(cards, cfg, info)
-    local tbl = {}
-    for i = cfg.min, cfg.max do
-        repeat
-            local count = cards[i]
-            if count > 0 then
-                table.insert(tbl, count)
-	    end
-
-	    if count == 0 or i == cfg.max then
-                if #tbl == 0 then
-                    break
-                end
-
-                if not M.check_sub(tbl, info) then
-                    return false
-                end
-                tbl = {}
+function M.check_color_chi(cards, min, max, info)
+    local key = 0
+    for i = min, max do
+        local c = cards[i]
+        if c > 0 then
+            key = key * 10 + c
+        elseif key > 0 then
+            local eye = (key%3 == 0)
+            if info.eye and eye then
+                return false
             end
-        until(true)
+
+            if not table_mgr:check(key) then
+                return false
+            end
+        end
     end
 
     return true
-end
-
-function M.check_sub(tbl, info)
-    local count = 0
-    for _,v in ipairs(tbl) do
-        count = count + v
-    end
-    local yu = (count % 3)
-
-    if yu == 1 then
-        return false
-    elseif yu == 2 then
-        if info.eye then
-            return false
-        end
-
-        info.eye = true
-        return M.check_wave_and_eye(tbl)
-    end
-
-    return M.check_wave(tbl)
-end
-
-function M.check_wave(tbl)
-    local num = 0
-    for _,c in ipairs(tbl) do
-        num = num * 10 + c
-    end
-
-    if wave_table[num] then
-        return true
-    end
-
-    if wave_table.collect then
-        wave_table[num] = true
-    end
-    return false
-end
-
--- 检查是否匹配3*n + 2
-function M.check_wave_and_eye(tbl)
-    if #tbl == 1 then
-        return true
-    end
-
-    local num = 0
-    for _,c in ipairs(tbl) do
-        num = num * 10 + c
-    end
-
-    if wave_table_eye[num] then
-        return true
-    end
-
-    if wave_table_eye.collect then
-        wave_table_eye[num] = true
-    end
-    return false
 end
 
 return M

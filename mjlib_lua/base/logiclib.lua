@@ -1,28 +1,15 @@
-package.path = "../../lualib/?.lua;"..package.path
-
-local utils = require "utils"
-
 local M = {}
 
-M.CardType = {
-    [0x10] = {min = 1, max = 9, chi = true},
-    [0x20] = {min = 10, max = 18, chi = true},
-    [0x30] = {min = 19, max = 27, chi = true},
-    [0x40] = {min = 28, max = 34, chi = false},
-}
+local COLORS = {"万","筒","条"}
 
-M.CardDefine = {
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, -- 万
-    0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, -- 筒
-    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, -- 条
-    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, -- 东、南、西、北、中、发、白
-}
+function M.get_color(card)
+    return math.floor((card-1)/9) + 1
+end
 
-M.COLOR_WAN = 0x10
-M.COLOR_TONG = 0x20
-M.COLOR_TIAO = 0x30
-M.COLOR_ZI = 0x40
-M.COLOR_HUA = 0x50
+function M.get_color_str(card)
+    local color = M.get_color(card)
+    return COLORS[color]
+end
 
 function M.get_card_str(index)
     if index >= 1 and index <= 9 then
