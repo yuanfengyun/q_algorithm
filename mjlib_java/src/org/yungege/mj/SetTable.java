@@ -1,13 +1,9 @@
-package test_hu;
+package org.yungege.mj;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.HashMap;
 
 public class SetTable {
@@ -32,17 +28,17 @@ public class SetTable {
 		try {
 			br = new BufferedReader(new FileReader(path));
 			String line = "";
-			int num=0;
+//			int num=0;
 			while ((line = br.readLine()) != null) {
 //				System.out.println("line:" + line);
 				m_tbl.put(Integer.parseInt(line), true);
-				num++;
+//				num++;
 			}
 			br.close();
-			System.out.printf("load %s: num=%d\n", path, num);
-			if(m_tbl.containsKey(200000000)){
-				System.out.println("contains 200000000");
-			}
+//			System.out.printf("load %s: num=%d\n", path, num);
+//			if(m_tbl.containsKey(200000000)){
+//				System.out.println("contains 200000000");
+//			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (NumberFormatException e) {

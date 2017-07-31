@@ -1,6 +1,6 @@
-package test_hu;
+package org.yungege.mj;
 
-class TableMgr {
+public class TableMgr {
 	public static TableMgr mgr = new TableMgr();
 	public SetTable[] m_check_table = new SetTable[9];
 	public SetTable[] m_check_eye_table = new SetTable[9];

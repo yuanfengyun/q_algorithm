@@ -1,9 +1,10 @@
-﻿package test_hu;
+﻿package org.yungege.mj;
 
 import java.util.HashSet;
+import java.util.Random;
 
 public class Program {
-	static void print_cards(int[] cards) {
+	public static void print_cards(int[] cards) {
 		for (int i = 0; i < 9; ++i) {
 			System.out.print(cards[i]);
 			System.out.print(",");
@@ -24,7 +25,7 @@ public class Program {
 			System.out.print(cards[i]);
 			System.out.print(",");
 		}
-		System.out.println("");
+		System.out.println("\n=========================================");
 	}
 
 	static HashSet<Integer> tested = new HashSet<Integer>();
@@ -47,7 +48,7 @@ public class Program {
 		tested.add(num);
 
 		for (int i = 0; i < max_gui_index; ++i) {
-			if (!HuLib.getInstance().get_hu_info(cards, 0, 0)) {
+			if (!Hulib.getInstance().get_hu_info(cards, 0, 0)) {
 				System.out.print("测试失败 i=%d\n" + i);
 				print_cards(cards);
 			}
@@ -103,6 +104,7 @@ public class Program {
 	}
 
 	static void test_one() {
+		TableMgr.getInstance().load();
 		int guiIndex = 33;
 
 		// 1筒，2筒，3筒，4筒，4筒，5筒，5筒，6筒，7筒，7筒，8筒，8筒，9筒，9筒
@@ -118,24 +120,61 @@ public class Program {
 
 		System.out.println("测试1种,癞子:" + guiIndex);
 		print_cards(cards);
-		if (!HuLib.getInstance().get_hu_info(cards, 34, guiIndex)) {
+		long start = System.currentTimeMillis();
+		
+		if (!Hulib.getInstance().get_hu_info(cards, 34, guiIndex)) {
 			System.out.print("测试失败\n");
 		} else {
 			System.out.print("测试成功\n");
 		}
+		
+		System.out.println("use:" + (System.currentTimeMillis() - start));
 	}
 
 	public static void main(String[] args) {
 
+//		ak_test();
+		test_one();
+	}
+	
+	private static Random random = new Random();
+	private static void ak_test()
+	{
 		System.out.print("test hulib begin...\n");
 
 		TableMgr.getInstance().load();
-
+		
+		int lose = 0;
+		int win = 0;
 		long start = System.currentTimeMillis();
-		test_one();
+		for (int i = 0 ; i < 1000000 ; i++)
+		{
+			int[] cards = new int[34];
+			int cardNum = 0;
+			while (cardNum < 14)
+			{
+				if(cards[random.nextInt(cards.length)] < 4)
+				{
+					cards[random.nextInt(cards.length)]++;
+					cardNum++;
+				}
+			}
+			int guiIndex =  random.nextInt(34);
+// 			System.out.println("测试1种,癞子:" + guiIndex);
+ 			
+// 			print_cards(cards);
+			if (!Hulib.getInstance().get_hu_info(cards, 34, guiIndex)) {
+// 				System.out.print("测试失败\n");
+				lose++;
+			} else {
+// 				System.out.print("测试成功\n");
+//				System.out.println("测试1种,癞子:" + guiIndex);
+//				print_cards(cards);
+				win++;
+			}
+		}
 
-		System.out.println("use:" + (System.currentTimeMillis() - start));
+		System.out.println("1000000次,use:" + (System.currentTimeMillis() - start)+"ms,成功:"+win+"次，失败:"+lose+"次.");
 		// System.Console.ReadKey();
-
 	}
 }
