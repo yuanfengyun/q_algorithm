@@ -16,4 +16,4 @@
 
       基于花色切分，然后查表。
       
-      有多种语言版本：lua、c++、c#、golang、js。
+      有多种语言版本：lua、c++、c#、golang、js、java。
