@@ -102,19 +102,21 @@ namespace mjlib
 
         bool list_probability(int color, int gui_num, int num, int key, bool chi, ProbabilityItemTable ptbl)
         {
+            bool find = false;
 			int anum = ptbl.array_num;
             for(int i=0; i<=gui_num; ++i)
             {
                 int yu = (num + i)%3;
                 if(yu == 1) continue;
                 bool eye = (yu == 2);
-                if(TableMgr.getInstance().check(key, i, eye, chi))
+                if(find || TableMgr.getInstance().check(key, i, eye, chi))
                 {
                     ProbabilityItem item = ptbl.m[anum,ptbl.m_num[anum]];
                     ptbl.m_num[anum]++;
 
                     item.eye = eye;
                     item.gui_num = i;
+                    find = true;
                 }
             }
 

@@ -1,5 +1,0 @@
-D:\game_source\mjlib_c#\gen_table\bin\Release\gen_table.exe.config
-D:\game_source\mjlib_c#\gen_table\bin\Release\gen_table.exe
-D:\game_source\mjlib_c#\gen_table\bin\Release\gen_table.pdb
-D:\game_source\mjlib_c#\gen_table\obj\Release\gen_table.exe
-D:\game_source\mjlib_c#\gen_table\obj\Release\gen_table.pdb

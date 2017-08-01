@@ -1,5 +1,0 @@
-D:\game_source\mjlib_c#\test_hu\bin\Release\test_hu.exe.config
-D:\game_source\mjlib_c#\test_hu\bin\Release\test_hu.exe
-D:\game_source\mjlib_c#\test_hu\bin\Release\test_hu.pdb
-D:\game_source\mjlib_c#\test_hu\obj\Release\test_hu.exe
-D:\game_source\mjlib_c#\test_hu\obj\Release\test_hu.pdb

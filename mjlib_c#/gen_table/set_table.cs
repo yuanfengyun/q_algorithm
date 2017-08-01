@@ -19,11 +19,11 @@ namespace mjlib {
 
         public void dump(string name)
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(name, true);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(name);
 
             foreach (var key in m_tbl)
             {
-                file.WriteLine(key);
+                file.WriteLine(key.Key);
             }
             file.Close();
         }

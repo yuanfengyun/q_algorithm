@@ -8,121 +8,114 @@ namespace gen_table
 {
     class Program
     {
-        static void add(int[] cards, int gui_num, bool eye)
-        {
-            int count = 0;
-            int key = 0;
-            for (int i = 0; i < 9; ++i)
+        static Dictionary<int, bool>[] gui_tested = new Dictionary<int, bool>[9];
+        static Dictionary<int, bool>[] gui_eye_tested = new Dictionary<int, bool>[9];
+
+        static void init_cache(){
+            for(int i=0;i<9;i++)
             {
-                count += cards[i];
+                gui_tested[i] = new Dictionary<int, bool>();
+                gui_eye_tested[i] = new Dictionary<int, bool>();
+            }
+        }
+
+        static bool check_add(int[] cards, int gui_num, bool eye){
+            int key = 0;
+
+            for (int i=0; i<9; i++) {
                 key = key * 10 + cards[i];
             }
 
+            if (key == 0)
+            {
+                return false;
+            }
+
+            Dictionary<int, bool> m;
+            if (!eye) {
+                m = gui_tested[gui_num];
+            } else {
+                m = gui_eye_tested[gui_num];
+            }
+           
+            if(m.ContainsKey(key)){
+                return false;
+            }
+
+            m.Add(key, true);
+
+            for (int i=0; i<9; i++){
+                if (cards[i] > 4) {
+                    return true;
+                }
+            }
             TableMgr.getInstance().add(key, gui_num, eye, true);
+            return true;
         }
 
-        static void parse_table_sub(int[] cards, int num, bool eye)
-        {
-            for (int i = 0; i < 9; ++i)
-            {
-                if (cards[i] == 0) continue;
+        static void parse_table_sub(int[] cards, int num, bool eye) {
+            for (int i=0; i<9; i++) {
+                if (cards[i] == 0) {
+                     continue;
+                }
 
-                --cards[i];
+                cards[i]--;
 
-                add(cards, num, eye);
+                if (!check_add(cards, num, eye)) {
+                    cards[i]++;
+                    continue;
+                }
 
-                if (num < 8)
-                {
+                if (num < 8) {
                     parse_table_sub(cards, num + 1, eye);
                 }
-                ++cards[i];
+                cards[i]++;
             }
         }
 
-        static void parse_table(int[] cards)
-        {
-            int count = 0;
-            for (int i = 0; i < 9; ++i)
-            {
-                count += cards[i];
+        static void parse_table(int[] cards, bool eye) {
+            if (!check_add(cards, 0, eye)) {
+                return;
             }
-
-            bool eye = false;
-            if (count % 3 != 0)
-            {
-                eye = true;
-            }
-
-            add(cards, 0, eye);
             parse_table_sub(cards, 1, eye);
         }
 
-        static HashSet<int> tested = new HashSet<int>();
-        static void check_hu(int[] cards)
+        static void gen_auto_table_sub(int[] cards, int level, bool eye)
         {
-           
-
-            for (int i = 0; i < 18; ++i)
+            for (int i = 0; i < 16; ++i)
             {
-                if (cards[i] > 4) return;
-            }
-
-            int num = 0;
-            for (int i = 0; i < 9; ++i)
-            {
-                num = num * 10 + cards[i];
-            }
-
-            if (tested.Contains(num))
-            {
-                return;
-            }
-
-            tested.Add(num);
-
-            parse_table(cards);
-        }
-
-        static void gen_auto_table_sub(int[] cards, int level)
-        {
-            for (int i = 0; i < 32; ++i)
-            {
-                int index = -1;
-                if (i <= 17)
+                if (i <= 8)
                 {
+                    if (cards[i] > 3)
+                    {
+                        continue;
+                    }
                     cards[i] += 3;
-                }
-                else if (i <= 24)
-                {
-                    index = i - 18;
                 }
                 else
                 {
-                    index = i - 16;
-                }
-
-                if (index >= 0)
-                {
+                    int index = i - 9;
+                    if (cards[index] > 5 || cards[index + 1] > 5 || cards[index + 2] > 5) {
+                        continue;
+                    }
                     cards[index] += 1;
                     cards[index + 1] += 1;
                     cards[index + 2] += 1;
                 }
 
-                if (level == 4)
+                parse_table(cards, eye);
+                if(level < 4)
                 {
-                    check_hu(cards);
-                }
-                else
-                {
-                    gen_auto_table_sub(cards, level + 1);
+                    gen_auto_table_sub(cards, level + 1, eye);
                 }
 
-                if (i <= 17)
+                if (i <= 8)
                 {
                     cards[i] -= 3;
                 }
                 else
                 {
+                    int index = i - 9;
                     cards[index] -= 1;
                     cards[index + 1] -= 1;
                     cards[index + 2] -= 1;
@@ -130,7 +123,18 @@ namespace gen_table
             }
         }
 
-        static void gen_auto_table()
+        static void gen_table()
+        {
+            int[] cards = new int[34];
+            for (int i = 0; i < 34; ++i)
+            {
+                cards[i] = 0;
+            }
+
+            gen_auto_table_sub(cards, 1, false);
+        }
+
+        static void gen_eye_table()
         {
             int[] cards = new int[34];
             for(int i=0; i<34; ++i)
@@ -138,22 +142,22 @@ namespace gen_table
                 cards[i] = 0;
             }
 
-            for (int i = 0; i < 18; ++i)
+            for (int i = 0; i < 9; ++i)
             {
                 cards[i] = 2;
-                System.Console.WriteLine("将 %d", i + 1);
-				parse_table(cards)
-                gen_auto_table_sub(cards, 1);
+                parse_table(cards, true);
+                gen_auto_table_sub(cards, 1, true);
                 cards[i] = 0;
             }
-
-            TableMgr.getInstance().dump_table();
         }
 
         static void Main(string[] args)
         {
             System.Console.WriteLine("generate table begin...");
-            gen_auto_table();
+            init_cache();
+            gen_table();
+            gen_eye_table();
+            TableMgr.getInstance().dump_table();
         }
     }
 }
