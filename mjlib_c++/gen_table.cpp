@@ -1,122 +1,104 @@
 #include <stdio.h>
 #include <set>
+#include <map>
 #include "hulib.h"
 #include "table_mgr.h"
 
-void add(char* cards, int gui_num, bool eye)
+std::map<int, bool> gui_tested[9];
+std::map<int, bool> gui_eye_tested[9];
+
+bool check_add(int cards[], int gui_num, bool eye)
 {
-    int count = 0;
     int key = 0;
-    for(int i=0; i<9; ++i)
-    {
-        count += cards[i];
+
+    for (int i=0; i<9; i++) {
         key = key * 10 + cards[i];
     }
 
-    TableMgr::get_instance()->add(key, gui_num, eye, true);
-}
-
-void parse_table_sub(char* cards, int num, bool eye)
-{
-    for(int i=0;i<9;++i)
+    if (key == 0)
     {
-        if(cards[i] == 0) continue;
+        return false;
+    }
 
-        --cards[i];
+    std::map<int, bool>* m;
+    if (!eye) {
+        m = &gui_tested[gui_num];
+    } else {
+        m = &gui_eye_tested[gui_num];
+    }
+    if(m->find(key) != m->end()){
+        return false;
+    }
 
-        add(cards, num, eye);
+    (*m)[key] = true;
 
-        if(num < 4)
-        {
-            parse_table_sub(cards, num+1, eye);
+    for (int i=0; i<9; i++){
+        if (cards[i] > 4) {
+            return true;
         }
-        ++cards[i];
+    }
+    TableMgr::get_instance()->add(key, gui_num, eye, true);
+    return true;
+}
+
+static void parse_table_sub(int cards[], int num, bool eye) {
+    for (int i=0; i<9; i++) {
+        if (cards[i] == 0) {
+             continue;
+        }
+
+        cards[i]--;
+
+        if (!check_add(cards, num, eye)) {
+            cards[i]++;
+            continue;
+        }
+
+        if (num < 8) {
+            parse_table_sub(cards, num + 1, eye);
+        }
+        cards[i]++;
     }
 }
 
-void parse_table(char* cards)
-{
-    int count = 0;
-    for(int i=0;i<9;++i)
-    {
-        count += cards[i];
+static void parse_table(int cards[], bool eye) {
+    if (!check_add(cards, 0, eye)) {
+        return;
     }
-
-    bool eye = false;
-    if(count%3 != 0)
-    {
-        eye = true;
-    }
-
-    add(cards, 0, eye);
     parse_table_sub(cards, 1, eye);
 }
 
-void check_hu(char* cards)
+void gen_auto_table_sub(int cards[], int level, bool eye)
 {
-    static std::set<int> tested;
-
-    for(int i=0;i<18;++i)
+    for(int i=0;i<16;++i)
     {
-        if(cards[i] > 4) return;
-    }
-
-    int num = 0;
-    for(int i=0;i<9;++i)
-    {
-        num = num * 10 + cards[i];
-    }
-
-    if(tested.find(num) != tested.end())
-    {
-        return;
-    }
-
-    tested.insert(num);
-
-    parse_table(cards);
-}
-
-void gen_auto_table_sub(char* cards, int level)
-{
-    for(int i=0;i<32;++i)
-    {
-        int index = -1;
-        if(i <= 17)
+        if(i <= 8)
         {
+            if(cards[i] > 3) continue;
             cards[i] += 3;
         }
-        else if(i <= 24)
-        {
-            index = i - 18;
-        }
         else
         {
-            index = i - 16;
-        }
-
-        if(index >= 0)
-        {
+            int index = i - 9;
+            if(cards[index]>5 || cards[index+1]>5 || cards[index+2]>5) continue;
             cards[index] += 1;
-            cards[index + 1] += 1;
-            cards[index + 2] += 1;
+            cards[index+1] += 1;
+            cards[index+2] += 1;
         }
 
-        if(level == 4)
+        parse_table(cards, eye);
+        if(level<4)
         {
-            check_hu(cards);
-        }
-        else
-        {
-            gen_auto_table_sub(cards, level + 1);
+            gen_auto_table_sub(cards, level + 1, eye);
         }
 
-        if(i <= 17)
+        if(i <= 8)
         {
             cards[i] -= 3;
         }
         else
         {
+            int index = i - 9;
             cards[index] -= 1;
             cards[index + 1] -= 1;
             cards[index + 2] -= 1;
@@ -124,26 +106,33 @@ void gen_auto_table_sub(char* cards, int level)
     }
 }
 
-void gen_auto_table()
+void gen_table()
 {
-    char cards[34] = {0};
+    int cards[34] = {0};
 
-    for(int i=0; i<18; ++i)
+    gen_auto_table_sub(cards, 1, false);
+}
+
+void gen_eye_table()
+{
+    int cards[34] = {0};
+
+    for(int i=0; i<9; ++i)
     {
+        printf("将%d\n",i);
         cards[i] = 2;
-        printf("将 %d\n", i+1);
-        parse_table(cards);
-        gen_auto_table_sub(cards, 1);
+        parse_table(cards, true);
+        gen_auto_table_sub(cards, 1, true);
         cards[i] = 0;
     }
-
-    TableMgr::get_instance()->dump_table();
 }
 
 int main()
 {
-  printf("generate table begin...\n");
-  gen_auto_table();
+    printf("generate table begin...\n");
+    gen_eye_table();
+    gen_table();
+    TableMgr::get_instance()->dump_table();
 
-  return 0;
+    return 0;
 }

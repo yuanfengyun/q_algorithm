@@ -1,4 +1,4 @@
-all: gen_table gen_feng_table
+all: gen_table gen_feng_table test_hu
 
 hulib.o: hulib.h hulib.cpp
 	g++ -g -c hulib.cpp
