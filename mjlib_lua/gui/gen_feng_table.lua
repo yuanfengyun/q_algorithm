@@ -10,7 +10,7 @@ end
 local function check_add(cards, gui_num, eye)
     local key = 0
 
-    for i=1,9 do
+    for i=1,7 do
         key = key * 10 + cards[i]
     end
 
@@ -31,17 +31,17 @@ local function check_add(cards, gui_num, eye)
 
     m[key] = true
 
-    for i=1,9 do
+    for i=1,7 do
         if cards[i] > 4 then
             return true
         end
     end
-    table_mgr:add(key, gui_num, eye, true)
+    table_mgr:add(key, gui_num, eye, false)
     return true
 end
 
 local function parse_table_sub(cards, num, eye)
-    for i=1,9 do
+    for i=1,7 do
         repeat
             if cards[i] == 0 then
                 break
@@ -68,49 +68,31 @@ local function parse_table(cards, eye)
     parse_table_sub(cards, 1, eye)
 end
 
-local function gen_table_sub(t, level, eye)
-    for j=1,16 do
+local function gen_table_sub(cards, level, eye)
+    for i=1,7 do
         repeat
-            if j <= 9 then
-                if t[j] > 3 then
-                    break
-                end
-                t[j] = t[j] + 3
-            elseif j<= 16 then
-                local index = j - 9
-                if t[index] >= 4 or t[index+1] >= 4 or t[index+2] >= 4 then
-                    break
-                end
-                t[index] = t[index] + 1
-                t[index + 1] = t[index + 1] + 1
-                t[index + 2] = t[index + 2] + 1
+            if cards[i] > 3 then
+                break
             end
-            parse_table(t, eye)
+            cards[i] = cards[i] + 3
+            parse_table(cards, eye)
             if level < 4 then
-                gen_table_sub(t, level + 1, eye)
+                gen_table_sub(cards, level + 1, eye)
             end
-
-            if j<= 9 then
-                t[j] = t[j] - 3
-            else
-                local index = j - 9
-                t[index] = t[index] - 1
-                t[index + 1] = t[index + 1] - 1
-                t[index + 2] = t[index + 2] - 1
-            end
+            cards[i] = cards[i] - 3
         until(true)
     end
 end
 
 local function gen_table()
-    local t = {0,0,0,0,0,0,0,0,0}
+    local t = {0,0,0,0,0,0,0}
     gen_table_sub(t, 1, false)
 end
 
 local function gen_eye_table()
-    local t = {0,0,0,0,0,0,0,0,0}
+    local t = {0,0,0,0,0,0,0}
 
-    for i=1,9 do
+    for i=1,7 do
         t[i] = 2
         parse_table(t, true)
         gen_table_sub(t, 1, true)
@@ -122,7 +104,8 @@ local function main()
     table_mgr:init()
     gen_table()
     gen_eye_table()
-    table_mgr:dump_table()
+    table_mgr:dump_feng_table()
+    print(total_key)
 end
 
 main()

@@ -1,7 +1,3 @@
-package.path = "../../lualib/?.lua;"..package.path
-
-local utils = require "utils"
-
 local M = {}
 
 M.CardType = {
