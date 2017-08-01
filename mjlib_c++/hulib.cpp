@@ -3,8 +3,8 @@
 #include "hulib.h"
 #include "table_mgr.h"
 
-#define LOG printf
-//#define LOG log
+//#define LOG printf
+#define LOG log
 
 void log(char*, ...)
 {
