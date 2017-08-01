@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "HuTipsMJ.h"
 #include <algorithm>
 #include <string.h>
@@ -89,7 +90,7 @@ vector<stNodeMJ> CHuTipsMJ::CheckSelfHiddenGang(stCardData &stData)
 		{
 			stNodeMJ stNode;
 			stNode.byType = BLOCK_2222_AN;
-			stNode.addCardInfo(i, 4);
+			stNode.addCardInfo(getValByIndex(i), 4);
 			vctNodeOut.push_back(stNode);
 		}
 	}	
@@ -240,18 +241,15 @@ bool CHuTipsMJ::CheckWin_ZiMo_Normal(stCardData stData, std::vector<stNodeMJ>& v
 
 bool CHuTipsMJ::CanWin2(stCardData &stData, BYTE byIndexNaiZi)
 {
-	BYTE nNaiZi = 0;
-	if (byIndexNaiZi < MAX_TOTAL_TYPE)
-		nNaiZi = stData.byCardCount[byIndexNaiZi];
+// 	BYTE nNaiZi = 0;
+// 	if (byIndexNaiZi < MAX_TOTAL_TYPE)
+// 		nNaiZi = stData.byCardCount[byIndexNaiZi];
 
-	if (stData.byNum == 0)
-		return true;
+// 	if (stData.byNum == 0)
+// 		return true;
 
-	if (nNaiZi == 0)
-		return CanWin_Do(stData);
-	else
-		return CanWin_Do_Nai(stData, byIndexNaiZi);		
-	return false;
+	BYTE nNaiZi = stData.byCardCount[byIndexNaiZi];
+	return CanWin_Do_Nai(stData, byIndexNaiZi);
 }
 
 bool CHuTipsMJ::CanWin(stCardData &stData, stAnswer& stResult, BYTE byIndexNaiZi/*INVALID_VAL*/, int nFlag/*0*/)
@@ -579,9 +577,9 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 	return false;
 }
 
-bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZi/*INVALID_VAL*/, BYTE byNumNaiZi/*0*/)
+bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byNaiIndex/*INVALID_VAL*/, BYTE byNumNaiZi/*0*/)
 {
-	if (byCardNaiZi == INVALID_VAL)
+	if (byNaiIndex == INVALID_VAL)
 		byNumNaiZi = 0;
 
 	int nJiangNum = (stData.byNum + byNumNaiZi) % 3;
@@ -596,7 +594,10 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 	{
 		if (byNumNaiZi >= 2)
 		{
-			if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi-2))
+			stNodeMJ stNode;
+			stNode.byType = BLOCK_22;			
+			stNode.addCardInfo(byNaiIndex, 2);
+			if (ColorMatch2(stData, 0, byNaiIndex, byNumNaiZi-2))
 				return true;
 		}
 		if (byNumNaiZi >= 1)
@@ -607,7 +608,7 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 				{					
 					stData.byCount[i] -= 1;
 					stData.byNum -= 1;
-					if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi-1))
+					if (ColorMatch2(stData, 0, byNaiIndex, byNumNaiZi-1))
 						return true;
 					stData.byCount[i] += 1;
 					stData.byNum += 1;
@@ -620,7 +621,7 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 			{
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi))
+				if (ColorMatch2(stData, 0, byNaiIndex, byNumNaiZi))
 					return true;
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
@@ -632,7 +633,7 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 			{
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi))
+				if (ColorMatch2(stData, 0, byNaiIndex, byNumNaiZi))
 					return true;
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
@@ -655,7 +656,7 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 				BYTE nNaiZiNeed = 3 - nCardsNeed;
 				stData.byCount[i]	-= nCardsNeed;
 				stData.byNum		-= nCardsNeed;
-				if (ColorMatch2(stData, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
+				if (ColorMatch2(stData, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1, byNaiIndex, byNumNaiZi-nNaiZiNeed))
 					return true;
 				stData.byCount[i]	+= nCardsNeed;
 				stData.byNum		+= nCardsNeed;
@@ -699,7 +700,7 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 				if (nFlag & 4)	stData.byCount[i+2] -= 1;
 				stData.byNum -= byLineNum;
 
-				if (ColorMatch2(stData, enBlockLev_234*MAX_COUNT_FLAG_NUM+i, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
+				if (ColorMatch2(stData, enBlockLev_234*MAX_COUNT_FLAG_NUM+i, byNaiIndex, byNumNaiZi-nNaiZiNeed))
 					return true;
 
 				if (nFlag & 1)	stData.byCount[i]	+= 1;
@@ -729,14 +730,7 @@ bool CHuTipsMJ::CheckCanPlay(stCardData &stData,BYTE byCard)
 
 vector<BYTE> CHuTipsMJ::getCardList(stNodeMJ &stNode)
 {
-	vector<BYTE> vctCards;
-	for (int i=0; i<5; ++i)
-	{
-		for (int n=0; n<stNode.sCardData[i].byNum; ++n)
-		{
-			vctCards.push_back(stNode.sCardData[i].byCard);
-		}
-	}
+	vector<BYTE> vctCards;	
 	return vctCards;
 }
 

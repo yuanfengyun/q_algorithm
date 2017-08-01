@@ -195,102 +195,66 @@ struct stCardInfo
 //吃碰杠节点
 struct stNodeMJ
 {
-	BYTE			byType;				//吃碰杠类型  参考 BLOCK_CARD_TYPE	
-	stCardInfo		sCardData[5];		//吃碰杠牌(特殊最多五张不同的牌)	
+	BYTE		byType;							//吃碰杠类型  参考 BLOCK_CARD_TYPE	
+	BYTE		byCardNum[MAX_TOTAL_TYPE];		//吃碰杠牌(特殊最多五张不同的牌)	
 
 	stNodeMJ() { memset(this, 0, sizeof(*this)); }
 
 	BYTE getCardNum()
 	{
 		BYTE byNum = 0;
-		for (int i=0; i<5; ++i)		
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)	
 		{
-			if (sCardData[i].byNum > 0 && sCardData[i].byCard > 0)
-				byNum += sCardData[i].byNum;	
+			byNum += byCardNum[i];	
 		}
 		return byNum;
 	}
 	BYTE getCardType()
 	{
 		BYTE byNum = 0;
-		for (int i=0; i<5; ++i)	
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)	
 		{
-			if (sCardData[i].byNum > 0 && sCardData[i].byCard > 0) 
+			if (byCardNum[i] > 0) 
 				++byNum;
-			else 
-				break;
 		}
 		return byNum;
 	}
-	bool addCardInfo(BYTE byVal, BYTE num)
+	void addCardInfo(BYTE byIndex, BYTE num)
 	{
-		for (int i=0; i<5; ++i)
-		{
-			if (sCardData[i].byNum == 0 || sCardData[i].byCard == byVal)
-			{
-				sCardData[i].byCard = byVal;
-				sCardData[i].byNum += num;
-				return true;
-			}
-		}
-		return false;
+		byCardNum[byIndex] += num;
 	}
-	bool delCardInfo(BYTE byVal)		// 只有删一张牌的需求
+	void delCardInfo(BYTE byIndex)		// 只有删一张牌的需求
 	{
-		for (int i=4; i>=0; --i)
-		{
-			if (sCardData[i].byNum > 0 && sCardData[i].byCard == byVal)
-			{				
-				sCardData[i].byNum--;
-				if (sCardData[i].byNum == 0)				
-					sCardData[i].byCard = 0;				
-				return true;
-			}
-		}
-		return false;
+		if (byCardNum[byIndex] > 0)
+			--byCardNum[byIndex];
 	}
-	BYTE delCardAll(BYTE byVal)
+	BYTE delCardAll(BYTE byIndex)
 	{
-		for (int i=4; i>=0; --i)
-		{
-			if (sCardData[i].byCard == byVal)
-			{				
-				BYTE num = sCardData[i].byNum;
-				memcpy(&sCardData[i], &sCardData[i+1], (4-i)*sizeof(stCardInfo));
-				memset(&sCardData[4], 0, sizeof(stCardInfo));
-				return num;
-			}
-		}
-		return 0;
+		int num = byCardNum[byIndex];
+		byCardNum[byIndex] = 0;
+		return num;
 	}
-	bool isHaveCard(BYTE byCard)
+	bool isHaveCard(BYTE byIndex)
 	{
-		for (int i=0; i<5; ++i)		
-			if (sCardData[i].byCard == byCard)	return true;		
-		return false;
+		return byCardNum[byIndex] > 0;
 	}
 	std::vector<BYTE> getVecData()
 	{
 		std::vector<BYTE> vctOut;
-		for (int i=0; i<5; ++i)
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
 		{
-			if (sCardData[i].byCard == 0 || sCardData[i].byNum == 0)
-				break;
-
-			for (BYTE n=0; n<sCardData[i].byNum; ++n)
+			for (BYTE n=0; n<byCardNum[i]; ++n)
 			{
-				vctOut.push_back(sCardData[i].byCard);
+				vctOut.push_back(getValByIndex(i));
 			}
 		}
 		return vctOut;
 	}
 	void printNode()
 	{
-		for (int i=0; i<5; ++i)
-		{
-			if (sCardData[i].byNum <= 0)
-				break;
-			cout<<hex<<(int)sCardData[i].byCard<<" : "<<(int)sCardData[i].byNum<<'\t';
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
+		{			
+			cout<<hex<<(int)getValByIndex(i)<<" : "<<(int)byCardNum[i]<<'\t';
 		}
 		cout<<endl;
 	}
@@ -389,7 +353,7 @@ struct stCardData
 	stCardData(BYTE byCards[], BYTE num)
 	{
 		memset(this, 0, sizeof(*this));
-		addCard(byCards, num);
+		addCard2(byCards, num);
 	}
 
 	void clear()
@@ -410,6 +374,14 @@ struct stCardData
 		if (bAddHuCard && byHuCard != 0 && byIndex<num)
 		{
 			byCardOut[byIndex] = byHuCard;			
+		}
+	}	
+	void addCard2(BYTE byCards[], BYTE num)
+	{
+		byNum = num;
+		for (int i=0; i<num; ++i)
+		{
+			++byCardCount[byCards[i]];
 		}
 	}	
 	bool addCard(BYTE byCards[], BYTE num)
@@ -495,30 +467,10 @@ struct stCardData
 	}
 	bool addCard(stNodeMJ stNode)
 	{
-		stCardData stTemp = *this;
-		for (int i=0; i<5; ++i)
-		{
-			if (stNode.sCardData[i].byNum <= 0) 
-				break;
-			bool bSuc = stTemp.addCard(stNode.sCardData[i].byCard, stNode.sCardData[i].byNum);
-			if (!bSuc)
-				return false;
-		}
-		memcpy(this, &stTemp, sizeof(stCardData));
 		return true;
 	}
 	bool DelCard(stNodeMJ stNode)
-	{
-		stCardData stTemp = *this;
-		for (int i=0; i<5; ++i)
-		{
-			if (stNode.sCardData[i].byNum <= 0) 
-				break;
-			bool bSuc = stTemp.DelCard(stNode.sCardData[i].byCard, stNode.sCardData[i].byNum);
-			if (!bSuc)
-				return false;
-		}
-		memcpy(this, &stTemp, sizeof(stCardData));
+	{	
 		return true;
 	}
 };

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PlayerHuTips.h"
 
 CPlayerHuTips::CPlayerHuTips(CHuTipsMJ* pAlgor): m_pAlgorithm(pAlgor)
@@ -221,49 +222,7 @@ bool CPlayerHuTips::isJiaHu()
 }
 
 int CPlayerHuTips::getJiaHuType(vector<stNodeMJ> &vctNodeOut, BYTE byCard)
-{
-	bool bJiangTing = false;	// 将牌单听
-	bool bJiaXing = false;		// 夹牌
-	bool bDanBian = false;		// 单边
-	bool bShuangBian = false;	// 双边
-	
-	for (size_t i=0; i<vctNodeOut.size(); ++i)
-	{
-		if (vctNodeOut[i].isHaveCard(byCard))
-		{
-			if (vctNodeOut[i].byType == BLOCK_22)
-			{
-				bJiangTing = true;
-			}
-			else if (vctNodeOut[i].byType == BLOCK_234)
-			{
-				BYTE byMin = 0x0F, byMax = 0x00;
-				for (int n=0; n<3; ++n)
-				{
-					if (vctNodeOut[i].sCardData[n].byCard != 0 && vctNodeOut[i].sCardData[n].byCard != byCard)
-					{
-						byMin = min(byMin, BYTE((vctNodeOut[i].sCardData[n].byCard)&0x0F));
-						byMax = max(byMax, BYTE((vctNodeOut[i].sCardData[n].byCard)&0x0F));
-					}						
-				}
-				if (byMax - byMin == 2)
-					bJiaXing = true;
-				else if ((byMax == 0x09 && byMin == 0x08) || (byMax == 0x02 && byMin == 0x01))
-					bDanBian = true;
-				else
-					bShuangBian = true;
-			}
-		}
-	}
-	if (bShuangBian == false)
-	{
-// 		if (bDanBian)
-// 			return enHuType_Bian;
-// 		else if (bJiaXing)
-// 			return enHuType_KanJia;
-// 		else if (bJiangTing)
-// 			return enHuType_Diao;
-	}	
+{	
 	return 0;
 }
 
@@ -404,18 +363,7 @@ bool CPlayerHuTips::isZhanLi()
 
 //得到对对胡的类型
 int CPlayerHuTips::getDuiDuiHuType(vector<stNodeMJ> vctTemp)
-{
-	if (vctTemp.size() != 7)	
-		return 0;
-	
-	map<BYTE, int> mapNote;
-	for (size_t i=0; i<vctTemp.size(); ++i)
-	{
-		if (vctTemp[i].byType != BLOCK_22)
-			return 0;
-		mapNote[vctTemp[i].sCardData[0].byCard] += 2;
-	}	
-//	return enHuType_DuiZi7;
+{	
 	return 0;
 }
 

@@ -13,8 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="perfacthash">
-      <UniqueIdentifier>{64a9aab0-18c1-42d4-a4c2-200bc6674110}</UniqueIdentifier>
+    <Filter Include="rjc">
+      <UniqueIdentifier>{8d20705f-3ccb-40af-8c4d-b7805b2355e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +42,27 @@
     <ClInclude Include="hash_table.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CMD_Mj.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="DefineHuTip.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="HuTipsMJ.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHuTips.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHuTips2.h">
+      <Filter>rjc</Filter>
+    </ClInclude>
+    <ClInclude Include="array_table.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -60,6 +81,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="hash_table.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HuTipsMJ.cpp">
+      <Filter>rjc</Filter>
+    </ClCompile>
+    <ClCompile Include="main_hu.cpp">
+      <Filter>rjc</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHuTips.cpp">
+      <Filter>rjc</Filter>
+    </ClCompile>
+    <ClCompile Include="array_table.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

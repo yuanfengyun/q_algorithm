@@ -10,18 +10,18 @@ void print_cards(char* cards)
     {
           printf("%d,", cards[i]);
     }
-    printf("\n");
+    printf("\t");
 
     for(int i=9;i<18;++i)
     {
           printf("%d,", cards[i]);
     }
-    printf("\n");
+    printf("\t");
     for(int i=18;i<27;++i)
     {
           printf("%d,", cards[i]);
     }
-    printf("\n");
+    printf("\t");
     for(int i=27;i<34;++i)
     {
           printf("%d,", cards[i]);

@@ -5,68 +5,137 @@
 #include <algorithm>
 #include "table_mgr.h"
 #include "hulib.h"
+
+#include "Define.h"
+#include "DefineHuTip.h"
+#include "PlayerHuTips.h"
+#include "PlayerHuTips2.h"
+
 using namespace std;
 
-#define MAX_COUNT 1000000
-
-static BYTE s_HuCardAll[136];
-
-void test_one()
+void print_cards(char* cards)
 {
-	char cards[34] = {
-		0,0,0,0,0,0,0,0,3,
-		0,0,0,0,1,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,
-		0,0,2,0,4,0,4
-	};
+	for (int i = 0; i<9; ++i)
+	{
+		printf("%d,", cards[i]);
+	}
+	printf("  ");
 
-	HuLib::get_hu_info(cards, NULL, 34, 34, 33);
+	for (int i = 9; i<18; ++i)
+	{
+		printf("%d,", cards[i]);
+	}
+	printf("  ");
+	for (int i = 18; i<27; ++i)
+	{
+		printf("%d,", cards[i]);
+	}
+	printf("  ");
+	for (int i = 27; i<34; ++i)
+	{
+		printf("%d,", cards[i]);
+	}
+	printf("\n");
 }
+
+#define MAX_COUNT (10000 * 10000)
+static BYTE g_HuCardAll[136];
+static BYTE s_HuCardAll[136];
 
 
 void main()
 {
-	TableMgr::get_instance()->load();
-	test_one();
-	srand(1);
 
+	CPlayerHuTips2 stTssss;
+	stTssss.TrainAll();
+
+	CHuTipsMJ		m_cAlgorithm;
+	TableMgr::get_instance()->load();
+	
 	for (int i = 0; i < 34; i++)
 	{
-		s_HuCardAll[i * 4] = i;
-		s_HuCardAll[i * 4+1] = i;
-		s_HuCardAll[i * 4+2] = i;
-		s_HuCardAll[i * 4+3] = i;
+		g_HuCardAll[i * 4] = i;
+		g_HuCardAll[i * 4+1] = i;
+		g_HuCardAll[i * 4+2] = i;
+		g_HuCardAll[i * 4+3] = i;
 	}
-	DWORD dwTimeBegin = GetTickCount();
-	BYTE byNaiZi = s_HuCardAll[135];
-	BYTE byCards[14] = {};
-	int  nAll = 0;
-	BYTE			 byNaiZiNote[1000] = {};
-	// 纯随机跑10000*9次，每次将第一个牌值设为赖子
+	
+	BYTE gui_card = getValByIndex(33);
+	int gui_index = 33;
 	int hu = 0;
+	char cards[34] = { 0 };
+	DWORD dwTimeBegin = GetTickCount();
+	
+	// rjc查表法
+	srand(1);
+	hu = 0;
+	stCardData2 stData2;
+	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
+	dwTimeBegin = GetTickCount();
 	for (int n = 0; n<MAX_COUNT; ++n)
 	{
-		random_shuffle(s_HuCardAll, s_HuCardAll + 136);
+		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
 		for (int i = 0; i<9; ++i)	// 136/14 -> 9
 		{
-			char cards[34] = { 0 };
-			for (int j = i * 14; j < (i + 1) * 14; j++)
-			{
+			stData2.byNum = 14;
+			memset(cards, 0, sizeof(cards));
+			for (int j = i * 14; j < i * 14 + 10; j++)
 				++cards[s_HuCardAll[j]];
+			cards[33] = 4;
+			memcpy(stData2.byCardNum, cards, sizeof(cards));
+			
+			if (stTssss.CheckCanHu(stData2, gui_index))
+			{
+				hu++;
 			}
-			int gui_index = s_HuCardAll[(i + 1) * 14 - 1];
-
-			hu += HuLib::get_hu_info(
-				cards,
-				NULL,
-				34,
-				34,
-				gui_index
-				);
 		}
 	}
-	cout << "nAll:" << MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
-	cout << "hu: " << hu << endl;;
+	cout << "rjc查表法总数:" << 9*MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "Hu: " << hu << endl;
 
-	cin >> nAll;
+	// 查表法
+	srand(1);
+	dwTimeBegin = GetTickCount();
+	hu = 0;
+	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
+	dwTimeBegin = GetTickCount();
+	for (int n = 0; n<MAX_COUNT; ++n)
+	{
+		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
+		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		{
+			memset(cards, 0, sizeof(cards));
+			for (int j = i * 14; j < i * 14 + 10; j++)
+				++cards[s_HuCardAll[j]];
+
+			cards[33] = 4;
+			hu += HuLib::get_hu_info(cards, NULL, 34, 34, gui_index);
+		}
+	}
+	cout << "查表法总数:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "Hu: " << hu << endl;
+
+	srand(1);
+	stCardData stData;
+	hu = 0;
+	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
+	dwTimeBegin = GetTickCount();
+	for (int n = 0; n<MAX_COUNT; ++n)
+	{
+		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
+		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		{
+			memset(cards, 0, sizeof(cards));
+			for (int j = i * 14; j < i * 14 + 10; j++)
+				++cards[s_HuCardAll[j]];
+
+			cards[33] = 4;
+			stData.byNum = 14;
+			memcpy(stData.byCardCount, cards, sizeof(cards));
+			hu += m_cAlgorithm.CanWin_Do_Nai(stData, gui_index);
+		}
+	}
+	cout << "递归方法, 总数:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "Hu: " << hu << endl;
+	cin >> hu;
 }

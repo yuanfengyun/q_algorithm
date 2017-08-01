@@ -89,7 +89,7 @@ vector<stNodeMJ> CHuTipsMJ::CheckSelfHiddenGang(stCardData &stData)
 		{
 			stNodeMJ stNode;
 			stNode.byType = BLOCK_2222_AN;
-			stNode.addCardInfo(i, 4);
+			stNode.addCardInfo(getValByIndex(i), 4);
 			vctNodeOut.push_back(stNode);
 		}
 	}	
@@ -213,11 +213,21 @@ vector<BYTE> CHuTipsMJ::CheckSelfBuGang_Spe(stCardData stData, std::vector<stNod
 
 //点炮胡
 //bool CHuTipsMJ::CheckWin_Dian(stCardData stData, std::vector<stNodeMJ>& vctNodeOut, BYTE byOutCard, BYTE byCardNaiZi, map<stKey, stAnswer> &mapHuanCun)
-bool CHuTipsMJ::CheckWin_Dian(stCardData &stData, BYTE byCardNaiZi)
-{	
+bool CHuTipsMJ::CheckWin_Dian(stCardData &stData, BYTE byOutCard, BYTE byCardNaiZi)
+{		
+	if (!IsValidCard(byOutCard))
+	{
+		return false;
+	}
+	stData.addCard(byOutCard, 1);
  	BYTE byNaiZi = getIndexByVal(byCardNaiZi);
 
-	return CanWin2(stData, byNaiZi);
+	stAnswer stResult;
+	bool bSuc = CanWin2(stData, stResult, byNaiZi);
+// 	if (bSuc)
+// 		stResult.getVctNode(vctNodeOut);
+
+	return bSuc;
 }
 
 //胡-七小队
@@ -238,7 +248,7 @@ bool CHuTipsMJ::CheckWin_ZiMo_Normal(stCardData stData, std::vector<stNodeMJ>& v
 	return bSuc;
 }
 
-bool CHuTipsMJ::CanWin2(stCardData &stData, BYTE byIndexNaiZi)
+bool CHuTipsMJ::CanWin2(stCardData &stData, stAnswer& stResult, BYTE byIndexNaiZi)
 {
 	BYTE nNaiZi = 0;
 	if (byIndexNaiZi < MAX_TOTAL_TYPE)
@@ -247,10 +257,10 @@ bool CHuTipsMJ::CanWin2(stCardData &stData, BYTE byIndexNaiZi)
 	if (stData.byNum == 0)
 		return true;
 
-	if (nNaiZi == 0)
-		return CanWin_Do(stData);
+	if (nNaiZi == 0 && stResult.nNum == 0)
+		return CanWin_Do(stData, stResult);
 	else
-		return CanWin_Do_Nai(stData, byIndexNaiZi);		
+		return CanWin_Do_Nai(stData, stResult, byIndexNaiZi);		
 	return false;
 }
 
@@ -264,14 +274,169 @@ bool CHuTipsMJ::CanWin(stCardData &stData, stAnswer& stResult, BYTE byIndexNaiZi
 		return true;
 
 	if (nNaiZi == 0 && stResult.nNum == 0)
-		return CanWin_Do(stData);
+		return CanWin_Do(stData, stResult);
 	else
-		return CanWin_Do_Nai(stData, byIndexNaiZi);
+		return CanWin_Do_Nai(stData, stResult, byIndexNaiZi);
+
+	// 1.先选将（优先把赖子当将）
+	if (stResult.nNum == 0)	//第一对肯定是将
+	{
+		if (nNaiZi >= 2)
+		{
+			stNodeMJ tempNode;
+			tempNode.byType = BLOCK_22;
+			tempNode.addCardInfo(getValByIndex(byIndexNaiZi), 2);
+			stResult.addNode(tempNode);
+			stData.DelCard(tempNode);
+			bool bSuc = CanWin(stData, stResult, byIndexNaiZi);
+			if (bSuc)	
+				return true;
+			stResult.delNode();
+			stData.addCard(tempNode);
+		}
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
+		{			
+			if (i != byIndexNaiZi && nNaiZi >= 1 && stData.byCardCount[i] >= 1)
+			{		
+				stNodeMJ tempNode;
+				tempNode.byType = BLOCK_22;
+				tempNode.addCardInfo(getValByIndex(byIndexNaiZi), 1);
+				tempNode.addCardInfo(getValByIndex(i), 1);
+				stResult.addNode(tempNode);
+				stData.DelCard(tempNode);
+				bool bSuc = CanWin(stData, stResult, byIndexNaiZi);
+				if (bSuc)	
+					return true;
+				stResult.delNode();
+				stData.addCard(tempNode);
+			}
+		}
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
+		{
+			if (i != byIndexNaiZi && stData.byCardCount[i] == 2)
+			{
+				stNodeMJ tempNode;
+				tempNode.byType = BLOCK_22;
+				tempNode.addCardInfo(getValByIndex(i), 2);
+				stResult.addNode(tempNode);
+				stData.DelCard(tempNode);
+				bool bSuc = CanWin(stData, stResult, byIndexNaiZi);
+				if (bSuc)	
+					return true;
+				stResult.delNode();
+				stData.addCard(tempNode);
+			}			
+		}
+		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
+		{
+			if (i != byIndexNaiZi && stData.byCardCount[i] > 2)
+			{
+				stNodeMJ tempNode;
+				tempNode.byType = BLOCK_22;
+				tempNode.addCardInfo(getValByIndex(i), 2);
+				stResult.addNode(tempNode);
+				stData.DelCard(tempNode);
+				bool bSuc = CanWin(stData, stResult, byIndexNaiZi);
+				if (bSuc)	
+					return true;
+				stResult.delNode();
+				stData.addCard(tempNode);
+			}			
+		}
+	}	
+	if (stData.byNum < 3 || stResult.nNum == 0)	
+		return false;
+		
+	int index = nFlag%MAX_COUNT_FLAG_NUM;
+	int nLev = nFlag/MAX_COUNT_FLAG_NUM;
+	if (nLev < enBlockLev_222)
+		index = 0;
+
+	// 2.刻子
+	if (nLev <= enBlockLev_222)	//刻子
+	{
+		int i = index;
+		for (; i<MAX_TOTAL_TYPE; ++i)
+		{
+			if (byIndexNaiZi == i) continue;
+
+			stNodeMJ tempNode;
+			tempNode.byType = BLOCK_222;
+
+			BYTE nNum = stData.byCardCount[i];
+			if ( nNum >= 3)
+			{			
+				tempNode.addCardInfo(getValByIndex(i), 3);			
+			}
+			else if (nNum + nNaiZi >= 3)
+			{		
+				if (nNum > 0)			
+					tempNode.addCardInfo(getValByIndex(i), nNum);			
+				if (nNaiZi > 0)			
+					tempNode.addCardInfo(getValByIndex(byIndexNaiZi), 3-nNum);						
+			}
+			if (tempNode.getCardNum() == 3)
+			{
+				stResult.addNode(tempNode);
+				stData.DelCard(tempNode);
+				bool bSuc = CanWin(stData, stResult, byIndexNaiZi, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1);
+				if (bSuc)	
+					return true;
+				stResult.delNode();
+				stData.addCard(tempNode);
+			}		
+		}
+	}
+	
+	// 3.顺子
+	if (nLev < enBlockLev_234)
+		index = 0;
+
+	for (int m=0; m<index; ++m)
+		if (stData.byCardCount[m] > 0) return false;
+	
+	int cor = index/9;
+	int val = index%9;
+	for (; cor<3; ++cor)
+	{
+		if (cor > index/9) val = 0;
+		for (; val<=6; ++val)
+		{
+			BYTE byIndex1 = cor*9 + val;
+			BYTE byIndex2 = cor*9 + val+1;
+			BYTE byIndex3 = cor*9 + val+2;
+
+			stNodeMJ tempNode;
+			tempNode.byType = BLOCK_234;
+			if (stData.byCardCount[byIndex1] > 0 && byIndex1 != byIndexNaiZi)
+				tempNode.addCardInfo(getValByIndex(byIndex1), 1);
+			if (stData.byCardCount[byIndex2] > 0 && byIndex2 != byIndexNaiZi)
+				tempNode.addCardInfo(getValByIndex(byIndex2), 1);
+			if (stData.byCardCount[byIndex3] > 0 && byIndex3 != byIndexNaiZi)
+				tempNode.addCardInfo(getValByIndex(byIndex3), 1);
+
+			int nSize = tempNode.getCardNum();
+			if (nSize < 3 && nSize + nNaiZi >= 3)
+				tempNode.addCardInfo(getValByIndex(byIndexNaiZi), 3-nSize);
+
+			if (tempNode.getCardNum() == 3)
+			{
+				stResult.addNode(tempNode);
+				stData.DelCard(tempNode);
+				bool bSuc = CanWin(stData, stResult, byIndexNaiZi, enBlockLev_234*MAX_COUNT_FLAG_NUM+byIndex1);
+				if (bSuc)	
+					return true;
+				stResult.delNode();
+				stData.addCard(tempNode);
+				return false;
+			}			
+		}
+	}
 
 	return false;
 }
 
-bool CHuTipsMJ::CanWin_Do(stCardData &stData)
+bool CHuTipsMJ::CanWin_Do(stCardData &stData, stAnswer& stResult)
 {
 	for (int cor=0; cor<enColorMJ_Max; ++cor)
 	{
@@ -284,7 +449,7 @@ bool CHuTipsMJ::CanWin_Do(stCardData &stData)
 			for (int i=0; i<nAll; ++i)
 				stColorTemp.byNum += stColorTemp.byCount[i];
 
-			if (ColorMatch2(stColorTemp) == false)
+			if (ColorMatch2(stColorTemp, stResult) == false)
 			{
 				return false;
 			}
@@ -293,7 +458,7 @@ bool CHuTipsMJ::CanWin_Do(stCardData &stData)
 	return true;
 }
 
-bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
+bool CHuTipsMJ::ColorMatch(stColorData &stData, stAnswer &stResult, int nFlag/*0*/)
 {
 	if (stData.byNum == 0) 
 		return true;
@@ -308,11 +473,16 @@ bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
 		for (int i=0; i<nAll; ++i)
 		{
 			if (stData.byCount[i] == 2)
-			{				
+			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_22;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 2);
+				stResult.addNode(stNode);
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch(stData))
+				if (ColorMatch(stData, stResult))
 					return true;
+				stResult.delNode();
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
 			}
@@ -320,12 +490,16 @@ bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
 		for (int i=0; i<nAll; ++i)
 		{
 			if (stData.byCount[i] > 2)
-			{				
+			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_22;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 2);
+				stResult.addNode(stNode);
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch(stData))
+				if (ColorMatch(stData, stResult))
 					return true;
-
+				stResult.delNode();
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
 			}
@@ -341,12 +515,16 @@ bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
 		for (; i<nAll; ++i)
 		{
 			if (stData.byCount[i] >= 3)
-			{				
+			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_222;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 3);
+				stResult.addNode(stNode);
 				stData.byCount[i] -= 3;
 				stData.byNum -= 3;
-				if (ColorMatch(stData, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1))
+				if (ColorMatch(stData, stResult, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1))
 					return true;
-
+				stResult.delNode();
 				stData.byCount[i] += 3;
 				stData.byNum += 3;
 			}
@@ -365,14 +543,20 @@ bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
 		for (; i<nAll-2; ++i)
 		{
 			if (stData.byCount[i] > 0 && stData.byCount[i+1] > 0 && stData.byCount[i+2] > 0)
-			{				
+			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_234;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 1);
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i+1), 1);
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i+2), 1);
+				stResult.addNode(stNode);
 				stData.byCount[i]	-= 1;
 				stData.byCount[i+1] -= 1;
 				stData.byCount[i+2] -= 1;
 				stData.byNum -= 3;
-				if (ColorMatch(stData, enBlockLev_234*MAX_COUNT_FLAG_NUM+i))
+				if (ColorMatch(stData, stResult, enBlockLev_234*MAX_COUNT_FLAG_NUM+i))
 					return true;
-
+				stResult.delNode();
 				stData.byCount[i]	+= 1;
 				stData.byCount[i+1] += 1;
 				stData.byCount[i+2] += 1;
@@ -384,7 +568,7 @@ bool CHuTipsMJ::ColorMatch(stColorData &stData, int nFlag/*0*/)
 	return false;
 }
 
-bool CHuTipsMJ::CanWin_Do_Nai(stCardData &stData, BYTE byIndexNaiZi/*INVALID_VAL*/)
+bool CHuTipsMJ::CanWin_Do_Nai(stCardData &stData, stAnswer& stResult, BYTE byIndexNaiZi/*INVALID_VAL*/)
 {
 	if (stData.byNum % 3 != 2)
 		return false;
@@ -432,18 +616,20 @@ bool CHuTipsMJ::CanWin_Do_Nai(stCardData &stData, BYTE byIndexNaiZi/*INVALID_VAL
 					byLeftNum[enColorMJ_FenZi] = (stColorTemp[3].byNum+i4)%3;
 					if (byLeftNum[enColorMJ_FenZi] == 1 || byLeftNum[0]+byLeftNum[1]+byLeftNum[2]+byLeftNum[3] != 2) continue;
 
+					stAnswer stResultTemp;
 					stColorData stTemp[enColorMJ_Max];
 					memcpy(stTemp, stColorTemp, sizeof(stTemp));					
 					
-					if (stColorTemp[0].byNum>0 && !ColorMatch2(stTemp[0], 0, getValByIndex(byIndexNaiZi), i1))
+					if (stColorTemp[0].byNum>0 && !ColorMatch2(stTemp[0], stResultTemp, 0, getValByIndex(byIndexNaiZi), i1))
 						continue;
-					if (stColorTemp[1].byNum>0 && !ColorMatch2(stTemp[1], 0, getValByIndex(byIndexNaiZi), i2))
+					if (stColorTemp[1].byNum>0 && !ColorMatch2(stTemp[1], stResultTemp, 0, getValByIndex(byIndexNaiZi), i2))
 						continue;
-					if (stColorTemp[2].byNum>0 && !ColorMatch2(stTemp[2], 0, getValByIndex(byIndexNaiZi), i3))
+					if (stColorTemp[2].byNum>0 && !ColorMatch2(stTemp[2], stResultTemp, 0, getValByIndex(byIndexNaiZi), i3))
 						continue;
-					if (stColorTemp[3].byNum>0 && !ColorMatch2(stTemp[3], 0, getValByIndex(byIndexNaiZi), i4))
+					if (stColorTemp[3].byNum>0 && !ColorMatch2(stTemp[3], stResultTemp, 0, getValByIndex(byIndexNaiZi), i4))
 						continue;
 
+					stResult = stResultTemp;
 					return true;
 				}
 			}			
@@ -510,7 +696,7 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 // 						}
 						if (stResultTemp[0].nNum == 0)
 						{
-							if (!ColorMatch2(stTemp[0], 0, getValByIndex(byIndexNaiZi), i1))
+							if (!ColorMatch2(stTemp[0], stResultTemp[0], 0, getValByIndex(byIndexNaiZi), i1))
 								continue;
 // 							else if (stColorTemp[0].byNum + i1 >= MIN_HU_HUAN_CUN)
 // 								mapHuanCun[strKey] = stResultTemp[0];
@@ -527,7 +713,7 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 // 						}
 						if (stResultTemp[1].nNum == 0)
 						{
-							if (!ColorMatch2(stTemp[1], 0, getValByIndex(byIndexNaiZi), i2))
+							if (!ColorMatch2(stTemp[1], stResultTemp[1], 0, getValByIndex(byIndexNaiZi), i2))
 								continue;
 // 							else if (stColorTemp[1].byNum + i2 >= MIN_HU_HUAN_CUN)
 // 								mapHuanCun[strKey] = stResultTemp[1];
@@ -544,7 +730,7 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 // 						}
 						if (stResultTemp[2].nNum == 0)
 						{
-							if (!ColorMatch2(stTemp[2], 0, getValByIndex(byIndexNaiZi), i3))
+							if (!ColorMatch2(stTemp[2], stResultTemp[2], 0, getValByIndex(byIndexNaiZi), i3))
 								continue;
 // 							else if (stColorTemp[2].byNum + i3 >= MIN_HU_HUAN_CUN)
 // 								mapHuanCun[strKey] = stResultTemp[2];
@@ -561,7 +747,7 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 // 						}
 						if (stResultTemp[3].nNum == 0)
 						{
-							if (!ColorMatch2(stTemp[3], 0, getValByIndex(byIndexNaiZi), i4))
+							if (!ColorMatch2(stTemp[3], stResultTemp[3], 0, getValByIndex(byIndexNaiZi), i4))
 								continue;
 // 							else if (stColorTemp[3].byNum + i4 >= MIN_HU_HUAN_CUN)
 // 								mapHuanCun[strKey] = stResultTemp[3];
@@ -579,7 +765,7 @@ bool CHuTipsMJ::CanWin_Do_Nai2(stCardData &stData, stAnswer& stResult, BYTE byIn
 	return false;
 }
 
-bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZi/*INVALID_VAL*/, BYTE byNumNaiZi/*0*/)
+bool CHuTipsMJ::ColorMatch2(stColorData &stData, stAnswer &stResult, int nFlag/*0*/, BYTE byCardNaiZi/*INVALID_VAL*/, BYTE byNumNaiZi/*0*/)
 {
 	if (byCardNaiZi == INVALID_VAL)
 		byNumNaiZi = 0;
@@ -596,19 +782,32 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 	{
 		if (byNumNaiZi >= 2)
 		{
-			if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi-2))
+			stNodeMJ stNode;
+			stNode.byType = BLOCK_22;			
+			stNode.addCardInfo(byCardNaiZi, 2);
+			stResult.addNode(stNode);
+			if (ColorMatch2(stData, stResult, 0, byCardNaiZi, byNumNaiZi-2))
 				return true;
+			stResult.delNode();
 		}
 		if (byNumNaiZi >= 1)
 		{
 			for (int i=0; i<nAll; ++i)
 			{
 				if (stData.byCount[i] >= 1)
-				{					
+				{
+					stNodeMJ stNode;
+					stNode.byType = BLOCK_22;
+					stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 1);
+					stNode.addCardInfo(byCardNaiZi, 1);
+					stResult.addNode(stNode);
+					//stData.delCards(i, 1);
 					stData.byCount[i] -= 1;
 					stData.byNum -= 1;
-					if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi-1))
+					if (ColorMatch2(stData, stResult, 0, byCardNaiZi, byNumNaiZi-1))
 						return true;
+					stResult.delNode();
+					//stData.addCards(i, 1);
 					stData.byCount[i] += 1;
 					stData.byNum += 1;
 				}
@@ -618,10 +817,17 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 		{			
 			if (stData.byCount[i] == 2)
 			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_22;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 2);
+				stResult.addNode(stNode);
+				//stData.delCards(i, 2);
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi))
+				if (ColorMatch2(stData, stResult, 0, byCardNaiZi, byNumNaiZi))
 					return true;
+				stResult.delNode();
+				//stData.addCards(i, 2);
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
 			}
@@ -630,10 +836,17 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 		{
 			if (stData.byCount[i] > 2)
 			{
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_22;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 2);
+				stResult.addNode(stNode);
+				//stData.delCards(i, 2);
 				stData.byCount[i] -= 2;
 				stData.byNum -= 2;
-				if (ColorMatch2(stData, 0, byCardNaiZi, byNumNaiZi))
+				if (ColorMatch2(stData, stResult, 0, byCardNaiZi, byNumNaiZi))
 					return true;
+				stResult.delNode();
+				//stData.addCards(i, 2);
 				stData.byCount[i] += 2;
 				stData.byNum += 2;
 			}
@@ -653,10 +866,18 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 			{
 				BYTE nCardsNeed = min((BYTE)3, stData.byCount[i]);
 				BYTE nNaiZiNeed = 3 - nCardsNeed;
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_222;
+				stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), nCardsNeed);				
+				if (nNaiZiNeed > 0)
+					stNode.addCardInfo(byCardNaiZi, nNaiZiNeed);
+
+				stResult.addNode(stNode);
 				stData.byCount[i]	-= nCardsNeed;
 				stData.byNum		-= nCardsNeed;
-				if (ColorMatch2(stData, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
+				if (ColorMatch2(stData, stResult, enBlockLev_222*MAX_COUNT_FLAG_NUM+i+1, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
 					return true;
+				stResult.delNode();
 				stData.byCount[i]	+= nCardsNeed;
 				stData.byNum		+= nCardsNeed;
 			}
@@ -694,14 +915,34 @@ bool CHuTipsMJ::ColorMatch2(stColorData &stData, int nFlag/*0*/, BYTE byCardNaiZ
 			if (byLineNum + byNumNaiZi >= 3)
 			{
 				BYTE nNaiZiNeed = 3 - byLineNum;
-				if (nFlag & 1)	stData.byCount[i] -= 1;
-				if (nFlag & 2)	stData.byCount[i+1] -= 1;
-				if (nFlag & 4)	stData.byCount[i+2] -= 1;
-				stData.byNum -= byLineNum;
+				stNodeMJ stNode;
+				stNode.byType = BLOCK_234;
 
-				if (ColorMatch2(stData, enBlockLev_234*MAX_COUNT_FLAG_NUM+i, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
+				if (nFlag & 1)
+				{					
+					stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i), 1);
+					stData.byCount[i] -= 1;
+				}
+				if (nFlag & 2)
+				{
+					stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i+1), 1);
+					stData.byCount[i+1] -= 1;
+				}
+				if (nFlag & 4)
+				{
+					stNode.addCardInfo(getValByIndex(stData.byCorType*MAX_VAL_NUM+i+2), 1);
+					stData.byCount[i+2] -= 1;
+				}
+
+				stData.byNum -= byLineNum;
+				if (nNaiZiNeed > 0)
+					stNode.addCardInfo(byCardNaiZi, nNaiZiNeed);
+
+				stResult.addNode(stNode);
+				if (ColorMatch2(stData, stResult, enBlockLev_234*MAX_COUNT_FLAG_NUM+i, byCardNaiZi, byNumNaiZi-nNaiZiNeed))
 					return true;
 
+				stResult.delNode();
 				if (nFlag & 1)	stData.byCount[i]	+= 1;
 				if (nFlag & 2)	stData.byCount[i+1] += 1;
 				if (nFlag & 4)	stData.byCount[i+2] += 1;

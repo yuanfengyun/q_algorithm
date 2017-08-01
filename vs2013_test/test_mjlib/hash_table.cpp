@@ -26,9 +26,14 @@ void HashTable::dump(char* name)
 {
     FILE *fp = fopen(name, "wb+");
 
+    int num = m_tbl.size();
+
+    fwrite(&num, 4, 1, fp);
+
     for(std::unordered_map<int,int>::iterator it=m_tbl.begin(); it!=m_tbl.end(); ++it)
     {
-		fprintf(fp, "%d\n", *it);
+        int key = it->second;
+        fwrite(&key, 4, 1, fp);
     }
 
     fclose(fp);
@@ -39,11 +44,13 @@ void HashTable::load(char* name)
     FILE *fp = fopen(name, "rb");
 
 	int key = 0;
-	while (fscanf(fp, "%d", &key) != EOF)
+	int num = 0;
+	while (fscanf(fp, "%d\n", &key) != EOF)
 	{
-		m_tbl[key] = 1;
+		num++;
+		add(key);
 	}
 
-    printf("load %s, set_size = %d\n", name, m_tbl.size());
+    printf("load %s %d key, set_size = %d\n", name, num, m_tbl.size());
     fclose(fp);
 }

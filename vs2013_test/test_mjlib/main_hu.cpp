@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <iostream>
 #include <windows.h>
 #include <vector>
@@ -6,6 +7,7 @@
 #include "DefineHuTip.h"
 #include "PlayerHuTips.h"
 
+/*
 void print_cards(char* cards)
 {
 	for (int i = 0; i<9; ++i)
@@ -43,7 +45,7 @@ void Print_cards(BYTE* a)
 using namespace std;
 
 static BYTE s_HuCardAll[136];
-void main()
+void main2()
 {
 	CHuTipsMJ		m_cAlgorithm;
 	CPlayerHuTips	cHuTips(&m_cAlgorithm);
@@ -81,10 +83,12 @@ void main()
 		{	
 			stCardData stData(s_HuCardAll+i*14+1, 10);	// 不要把第一个牌值设进去
 			stData.addCard(gui_array, 4);
-			hu += = m_cAlgorithm.CheckWin_Dian(stData, gui_card);			
+			hu +=  m_cAlgorithm.CheckWin_Dian(stData, gui_card);			
 		}
 	}
 	cout << "总数:" << MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }
+
+//*/

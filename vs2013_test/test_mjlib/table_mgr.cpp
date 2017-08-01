@@ -3,28 +3,30 @@
 #include "table_mgr.h"
 #include "set_table.h"
 #include "hash_table.h"
+#include "array_table.h"
 
+#define TABLECLASS ArrayTable
 
 TableMgr::TableMgr()
 {
     for(int i=0; i<5; ++i)
     {
-        m_check_table[i] = new HashTable;
+		m_check_table[i] = new TABLECLASS;
     }
 
     for(int i=0; i<5; ++i)
     {
-		m_check_eye_table[i] = new HashTable;
+		m_check_eye_table[i] = new TABLECLASS;
     }
  
     for(int i=0; i<5; ++i)
     {
-		m_check_feng_table[i] = new HashTable;
+		m_check_feng_table[i] = new TABLECLASS;
     }
 
     for(int i=0; i<5; ++i)
     {
-		m_check_feng_eye_table[i] = new HashTable;
+		m_check_feng_eye_table[i] = new TABLECLASS;
     }
 }
 
@@ -122,25 +124,25 @@ bool TableMgr::load()
     char path[256];
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_table_%d", i);
+        sprintf(path, "tbl/table_%d.tbl", i);
         m_check_table[i]->load(path);
     }
 
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_eye_table_%d", i);
+        sprintf(path, "tbl/eye_table_%d.tbl", i);
         m_check_eye_table[i]->load(path);
     }
  
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_feng_table_%d", i);
+        sprintf(path, "tbl/feng_table_%d.tbl", i);
         m_check_feng_table[i]->load(path);
     }
 
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_feng_eye_table_%d", i);
+        sprintf(path, "tbl/feng_eye_table_%d.tbl", i);
         m_check_feng_eye_table[i]->load(path);
     }
     return true;
@@ -151,13 +153,13 @@ bool TableMgr::dump_table()
     char path[256];
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_table_%d", i);
+        sprintf(path, "tbl/table_%d.tbl", i);
         m_check_table[i]->dump(path);
     }
 
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_eye_table_%d", i);
+        sprintf(path, "tbl/eye_table_%d.tbl", i);
         m_check_eye_table[i]->dump(path);
     }
     return true;
@@ -168,13 +170,13 @@ bool TableMgr::dump_feng_table()
     char path[256];
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_feng_table_%d", i);
+        sprintf(path, "tbl/feng_table_%d.tbl", i);
         m_check_feng_table[i]->dump(path);
     }
 
     for(int i=0; i<5; ++i)
     {
-        sprintf(path, "tbl/check_feng_eye_table_%d", i);
+        sprintf(path, "tbl/feng_eye_table_%d.tbl", i);
         m_check_feng_eye_table[i]->dump(path);
     }
 
