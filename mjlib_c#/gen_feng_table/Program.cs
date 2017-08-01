@@ -123,11 +123,7 @@ namespace gen_feng_table
                 cards[i] = 0;
             }
 
-            for (int i = 0; i < 7; ++i)
-            {
-                parse_table(cards, false);
-				gen_auto_table_sub(cards, 1, false);
-            }
+            gen_auto_table_sub(cards, 1, false);
         }
         static void gen_eye_table()
         {
@@ -141,7 +137,7 @@ namespace gen_feng_table
             {
                 cards[i] = 2;
                 parse_table(cards, true);
-				gen_auto_table_sub(cards, 1, true);
+                gen_auto_table_sub(cards, 1, true);
                 cards[i] = 0;
             }
         }
