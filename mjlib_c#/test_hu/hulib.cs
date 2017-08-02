@@ -14,11 +14,11 @@ namespace mjlib
 
     class ProbabilityItemTable
     {
-        public ProbabilityItem[,] m = new ProbabilityItem[4,5]{
-                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
-                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
-                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
-                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
+        public ProbabilityItem[,] m = new ProbabilityItem[4,9]{
+                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
+                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
+                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
+                {new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem(), new ProbabilityItem()},
          };
         public int array_num;
         public int[] m_num;
@@ -35,7 +35,7 @@ namespace mjlib
     }
     class HuLib {
         static HuLib m_hulib = new HuLib();
-        public bool get_hu_info(int[] hand_cards, Wave[] waves, int curCard, int gui_index)
+        public bool get_hu_info(int[] hand_cards, Wave[] waves, int curCard, int gui_index1, int gui_index2)
         {
             int[] hand_cards_tmp = new int[34];
             for(int i=0;i<34;++i)
@@ -48,10 +48,15 @@ namespace mjlib
                 hand_cards_tmp[curCard]++;
             }
             int gui_num = 0;
-            if (gui_index < 34)
+            if (gui_index1 < 34)
             {
-                gui_num = hand_cards_tmp[gui_index];
-                hand_cards_tmp[gui_index] = 0;
+                gui_num = hand_cards_tmp[gui_index1];
+                hand_cards_tmp[gui_index1] = 0;
+            }
+            if (gui_index2 < 34)
+            {
+                gui_num += hand_cards_tmp[gui_index2];
+                hand_cards_tmp[gui_index2] = 0;
             }
 
             ProbabilityItemTable ptbl = new ProbabilityItemTable();

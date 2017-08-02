@@ -47,7 +47,7 @@ namespace test_hu
 
             System.Console.Write("测试1种\n");
             print_cards(cards);
-            if (!HuLib.getInstance().get_hu_info(cards, null, 34, 34))
+            if (!HuLib.getInstance().get_hu_info(cards, null, 34, 34, 34))
             {
                 System.Console.Write("测试失败\n");
             }
