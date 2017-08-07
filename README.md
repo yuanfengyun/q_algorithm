@@ -26,7 +26,9 @@ tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：
 
 易县麻将: https://fir.im/yizhouqipai (8个赖子）
 
-乾娱科技
+乾娱科技: http://www.qygames.net/
 
-陌陌
+陌陌： https://www.immomo.com/
+
+探娱互动： http://www.tanyu.mobi/
 
