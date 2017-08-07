@@ -21,3 +21,8 @@
       有多种语言版本：lua、c++、c#、golang、js、java。
 
 tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：273461474。
+
+已使用的项目(不完全统计)：
+
+易县麻将: https://fir.im/yizhouqipai (8个赖子）
+
