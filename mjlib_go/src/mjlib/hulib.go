@@ -1,7 +1,6 @@
 package mjlib
 
 import (
-    "fmt"
 )
 
 const MAX_CARD = 34
@@ -12,7 +11,7 @@ type ProbabilityItem struct {
 }
 
 type ProbabilityItemTable struct {
-    m         [4][5]ProbabilityItem
+    m         [4][9]ProbabilityItem
     array_num int
     m_num     [4]int
 }
@@ -40,7 +39,7 @@ func (this *HuLib) GetHuInfo(cards []int, cur_card int, gui_1 int, gui_2 int) bo
 
     var ptbl ProbabilityItemTable
     if !this._split(tmp_cards, gui_num, &ptbl) {
-        fmt.Println(ptbl)
+        //fmt.Println(ptbl)
         return false
     }
 
@@ -105,7 +104,7 @@ func (this *HuLib) list_probability(color int, gui_num int, num int, key int, ch
         }
     }
 
-    fmt.Printf("color = %d,  gui_num = %d,  key = %d,  可能性=%d\n", color, gui_num, key, ptbl.m_num[anum])
+    //fmt.Printf("color = %d,  gui_num = %d,  key = %d,  可能性=%d\n", color, gui_num, key, ptbl.m_num[anum])
 
     if ptbl.m_num[anum] <= 0 {
         return false
