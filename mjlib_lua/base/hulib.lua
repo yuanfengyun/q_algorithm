@@ -74,7 +74,7 @@ function M.check_color_chi(cards, min, max, info)
         if c > 0 then
             key = key * 10 + c
         elseif key > 0 then
-            local eye = (key%3 == 0)
+            local eye = (key%3 == 2)
             if info.eye and eye then
                 return false
             end
