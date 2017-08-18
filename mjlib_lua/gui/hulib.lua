@@ -131,7 +131,7 @@ function M.check_probability(splited_table, gui_num)
 
     -- 组合花色间的组合，如果能满足组合条件，则胡
     for i,v in ipairs(splited_table[1]) do
-        local ret = M.check_probability_sub(splited_table, v.eye, v.gui_num, 2, c)
+        local ret = M.check_probability_sub(splited_table, v.eye, gui_num - v.gui_num, 2, c)
         if ret then
             return true
         end
