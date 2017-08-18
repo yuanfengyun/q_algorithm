@@ -82,6 +82,7 @@ function M.check_color_chi(cards, min, max, info)
             if not table_mgr:check(key) then
                 return false
             end
+            key = 0
         end
     end
 
