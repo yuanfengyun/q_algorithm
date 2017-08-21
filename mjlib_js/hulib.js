@@ -131,18 +131,11 @@ HuLib.check_probability_sub = function( ptbl, eye, gui_num, level, max_level )
         }
         if ( level < max_level - 1 )
         {
-            let old_gui_num = gui_num;
-            let old_eye = eye;
-            gui_num -= item.gui_num;
-            eye = eye || item.eye;
-            if ( this.check_probability_sub( ptbl, eye, gui_num - item.gui_num, level + 1, ptbl.array_num ) )
+            if ( this.check_probability_sub( ptbl, eye || item.eye, gui_num - item.gui_num, level + 1, ptbl.array_num ) )
             {
                 return true;
             }
-            eye = old_eye;
-            gui_num = old_gui_num;
             continue;
-
         }
         if ( !eye && !item.eye && item.gui_num + 2 > gui_num )
         {
