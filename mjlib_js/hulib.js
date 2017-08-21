@@ -135,7 +135,7 @@ HuLib.check_probability_sub = function( ptbl, eye, gui_num, level, max_level )
             let old_eye = eye;
             gui_num -= item.gui_num;
             eye = eye || item.eye;
-            if ( this.check_probability_sub( ptbl, eye, gui_num, level + 1, ptbl.array_num ) )
+            if ( this.check_probability_sub( ptbl, eye, gui_num - item.gui_num, level + 1, ptbl.array_num ) )
             {
                 return true;
             }
@@ -223,8 +223,6 @@ HuLib.list_probability = function( color, gui_num, num, key, chi, ptbl )
             find = true
         }
     }
-
-    console.log("color = %d,  gui_num = %d,  key = %d,  可能性=%d\n", color, gui_num, key, ptbl.m_num[anum]);
 
 
     if( ptbl.m_num[ anum ] <= 0 )
