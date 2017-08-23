@@ -180,7 +180,7 @@ end
 function M.get_ting_cards(cards)
     local t = {}
     for i=1,34 do
-       if mjlib.check_hu(cards, i) then
+       if cards[i] < 4 and mjlib.check_hu(cards, i) then
             t[i] = true
        end
     end
