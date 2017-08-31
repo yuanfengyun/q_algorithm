@@ -144,7 +144,7 @@ public class Hulib
 
 			if (level < max_level - 1)
 			{
-				if (check_probability_sub(ptbl, eye || item.eye, gui_num, level + 1, ptbl.array_num))
+				if (check_probability_sub(ptbl, eye || item.eye, gui_num - item.gui_num, level + 1, ptbl.array_num))
 				{
 					return true;
 				}
