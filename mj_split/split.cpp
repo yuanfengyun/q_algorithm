@@ -43,20 +43,20 @@ bool split::get_hu_info(char* cards, char cur_card, char gui_index)
 	for (int i = 0; i < eye_num; i++) {
 		int eye = eye_tbl[i];
 		if (eye == empty) {
-			hu = foreach_eye(cards, gui_num - 2, 1000, cache);
+			hu = foreach_eye(cards, gui_num - 2, gui_num, 1000, cache);
 		}
 		else{
 			char n = cards[eye];
 			if (n == 1) {
 				cards[eye] = 0;
-				hu = foreach_eye(cards, gui_num - 1, eye/9, cache);
+				hu = foreach_eye(cards, gui_num - 1, gui_num, eye/9, cache);
 			}
 			else if (n == 0) {
-				hu = foreach_eye(cards, gui_num - 2, eye/9, cache);
+				hu = foreach_eye(cards, gui_num - 2, gui_num, eye/9, cache);
 			}
 			else {
 				cards[eye] -= 2;
-				hu = foreach_eye(cards, gui_num, eye/9, cache);
+				hu = foreach_eye(cards, gui_num, gui_num, eye/9, cache);
 			}
 			cards[eye] = n;
 		}
@@ -71,17 +71,17 @@ bool split::get_hu_info(char* cards, char cur_card, char gui_index)
 	return hu;
 }
 
-bool split::foreach_eye(char* cards, char gui_num, int eye_color, int* cache)
+bool split::foreach_eye(char* cards, char gui_num, char max_gui, int eye_color, int* cache)
 {
 	int left_gui = gui_num;
 	for (int i = 0; i < 3; i++) {
 		int cache_index = -1;
 		if (eye_color != i) cache_index = i;
-		int old_gui = left_gui;
-		left_gui = check_normal(cards, i*9, i*9+8, left_gui, cache_index, cache);
+		int need_gui = check_normal(cards, i*9, i*9+8, max_gui, cache_index, cache);
 		if (cache_index>0) {
-			cache[i] = old_gui - left_gui + 1;
+			cache[i] = need_gui+1;
 		}
+		left_gui -= need_gui;
 		if (left_gui < 0) {
 			return false;
 		}
@@ -89,25 +89,18 @@ bool split::foreach_eye(char* cards, char gui_num, int eye_color, int* cache)
 
 	int cache_index = -1;
 	if (eye_color != 3) cache_index = 3;
-	int old_gui = left_gui;
-	left_gui = check_zi(cards, left_gui, cache_index, cache);
+	int need_gui = check_zi(cards, max_gui, cache_index, cache);
 	if (cache_index>0) {
-		cache[3] = old_gui - left_gui + 1;
+		cache[3] = need_gui + 1;
 	}
-	if (left_gui < 0) {
-		return false;
-	}
-
-	return true;
+	return left_gui >= need_gui;
 }
 
-int split::check_normal(char* cards, int from, int to, int left_gui, int cache_index, int* cache)
+int split::check_normal(char* cards, int from, int to, int max_gui, int cache_index, int* cache)
 {
 	if (cache_index >= 0) {
-		int need_gui = cache[cache_index];
-		if (need_gui > 0) {
-			return left_gui - (need_gui - 1);
-		}
+		int n = cache[cache_index];
+		if (n>0) return n - 1;
 	}
 
 	int n = 0;
@@ -115,10 +108,10 @@ int split::check_normal(char* cards, int from, int to, int left_gui, int cache_i
 		n = n * 10 + cards[i];
 	}
 	
-	if (n == 0) return left_gui;
+	if (n == 0) return 0;
 
 	bool n3 = false;
-	for (int i = 0; i <= left_gui; i++) {
+	for (int i = 0; i <= max_gui; i++) {
 		if ((n + i) % 3 == 0) {
 			n3 = true;
 			break;
@@ -126,17 +119,17 @@ int split::check_normal(char* cards, int from, int to, int left_gui, int cache_i
 	}
 
 	if (!n3) {
-		return -1;
+		return max_gui+1;
 	}
 
-	return next_split(n, left_gui);
+	return next_split(n, 0);
 }
 
-int split::next_split(int n, int gui_num)
+int split::next_split(int n, int need_gui)
 {
 	int c=0;
 	while(true){
-		if (n == 0) return gui_num;
+		if (n == 0) return need_gui;
 
 		while (n > 0) {
 			c = n % 10;
@@ -144,21 +137,17 @@ int split::next_split(int n, int gui_num)
 			if (c != 0) break;
 		}
 		if (c == 1 || c == 4) {
-			return one(n, gui_num);
+			return one(n, need_gui);
 		}
 		else if (c == 2) {
-			return two(n, gui_num);
-		}
-		else if (c == 3) {
-			if (n == 0) return gui_num;
+			return two(n, need_gui);
 		}
 	}
-	return -1;
+	return need_gui;
 }
 
-int split::one(int n, int gui_num)
+int split::one(int n, int need_gui)
 {
-	int need_gui = 0;
 	int c1 = n % 10;
 	int c2 = (n % 100) / 10;
 
@@ -167,14 +156,13 @@ int split::one(int n, int gui_num)
 
 	if (c2 == 0) ++need_gui;
 	else n -= 10;
-	gui_num -= need_gui;
 
-	if (n == 0 || gui_num < 0) return gui_num;
+	if (n == 0) return need_gui;
 
-	return next_split(n, gui_num);
+	return next_split(n, need_gui);
 }
 
-int split::two(int n, int gui_num)
+int split::two(int n, int need_gui)
 {
 	int c1 = n % 10;
 	int c2 = (n % 100) / 10;
@@ -238,9 +226,8 @@ int split::two(int n, int gui_num)
 		}
 	}
 
-	int need_gui = 0;
 	if (choose_ke) {
-		need_gui = 1;
+		need_gui += 1;
 	}
 	else
 	{
@@ -261,18 +248,15 @@ int split::two(int n, int gui_num)
 		}
 	}
 
-	gui_num -= need_gui;
-	if (n == 0 || gui_num <0) return gui_num;
-	return next_split(n, gui_num);
+	if (n == 0) return need_gui;
+	return next_split(n, need_gui);
 }
 
-int split::check_zi(char* cards,  int gui_num, int cache_index, int* cache)
+int split::check_zi(char* cards,  int max_gui, int cache_index, int* cache)
 {
 	if (cache_index >= 0) {
-		int need_gui = cache[cache_index];
-		if (need_gui > 0) {
-			return gui_num - (need_gui - 1);
-		}
+		int n = cache[cache_index];
+		if(n>0) return n - 1;
 	}
 
 	int need_gui = 0;
@@ -287,5 +271,5 @@ int split::check_zi(char* cards,  int gui_num, int cache_index, int* cache)
 		}
 	}
 
-	return gui_num - need_gui;
+	return need_gui;
 }
