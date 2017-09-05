@@ -6,13 +6,12 @@ public:
 private:
 	static bool foreach_eye(char* cards, char gui_num, char max_gui, int eye_color, int* cache);
 
-	static int check_normal(char* cards, int from, int to, int left_gui, int cache_index, int* cache);
+	static int check_normal(char* cards, int from, int to, int max_gui, int cache_index, int* cache);
 
-	static int next_split(int n, int gui_num);
+	static int next_split(int n, int gui_num, int max_gui);
 
-	static int one(int n, int gui_num);
-	static int two(int n, int gui_num);
+	static int one(int n, int gui_num, int max_gui);
+	static int two(int n, int gui_num, int max_gui);
 
 	static inline int check_zi(char* cards, int max_gui, int cache_index, int* cache);
 };
-
