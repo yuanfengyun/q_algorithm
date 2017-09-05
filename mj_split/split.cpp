@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include"stdafx.h"
 #include "split.h"
 
 bool split::get_hu_info(char* cards, char cur_card, char gui_index)
@@ -122,10 +122,10 @@ int split::check_normal(char* cards, int from, int to, int max_gui, int cache_in
 		return max_gui+1;
 	}
 
-	return next_split(n, 0);
+	return next_split(n, 0, max_gui);
 }
 
-int split::next_split(int n, int need_gui)
+int split::next_split(int n, int need_gui, int max_gui)
 {
 	int c=0;
 	while(true){
@@ -137,16 +137,16 @@ int split::next_split(int n, int need_gui)
 			if (c != 0) break;
 		}
 		if (c == 1 || c == 4) {
-			return one(n, need_gui);
+			return one(n, need_gui, max_gui);
 		}
 		else if (c == 2) {
-			return two(n, need_gui);
+			return two(n, need_gui, max_gui);
 		}
 	}
 	return need_gui;
 }
 
-int split::one(int n, int need_gui)
+int split::one(int n, int need_gui, int max_gui)
 {
 	int c1 = n % 10;
 	int c2 = (n % 100) / 10;
@@ -159,10 +159,12 @@ int split::one(int n, int need_gui)
 
 	if (n == 0) return need_gui;
 
-	return next_split(n, need_gui);
+	if (need_gui > max_gui) return need_gui;
+
+	return next_split(n, need_gui, max_gui);
 }
 
-int split::two(int n, int need_gui)
+int split::two(int n, int need_gui, int max_gui)
 {
 	int c1 = n % 10;
 	int c2 = (n % 100) / 10;
@@ -249,7 +251,10 @@ int split::two(int n, int need_gui)
 	}
 
 	if (n == 0) return need_gui;
-	return next_split(n, need_gui);
+
+	if (need_gui > max_gui) return need_gui;
+
+	return next_split(n, need_gui, max_gui);
 }
 
 int split::check_zi(char* cards,  int max_gui, int cache_index, int* cache)
@@ -269,6 +274,7 @@ int split::check_zi(char* cards,  int max_gui, int cache_index, int* cache)
 		else if (c == 2) {
 			need_gui = need_gui + 1;
 		}
+		if (need_gui > max_gui) return need_gui;
 	}
 
 	return need_gui;
