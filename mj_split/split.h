@@ -4,7 +4,7 @@ class split
 public:
 	static bool get_hu_info(char* cards, char cur_card, char gui_index);
 private:
-	static bool foreach_eye(char* cards, char gui_num, int eye_color, int* cache);
+	static bool foreach_eye(char* cards, char gui_num, char max_gui, int eye_color, int* cache);
 
 	static int check_normal(char* cards, int from, int to, int left_gui, int cache_index, int* cache);
 
@@ -13,5 +13,6 @@ private:
 	static int one(int n, int gui_num);
 	static int two(int n, int gui_num);
 
-	static inline int check_zi(char* cards, int gui_num, int cache_index, int* cache);
+	static inline int check_zi(char* cards, int max_gui, int cache_index, int* cache);
 };
+
