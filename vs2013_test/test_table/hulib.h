@@ -16,7 +16,7 @@ class HuLib
 
     struct ProbabilityItemTable
     {
-        ProbabilityItem m[4][5];
+        ProbabilityItem m[4][9];
         int array_num;
         int m_num[4];
         ProbabilityItemTable()
@@ -36,7 +36,7 @@ private:
 
     static bool check_probability(ProbabilityItemTable& ptbl, int gui_num);
 
-    static bool check_probability_sub(ProbabilityItemTable& ptbl, bool& eye, int& gui_num, int level, int max_level);
+    static bool check_probability_sub(ProbabilityItemTable& ptbl, bool eye, int gui_num, int level, int max_level);
     static bool check_7dui(char* const hand_cards);
     static bool check_pengpeng(char* const hand_cards, Wave* const waves, char self_card, char other_card);
 };

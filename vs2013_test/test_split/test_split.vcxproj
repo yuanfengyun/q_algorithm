@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EB7E93E6-1177-4C2B-B39F-0B0BEF9E02A8}</ProjectGuid>
+    <ProjectGuid>{9BAFC432-0B96-4505-A349-702995DBF118}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>test_mjlib</RootNamespace>
+    <RootNamespace>test_split</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -47,27 +47,26 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -77,47 +76,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="array_table.h" />
-    <ClInclude Include="CMD_Mj.h" />
-    <ClInclude Include="Define.h" />
-    <ClInclude Include="DefineHuTip.h" />
-    <ClInclude Include="hash_table.h" />
-    <ClInclude Include="hulib.h" />
-    <ClInclude Include="HuTipsMJ.h" />
-    <ClInclude Include="PlayerHuTips.h" />
-    <ClInclude Include="PlayerHuTips2.h" />
-    <ClInclude Include="set_table.h" />
-    <ClInclude Include="split\split.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="table.h" />
-    <ClInclude Include="table_mgr.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="tbl\array_table.h" />
-    <ClInclude Include="tbl\binary_array_table.h" />
-    <ClInclude Include="tbl\compress_array_table.h" />
-    <ClInclude Include="tbl\hash_table.h" />
-    <ClInclude Include="tbl\hulib.h" />
-    <ClInclude Include="tbl\set_table.h" />
-    <ClInclude Include="tbl\table.h" />
-    <ClInclude Include="tbl\table_mgr.h" />
+    <ClCompile Include="split.cpp" />
+    <ClCompile Include="test_split.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HuTipsMJ.cpp" />
-    <ClCompile Include="main_hu.cpp" />
-    <ClCompile Include="PlayerHuTips.cpp" />
-    <ClCompile Include="split\split.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="tbl\array_table.cpp" />
-    <ClCompile Include="tbl\binary_array_table.cpp" />
-    <ClCompile Include="tbl\compress_array_table.cpp" />
-    <ClCompile Include="tbl\hash_table.cpp" />
-    <ClCompile Include="tbl\hulib.cpp" />
-    <ClCompile Include="tbl\set_table.cpp" />
-    <ClCompile Include="tbl\table_mgr.cpp" />
-    <ClCompile Include="test_mjlib.cpp" />
+    <ClInclude Include="split.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

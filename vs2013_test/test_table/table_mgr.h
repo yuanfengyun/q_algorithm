@@ -21,8 +21,8 @@ public:
 
     bool dump_feng_table();
 
-    Table* m_check_table[5];
-    Table* m_check_eye_table[5];
-    Table* m_check_feng_table[5];
-    Table* m_check_feng_eye_table[5];
+    Table* m_check_table[9];
+    Table* m_check_eye_table[9];
+    Table* m_check_feng_table[9];
+    Table* m_check_feng_eye_table[9];
 };

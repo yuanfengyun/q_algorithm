@@ -3,8 +3,9 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
-#include "table_mgr.h"
-#include "hulib.h"
+#include "tbl\table_mgr.h"
+#include "tbl\hulib.h"
+#include "split\split.h"
 
 #include "Define.h"
 #include "DefineHuTip.h"
@@ -38,14 +39,13 @@ void print_cards(char* cards)
 	printf("\n");
 }
 
-#define MAX_COUNT (10000 * 10000)
+#define GUI_NUM 4
+#define MAX_COUNT (100 * 10000)
 static BYTE g_HuCardAll[136];
 static BYTE s_HuCardAll[136];
 
-
 void main()
 {
-
 	CPlayerHuTips2 stTssss;
 	stTssss.TrainAll();
 
@@ -66,33 +66,6 @@ void main()
 	char cards[34] = { 0 };
 	DWORD dwTimeBegin = GetTickCount();
 	
-	// rjc查表法
-	srand(1);
-	hu = 0;
-	stCardData2 stData2;
-	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
-	dwTimeBegin = GetTickCount();
-	for (int n = 0; n<MAX_COUNT; ++n)
-	{
-		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
-		for (int i = 0; i<9; ++i)	// 136/14 -> 9
-		{
-			stData2.byNum = 14;
-			memset(cards, 0, sizeof(cards));
-			for (int j = i * 14; j < i * 14 + 10; j++)
-				++cards[s_HuCardAll[j]];
-			cards[33] = 4;
-			memcpy(stData2.byCardNum, cards, sizeof(cards));
-			
-			if (stTssss.CheckCanHu(stData2, gui_index))
-			{
-				hu++;
-			}
-		}
-	}
-	cout << "rjc查表法总数:" << 9*MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
-	cout << "Hu: " << hu << endl;
-
 	// 查表法
 	srand(1);
 	dwTimeBegin = GetTickCount();
@@ -101,18 +74,69 @@ void main()
 	dwTimeBegin = GetTickCount();
 	for (int n = 0; n<MAX_COUNT; ++n)
 	{
-		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
+		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
 		for (int i = 0; i<9; ++i)	// 136/14 -> 9
 		{
 			memset(cards, 0, sizeof(cards));
-			for (int j = i * 14; j < i * 14 + 10; j++)
+			for (int j = i * 14; j < i * 14 + 14 - 4; j++)
 				++cards[s_HuCardAll[j]];
 
+			cards[32] = 0;
 			cards[33] = 4;
-			hu += HuLib::get_hu_info(cards, NULL, 34, 34, gui_index);
+			hu += HuLib::get_hu_info(cards, NULL, 34, 34, 34, 33);
 		}
 	}
 	cout << "查表法总数:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "Hu: " << hu << endl;
+
+	// 选将，拆分法
+	srand(1);
+	dwTimeBegin = GetTickCount();
+	hu = 0;
+	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
+	dwTimeBegin = GetTickCount();
+	for (int n = 0; n<MAX_COUNT; ++n)
+	{
+		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
+		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		{
+			memset(cards, 0, sizeof(cards));
+			for (int j = i * 14; j < i * 14 + 14 - 4; j++)
+				++cards[s_HuCardAll[j]];
+
+			cards[32] = 0;
+			cards[33] = 4;
+			hu += split::get_hu_info(cards, 34, 34, 33);
+		}
+	}
+	cout << "选将拆分法总数:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "Hu: " << hu << endl;
+
+	// rjc查表法
+	srand(1);
+	hu = 0;
+	stCardData2 stData2;
+	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
+	dwTimeBegin = GetTickCount();
+	for (int n = 0; n<MAX_COUNT; ++n)
+	{
+		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
+		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		{
+			stData2.byNum = 14;
+			memset(cards, 0, sizeof(cards));
+			for (int j = i * 14; j < i * 14 + 14 - GUI_NUM; j++)
+				++cards[s_HuCardAll[j]];
+			cards[33] = GUI_NUM;
+			memcpy(stData2.byCardNum, cards, sizeof(cards));
+
+			if (stTssss.CheckCanHu(stData2, gui_index))
+			{
+				hu++;
+			}
+		}
+	}
+	cout << "rjc查表法总数:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 
 	srand(1);
@@ -122,14 +146,14 @@ void main()
 	dwTimeBegin = GetTickCount();
 	for (int n = 0; n<MAX_COUNT; ++n)
 	{
-		random_shuffle(s_HuCardAll, s_HuCardAll + 132);		// 这个函数对计算有影响
+		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
 		for (int i = 0; i<9; ++i)	// 136/14 -> 9
 		{
 			memset(cards, 0, sizeof(cards));
-			for (int j = i * 14; j < i * 14 + 10; j++)
+			for (int j = i * 14; j < i * 14 + 14 - GUI_NUM; j++)
 				++cards[s_HuCardAll[j]];
 
-			cards[33] = 4;
+			cards[33] = GUI_NUM;
 			stData.byNum = 14;
 			memcpy(stData.byCardCount, cards, sizeof(cards));
 			hu += m_cAlgorithm.CanWin_Do_Nai(stData, gui_index);

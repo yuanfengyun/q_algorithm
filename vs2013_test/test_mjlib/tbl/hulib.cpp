@@ -11,7 +11,7 @@ void log(char*, ...)
 {
 }
 
-bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_card_index, char other_card_index, int gui_index)
+bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_card_index, char other_card_index, int gui_index1, int gui_index2)
 {
     char hand_cards_tmp[34];
     memcpy(hand_cards_tmp, hand_cards, 34);
@@ -25,9 +25,15 @@ bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_car
         hand_cards_tmp[other_card_index]++;
     }
 
-    int gui_num = hand_cards_tmp[gui_index];
-    hand_cards_tmp[gui_index] = 0;
-
+	int gui_num = 0;
+	if (gui_index1 != 34){
+		gui_num += hand_cards_tmp[gui_index1];
+		hand_cards_tmp[gui_index1] = 0;
+	}
+	if (gui_index2 != 34){
+		gui_num += hand_cards_tmp[gui_index2];
+		hand_cards_tmp[gui_index2] = 0;
+	}
     ProbabilityItemTable ptbl;
     if(!split(hand_cards_tmp, gui_num, ptbl))
     {
