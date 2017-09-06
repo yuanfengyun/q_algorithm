@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_table_rjc", "test_tabl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_split_rjc", "test_split_rjc\test_split_rjc.vcxproj", "{2347F725-51AD-41BD-9BD3-8AD82B076D58}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_split2", "test_split2\test_split2.vcxproj", "{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,8 +41,15 @@ Global
 		{2347F725-51AD-41BD-9BD3-8AD82B076D58}.Debug|Win32.Build.0 = Debug|Win32
 		{2347F725-51AD-41BD-9BD3-8AD82B076D58}.Release|Win32.ActiveCfg = Release|Win32
 		{2347F725-51AD-41BD-9BD3-8AD82B076D58}.Release|Win32.Build.0 = Release|Win32
+		{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}.Debug|Win32.Build.0 = Debug|Win32
+		{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}.Release|Win32.ActiveCfg = Release|Win32
+		{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

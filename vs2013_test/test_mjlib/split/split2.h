@@ -4,7 +4,7 @@ class split2
 public:
 	static bool get_hu_info(char* cards, char cur_card, char gui_index);
 private:
-	static bool foreach_color(char* cards, char max_gui, int* cache, int* counter);
+	static bool get_cache(char* cards, char max_gui, int* cache);
 
 	static bool check_color_zi(char* cards, char max_gui);
 

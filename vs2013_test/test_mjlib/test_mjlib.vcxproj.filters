@@ -86,6 +86,9 @@
     <ClInclude Include="tbl\binary_array_table.h">
       <Filter>tbl</Filter>
     </ClInclude>
+    <ClInclude Include="split\split2.h">
+      <Filter>split</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -124,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="tbl\binary_array_table.cpp">
       <Filter>tbl</Filter>
+    </ClCompile>
+    <ClCompile Include="split\split2.cpp">
+      <Filter>split</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

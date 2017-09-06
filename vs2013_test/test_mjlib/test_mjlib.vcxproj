@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -88,6 +88,7 @@
     <ClInclude Include="PlayerHuTips2.h" />
     <ClInclude Include="set_table.h" />
     <ClInclude Include="split\split.h" />
+    <ClInclude Include="split\split2.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="table.h" />
     <ClInclude Include="table_mgr.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="main_hu.cpp" />
     <ClCompile Include="PlayerHuTips.cpp" />
     <ClCompile Include="split\split.cpp" />
+    <ClCompile Include="split\split2.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

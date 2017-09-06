@@ -1,10 +1,9 @@
+#include "stdafx.h"
 #include "split2.h"
 #include "string.h"
 
-bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
+bool split2::get_hu_info(char* cards, char cur_card, char gui_index)
 {
-	char cards[34];
-	memcpy(cards, hand_cards, 34);
 	char gui_num = 0;
 	if (gui_index != 34) {
 		gui_num = cards[gui_index];
@@ -34,6 +33,8 @@ bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
 			if (eye_color >= 0) return false;
 			// 其它花色对赖子需求大于赖子数量
 			if (need_sum - n > gui_num) return false;
+			// 扣除将以后赖子还不够的
+			if (need_sum - 1 > gui_num) return false;
 			eye_color = i;
 			break;
 		}
@@ -50,6 +51,9 @@ bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
 
 	for (int i = 3; i >= 0; i--)
 	{
+		// 扣除将以后赖子还不够的
+		if (need_sum - 1 > gui_num) continue;
+
 		if (need_sum - cache[i] <= gui_num){
 			if (i == 3){
 				hu = check_color_zi(cards, gui_num-(need_sum - cache[i]));
@@ -64,12 +68,28 @@ bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
 	return hu;
 }
 
-bool split2::foreach_color(char* cards, char max_gui, int* cache, int* counter)
+bool split2::get_cache(char* cards, char max_gui, int* cache)
 {
+	int over_count = 0;
 	cache[0] = check_normal(cards,  0, max_gui);
+	if (cache[0] > max_gui)
+	{
+		over_count++;
+	}
 	cache[1] = check_normal(cards,  9, max_gui);
+	if (cache[1] > max_gui)
+	{
+		over_count++;
+	}
+	if (over_count == 2) return false;
 	cache[2] = check_normal(cards, 18, max_gui);
+	if (cache[2] > max_gui)
+	{
+		over_count++;
+	}
+	if (over_count == 2) return false;
 	cache[3] = check_zi(cards, max_gui);
+	return true;
 }
 
 bool split2::check_color(char* cards, char from, char gui_num)
@@ -77,21 +97,6 @@ bool split2::check_color(char* cards, char from, char gui_num)
 	char eye_tbl[9];
 	char eye_num = 0;
 	for (int i = from; i < from+9; i++) {
-		// 优化手段，三不靠的牌，必做将
-		int min = (i / 9) * 9;
-		int max = min + 8;
-		if (cards[i] == 1 &&
-			(i - 2 < min || cards[i - 2] == 0) &&
-			(i - 1 < min || cards[i - 1] == 0) &&
-			(i + 1 > max || cards[i + 1] == 0) &&
-			(i + 2 > max || cards[i + 2] == 0)){
-			if (gui_num<0) {
-				return false;
-			}
-			eye_num = 1;
-			eye_tbl[0] = i;
-			break;
-		}
 		if (cards[i] > 0 && cards[i] + gui_num >= 2) {
 			eye_tbl[eye_num++] = i;
 		}
@@ -127,7 +132,7 @@ bool split2::check_color_zi(char* cards, char max_gui)
 		if (cards[i] == 1 || cards[i] == 4){
 			count1_4++;
 		}
-		else if (cards[i]==2)
+		else if (cards[i] == 2)
 		{
 			count2++;
 		}

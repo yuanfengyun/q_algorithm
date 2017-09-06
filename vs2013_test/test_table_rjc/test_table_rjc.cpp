@@ -36,12 +36,39 @@ void print_cards(char* cards)
 }
 
 #define GUI_NUM 4
-#define MAX_COUNT (100 * 10000)
+#define MAX_COUNT (1000 * 10000)
 static BYTE g_HuCardAll[136];
+
+CPlayerHuTips2 stTssss;
+
+void test_repeat()
+{
+	char cards[] = {
+		2, 0, 0, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 1, 3, 2, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 4
+	};
+	int hu = 0;
+	stCardData2 stData2;
+
+	DWORD dwTimeBegin = GetTickCount();
+	for (int i = 0; i < MAX_COUNT; i++){
+		stData2.byNum = 14;
+		memcpy(stData2.byCardNum, cards, sizeof(cards));
+		hu += stTssss.CheckCanHu(stData2, 33);
+	}
+
+	cout << "rjc查表法，相同牌型，总次数: " << MAX_COUNT / 10000 << "万次" << endl;
+	cout << "time: " << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "hu:" << hu << endl;
+}
+
 void main()
 {
-	CPlayerHuTips2 stTssss;
 	stTssss.TrainAll();
+
+	test_repeat();
 	
 	for (int i = 0; i < 34; i++)
 	{

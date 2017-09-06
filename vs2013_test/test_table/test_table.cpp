@@ -32,6 +32,9 @@ void print_cards(char* cards)
 	printf("\n");
 }
 
+#define MAX_COUNT (1000 * 10000)
+static BYTE s_HuCardAll[136];
+
 void test_hu()
 {
 	char cards[] = {
@@ -40,14 +43,17 @@ void test_hu()
 		0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,2
 	};
-	if (HuLib::get_hu_info(cards, NULL, 34, 34, 33))
-	{
-		cout << "test_hu成功" << endl;
+	int hu = 0;
+	DWORD dwTimeBegin = GetTickCount();
+	for (int i = 0; i < MAX_COUNT; i++){
+		hu += HuLib::get_hu_info(cards, NULL, 34, 34, 33);
 	}
+
+	cout << "查表法，相同牌型，总次数: " << MAX_COUNT / 10000 << "万次" << endl;
+	cout << "time: " << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "hu:" << hu << endl;
 }
 
-#define MAX_COUNT (100 * 10000)
-static BYTE s_HuCardAll[136];
 
 void main()
 {

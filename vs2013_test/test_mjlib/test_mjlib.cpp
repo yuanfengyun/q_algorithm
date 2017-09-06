@@ -40,7 +40,7 @@ void print_cards(char* cards)
 }
 
 #define GUI_NUM 4
-#define MAX_COUNT (100 * 10000)
+#define MAX_COUNT (80000 * 10000)
 static BYTE g_HuCardAll[136];
 static BYTE s_HuCardAll[136];
 
