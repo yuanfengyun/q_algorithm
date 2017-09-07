@@ -3,10 +3,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "Define.h"
-//#include "DefineHuTip.h"
-//#include "PlayerHuTips.h"
-#include "PlayerHuTips2.h"
+#include "DefineHuTip.h"
+#include "HuPaiMJ_32.h"
 
 using namespace std;
 
@@ -35,11 +33,11 @@ void print_cards(char* cards)
 	printf("\n");
 }
 
-#define GUI_NUM 4
-#define MAX_COUNT (1000 * 10000)
+#define GUI_NUM 0
+#define MAX_COUNT (100 * 10000)
 static BYTE g_HuCardAll[136];
 
-CPlayerHuTips2 stTssss;
+CHuPaiMJ stTssss;
 
 void test_repeat()
 {
@@ -50,8 +48,7 @@ void test_repeat()
 		0, 0, 0, 0, 0, 0, 4
 	};
 	int hu = 0;
-	stCardData2 stData2;
-
+	stCardData stData2;
 	DWORD dwTimeBegin = GetTickCount();
 	for (int i = 0; i < MAX_COUNT; i++){
 		stData2.byNum = 14;
@@ -59,7 +56,7 @@ void test_repeat()
 		hu += stTssss.CheckCanHu(stData2, 33);
 	}
 
-	cout << "rjc²é±í·¨£¬ÏàÍ¬ÅÆÐÍ£¬×Ü´ÎÊý: " << MAX_COUNT / 10000 << "Íò´Î" << endl;
+	cout << "rjcæŸ¥è¡¨æ³•ï¼Œç›¸åŒç‰Œåž‹ï¼Œæ€»æ¬¡æ•°: " << MAX_COUNT / 10000 << "ä¸‡æ¬¡" << endl;
 	cout << "time: " << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "hu:" << hu << endl;
 }
@@ -68,7 +65,7 @@ void main()
 {
 	stTssss.TrainAll();
 
-	test_repeat();
+	//test_repeat();
 	
 	for (int i = 0; i < 34; i++)
 	{
@@ -82,13 +79,13 @@ void main()
 	int hu = 0;
 	char cards[34] = { 0 };
 
-	// rjc²é±í·¨
-	stCardData2 stData2;
+	// rjcæŸ¥è¡¨æ³•
+	stCardData stData2;
 	srand(1);
 	DWORD dwTimeBegin = GetTickCount();
 	for (int n = 0; n<MAX_COUNT; ++n)
 	{
-		random_shuffle(g_HuCardAll, g_HuCardAll + 126);		// Õâ¸öº¯Êý¶Ô¼ÆËãÓÐÓ°Ïì
+		random_shuffle(g_HuCardAll, g_HuCardAll + 126);		// è¿™ä¸ªå‡½æ•°å¯¹è®¡ç®—æœ‰å½±å“
 		for (int i = 0; i<9; ++i)	// 136/14 -> 9
 		{
 			stData2.byNum = 14;
@@ -104,7 +101,7 @@ void main()
 			}
 		}
 	}
-	cout << "rjc²é±í·¨×ÜÊý:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "rjcæŸ¥è¡¨æ³•æ€»æ•°:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }
