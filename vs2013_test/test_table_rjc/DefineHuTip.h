@@ -5,99 +5,81 @@
 #include <string>
 #include <string.h>
 #include <time.h>
-#include <iostream>
 
 using namespace std;
 
 #pragma pack(1)
 
-#define INVALID_VAL						0xFF			//·Ç·¨Êı¾İ
-#define MAX_TOTAL_TYPE					34				//Âé½«ÖÖÀàÊı
-#define MIN_HU_HUAN_CUN					5				//×îĞ¡»º´æ³¤¶È
+#define INVALID_VAL						0xFF			//é”Ÿè§’å‡¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+#define MAX_TOTAL_TYPE					34				//é”Ÿä»‹å°†é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+#define MIN_HU_HUAN_CUN					5				//é”Ÿæ–¤æ‹·å°é”Ÿæ–¤æ‹·é”ŸèŠ¥é•¿é”Ÿæ–¤æ‹·
 
 enum enPlayMode
 {
-	enPlayMode_ZhuangFen,		//×¯Ëã·Ö
-	enPlayMode_7Dui,			//¿ÉºúÆß¶Ô
-	enPlayMode_NaiZi,			//ºìÖĞÀµ×Ó
+	enPlayMode_ZhuangFen,		//åº„é”Ÿæ–¤æ‹·é”Ÿ?
+	enPlayMode_7Dui,			//é”Ÿç¼´çŒ´æ‹·é”Ÿç«­è®¹æ‹·
+	enPlayMode_NaiZi,			//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
 	enPlayMode_Max,
 };
 
-//ºúÅÆÌáÊ¾Ïà¹Ø
+//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·ç¤ºé”Ÿæ–¤æ‹·é”Ÿ?
 enum enCountFlag
 {
-	enCountFlag_7Dui		= 0x0001,
-	enCountFlag_KeZiFirst	= 0x0002,
-	enCountFlag_13Lan		= 0x0004,
+	enCountFlag_7Dui = 0x0001,
+	enCountFlag_KeZiFirst = 0x0002,
+	enCountFlag_13Lan = 0x0004,
 };
 
-//Ò»×éÅÆÀàĞÍ
+//ä¸€é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
 enum BLOCK_TYPE_HU
-{	
-	BLOCK_22 = 1,				    //¶Ô×Ó
-	BLOCK_234,						//Ë³Ğò »òÕß ³ÔÅÆ ½á¹¹
-	BLOCK_222,						//¿Ì×Ó »òÕß Åö×Ó ½á¹¹, 3¸öÏàÍ¬
-	BLOCK_2222_DIAN,   				//¸Ü×Ó--µã¸Ü,4¸öÏàÍ¬
-	BLOCK_2222_BU,   				//¸Ü×Ó--²¹¸Ü,4¸öÏàÍ¬
-	BLOCK_2222_AN ,					//¸Ü×Ó--°µ¸Ü,4¸öÏàÍ¬	
+{
+	BLOCK_22 = 1,				    //é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+	BLOCK_234,						//é¡ºé”Ÿæ–¤æ‹· é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹· é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹· é”Ÿç»“æ„
+	BLOCK_222,						//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹· é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹· é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹· é”Ÿç»“æ„, 3é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·åŒ
+	BLOCK_2222_DIAN,   				//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·--é”Ÿæ–¤æ‹·é”Ÿ?4é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·åŒ
+	BLOCK_2222_BU,   				//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·--é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·,4é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·åŒ
+	BLOCK_2222_AN,					//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·--é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·,4é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·åŒ	
 	BLOCK_MAX,
 };
 
-#define	 MAX_COUNT_FLAG_NUM				100
-enum enBlockLev
-{
-	enBlockLev_Null,	
-	enBlockLev_222,
-	enBlockLev_234,
-};
 
 #define MAX_VAL_NUM						9
-//Âé½«ÑÕÉ«£¨ÖÖÀà£©¶¨Òå
+#define MAX_KEY_NUM						(MAX_VAL_NUM+1)		//9+é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+//é”Ÿä»‹å°†é”Ÿæ–¤æ‹·è‰²é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ´ï¼‰é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
 enum enColorMJ
 {
-	enColorMJ_WAN = 0,  //Íò
-	enColorMJ_TONG,     //Í²
-	enColorMJ_TIAO,     //Ìõ
-	enColorMJ_FenZi,    //·ç¡¢×Ö ÅÆ
+	enColorMJ_WAN = 0,  //é”Ÿæ–¤æ‹·
+	enColorMJ_TONG,     //ç­’
+	enColorMJ_TIAO,     //é”Ÿæ–¤æ‹·
+	enColorMJ_FenZi,    //é”Ÿç•Œã€é”Ÿæ–¤æ‹· é”Ÿæ–¤æ‹·
 	enColorMJ_Max,
 };
 //////////////////////////////////////////////////////////////
-//ËùÓĞÅÆÀàĞÍÖµ
-static const BYTE s_HuCardType[] = 
+//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·å€¼
+static const BYTE s_HuCardType[] =
 {
-	0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,				//Íò
-	0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,				//±ı
-	0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,				//Ìõ
-	0x31, 0x32, 0x33, 0x34,                                             //¶«ÄÏÎ÷±±
-	0x41, 0x42, 0x43,                                                   //ÖĞ·¢°×
+	0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,				//é”Ÿæ–¤æ‹·
+	0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,				//é”Ÿæ–¤æ‹·
+	0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29,				//é”Ÿæ–¤æ‹·
+	0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37                            //é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿå«å‡¤æ‹·é”Ÿæ–¤æ‹·
 };
 
 //////////////////////////////////////////////////////////////
-//ÓÉÅÆÖµµÃµ½Ë÷ÒıÖµ
+//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·å€¼é”ŸçŸ«ç¢‰æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·å€¼
 inline BYTE getIndexByVal(BYTE byCard)
 {
 	BYTE cor = byCard / 0x10;
 	BYTE val = byCard % 0x10;
 
+	int  nMaxIndex = cor == 3 ? 7 : 9;
 	BYTE byIndex = INVALID_VAL;
-	if (cor < 3)	
-	{
-		if (val > 0 && val <= 9) 
-			byIndex = (cor)*9 + val-1;
-	}
-	else if (cor == 3)	
-	{
-		if (val > 0 && val <= 4) 
-			byIndex = 27 + val-1;
-	}
-	else if (cor == 4)	
-	{
-		if (val > 0 && val <= 3)		// val==4Ê±£¬byIndex = 34 ±íÊ¾Àµ×ÓË÷Òı
-			byIndex = 27 + 4 + val-1;
-	}		
-	return byIndex;	
+
+	if (val > 0 && val <= 9 && cor <= 3)
+		byIndex = (cor) * 9 + val - 1;
+
+	return byIndex;
 }
-//ÓÉË÷ÒıÖµµÃµ½ÅÆÖµ
+//é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·å€¼é”ŸçŸ«ç¢‰æ‹·é”Ÿæ–¤æ‹·å€¼
 inline BYTE getValByIndex(BYTE byIndex)
 {
 	if (byIndex < MAX_TOTAL_TYPE)
@@ -106,254 +88,40 @@ inline BYTE getValByIndex(BYTE byIndex)
 	}
 	return INVALID_VAL;
 }
-//ÓÉÊÇ·ñÊÇºÏ·¨ÅÆÖµ
+//é”Ÿæ–¤æ‹·é”Ÿè§’å‡¤æ‹·é”Ÿè§’åˆå‡¤æ‹·é”Ÿæ–¤æ‹·å€¼
 inline bool IsValidCard(BYTE bCard)
-{	
+{
 	return getIndexByVal(bCard) != INVALID_VAL;
 }
-//µÃµ½Ë÷ÒıKEY
-inline int  getKey(vector<BYTE> vctCard)
-{		
-	vctCard.resize(4);
-	sort(vctCard.begin(), vctCard.end());
-//	reverse(vctCard.begin(), vctCard.end());
-	return *(int*)(&vctCard[0]);
-}
-// È¡µÃ¼ÆÊ±
-// inline DWORD GetTickCount()
-// {
-// 	struct timespec ts;
-// 	clock_gettime(CLOCK_MONOTONIC, &ts);
-// 	return (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-// }
-// Î¢Ãë£¨ºÁÃë¡¢Î¢Ãë¡¢ÄÉÃë£©
-// inline DWORD GetTickCountUs()
-// {
-// 	struct timespec ts;
-// 	clock_gettime(CLOCK_MONOTONIC, &ts);
-// 	return (ts.tv_sec * 1000000 + ts.tv_nsec / 1000);
-// }
-// ×Ö·û×ª»»
-inline char getCharFlag(BYTE byIndex)
-{
-	static const char s_HuCardFlag[MAX_TOTAL_TYPE+1] = 
-	{
-		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',				//Íò
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',				//Íò
-		'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',				//Íò
-		'J', 'K', 'L', 'M',
-		'O', 'P', 'Q', '\0'
-	};
-	if (byIndex < MAX_TOTAL_TYPE)
-	{
-		return s_HuCardFlag[byIndex];
-	}
-	return INVALID_VAL;
-}
-
-//////////////////////////////////////////////////////////////
-struct stHuData
-{
-	BYTE	byCardHu;
-	BYTE	byNum;
-	int		nVal;
-};
-struct stHuTips
-{
-	BYTE		byCardOut;
-	stHuData	stData[10];
-
-	stHuTips()
-	{
-		memset(this, 0, sizeof(*this));
-	}
-	stHuTips(BYTE byOut)
-	{
-		memset(this, 0, sizeof(*this));
-		byCardOut = byOut;
-	}
-	stHuTips(const stHuTips& stTemp)
-	{
-		memcpy(this, &stTemp, sizeof(stHuTips));
-	}
-};
-
-// ÌØÊâ¸ÜµÄÊı¾İ
-struct stCardInfo
-{
-	BYTE				byCard;		//ÅÆÖµ
-	BYTE				byNum;		//ÊıÁ¿
-
-	stCardInfo(BYTE card, BYTE num)
-	{
-		byCard = card;
-		byNum  = byNum;
-	}
-	stCardInfo(){ memset(this, 0, sizeof(*this)); }
-};
-
-//³ÔÅö¸Ü½Úµã
-struct stNodeMJ
-{
-	BYTE		byType;							//³ÔÅö¸ÜÀàĞÍ  ²Î¿¼ BLOCK_CARD_TYPE	
-	BYTE		byCardNum[MAX_TOTAL_TYPE];		//³ÔÅö¸ÜÅÆ(ÌØÊâ×î¶àÎåÕÅ²»Í¬µÄÅÆ)	
-
-	stNodeMJ() { memset(this, 0, sizeof(*this)); }
-
-	BYTE getCardNum()
-	{
-		BYTE byNum = 0;
-		for (int i=0; i<MAX_TOTAL_TYPE; ++i)	
-		{
-			byNum += byCardNum[i];	
-		}
-		return byNum;
-	}
-	BYTE getCardType()
-	{
-		BYTE byNum = 0;
-		for (int i=0; i<MAX_TOTAL_TYPE; ++i)	
-		{
-			if (byCardNum[i] > 0) 
-				++byNum;
-		}
-		return byNum;
-	}
-	void addCardInfo(BYTE byIndex, BYTE num)
-	{
-		byCardNum[byIndex] += num;
-	}
-	void delCardInfo(BYTE byIndex)		// Ö»ÓĞÉ¾Ò»ÕÅÅÆµÄĞèÇó
-	{
-		if (byCardNum[byIndex] > 0)
-			--byCardNum[byIndex];
-	}
-	BYTE delCardAll(BYTE byIndex)
-	{
-		int num = byCardNum[byIndex];
-		byCardNum[byIndex] = 0;
-		return num;
-	}
-	bool isHaveCard(BYTE byIndex)
-	{
-		return byCardNum[byIndex] > 0;
-	}
-	std::vector<BYTE> getVecData()
-	{
-		std::vector<BYTE> vctOut;
-		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
-		{
-			for (BYTE n=0; n<byCardNum[i]; ++n)
-			{
-				vctOut.push_back(getValByIndex(i));
-			}
-		}
-		return vctOut;
-	}
-	void printNode()
-	{
-		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
-		{			
-			cout<<hex<<(int)getValByIndex(i)<<" : "<<(int)byCardNum[i]<<'\t';
-		}
-		cout<<endl;
-	}
-};
-
-struct stKey
-{
-	BYTE byNum;
-	BYTE byData[14];
-
-	stKey() { memset(this, 0, sizeof(*this)); }
-	stKey(const stKey &t) {memcpy(this, &t, sizeof(*this));}
-
-	void append(BYTE num, BYTE val)
-	{
-		if (num > 0 && byNum+num <= 14)
-			memset(&byData[byNum], val, num);
-		byNum +=num;
-	}
-	string getString()
-	{
-		string strOut;
-		for (BYTE i=0; i<byNum; ++i)
-			strOut.append(1, getCharFlag(byData[i]));
-
-		return strOut;
-	}
-
-	bool operator<(const stKey &t) const
-	{
-		if (t.byNum == byNum)
-		{
-			for (BYTE i=0; i<byNum; ++i)
-			{
-				if (byData[i] != t.byData[i])
-					return byData[i] < t.byData[i];
-			}
-			return false;
-		}
-		return byNum < t.byNum;
-	}
-	bool operator==(const stKey &t) const
-	{
-		if (t.byNum == byNum)
-		{
-			for (BYTE i=0; i<byNum; ++i)
-			{
-				if (byData[i] != t.byData[i])
-					return false;
-			}
-			return true;
-		}
-		return false;
-	}
-	stKey & operator=(const stKey &t)
-	{
-		memcpy(this, &t, sizeof(stKey));
-		return *this;
-	}
-};
 
 struct stColorData
 {
 	BYTE	byCorType;					// enColorMJ
-	BYTE	byNum;						// ÅÆÊıÁ¿
-	BYTE	byCount[MAX_VAL_NUM];		// Í³¼ÆÊı¾İ
+	BYTE	byNum;						// é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+	BYTE	byCount[MAX_KEY_NUM];		// ç»Ÿé”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
 
-	stColorData(){memset(this, 0, sizeof(*this));}
-	stKey getStringKey(BYTE byNaiIndex, BYTE byNum)
+	stColorData() { memset(this, 0, sizeof(*this)); }
+	stColorData(BYTE byType, BYTE byVal[MAX_KEY_NUM]) :byCorType(byType), byNum(0)
 	{
-		stKey strOut;
-		int nMax = byCorType >= enColorMJ_FenZi ? 7 : 9;
-		for (int i=0; i<nMax; ++i)
-		{
-			if (byCount[i] > 0)
-				strOut.append(byCount[i], byCorType*9+i+1);
-				//strOut.append(byCount[i], getCharFlag(byCorType*9+i));
-		}
-		if (byNaiIndex != INVALID_VAL && byNum > 0)
-			strOut.append(byNum, INVALID_VAL);
-
-		return strOut;
+		memcpy(byCount, byVal, MAX_KEY_NUM);
+		for (int i = 0; i<MAX_KEY_NUM; ++i)
+			byNum += byCount[i];
 	}
 };
 
 struct stCardData
 {
-	BYTE	byCardCount[MAX_TOTAL_TYPE];		// Í³¼ÆÊı¾İ
-	BYTE	byNum;								// ÊıÁ¿
-	BYTE	byHuCard;							// ºúµÄÄÇÕÅÅÆ£¨ÌØÊâÓÃÍ¾£©
+	BYTE	byCardNum[MAX_TOTAL_TYPE];			// ç»Ÿé”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+	BYTE	byNum;								// é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·
+	BYTE	byHuCard;							// é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿç‹¡ï½æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é”Ÿæ–¤æ‹·é€”é”Ÿæ–¤æ‹·
 
 	stCardData()
 	{
 		memset(this, 0, sizeof(*this));
 	}
-	stCardData(BYTE byCards[], BYTE num)
+	stCardData(BYTE byCards[], BYTE num) :byNum(num)
 	{
-		memset(this, 0, sizeof(*this));
-		addCard2(byCards, num);
+		memcpy(byCardNum, byCards, MAX_TOTAL_TYPE);
 	}
 
 	void clear()
@@ -363,188 +131,17 @@ struct stCardData
 	void getCardsData(BYTE byCardOut[], BYTE num, bool bAddHuCard = false)
 	{
 		BYTE byIndex = 0;
-		for (int i=0; i<MAX_TOTAL_TYPE; ++i)
+		for (int i = 0; i<MAX_TOTAL_TYPE; ++i)
 		{
-			if (byCardCount[i] > 0 && byCardCount[i]+byIndex <= num)
+			if (byCardNum[i] > 0 && byCardNum[i] + byIndex <= num)
 			{
-				memset(byCardOut+byIndex, getValByIndex(i), byCardCount[i]);
-				byIndex += byCardCount[i];
+				memset(byCardOut + byIndex, getValByIndex(i), byCardNum[i]);
+				byIndex += byCardNum[i];
 			}
 		}
 		if (bAddHuCard && byHuCard != 0 && byIndex<num)
-		{
-			byCardOut[byIndex] = byHuCard;			
-		}
-	}	
-	void addCard2(BYTE byCards[], BYTE num)
-	{
-		byNum = num;
-		for (int i=0; i<num; ++i)
-		{
-			++byCardCount[byCards[i]];
-		}
-	}	
-	bool addCard(BYTE byCards[], BYTE num)
-	{
-		if (num <= 0 ) 
-			return false;
-
-		BYTE	byNumTemp = byNum;
-		BYTE	byCardTemp[MAX_TOTAL_TYPE] = {};
-		memcpy(byCardTemp, byCardCount, MAX_TOTAL_TYPE);
-		for (int i=0; i<num; ++i)
-		{
-			BYTE byIndex = getIndexByVal(byCards[i]);
-			if (byIndex < MAX_TOTAL_TYPE)
-			{
-				++byCardTemp[byIndex];
-				++byNumTemp;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		memcpy(byCardCount, byCardTemp, MAX_TOTAL_TYPE);
-		byNum = byNumTemp;
-		return true;
-	}
-	bool DelCard(BYTE byCards[], BYTE num)
-	{
-		if (num <= 0 || num > byNum) 
-			return false;
-
-		BYTE	byNumTemp = byNum;
-		BYTE	byCardTemp[MAX_TOTAL_TYPE] = {};
-		memcpy(byCardTemp, byCardCount, MAX_TOTAL_TYPE);
-		for (int i=0; i<num; ++i)
-		{
-			BYTE byIndex = getIndexByVal(byCards[i]);
-			if (byIndex < MAX_TOTAL_TYPE && byCardTemp[byIndex] > 0)
-			{
-				--byCardTemp[byIndex];
-				--byNumTemp;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		memcpy(byCardCount, byCardTemp, MAX_TOTAL_TYPE);
-		byNum = byNumTemp;
-		return true;
-	}
-	bool addCard(BYTE byCard, BYTE num)
-	{
-		BYTE byIndex = getIndexByVal(byCard);
-		if (byIndex < MAX_TOTAL_TYPE)
-		{
-			//			if (num + byCardCount[byIndex] <= 4)
-			{
-				byCardCount[byIndex] += num;
-				byNum += num;
-				return true;
-			}
-		}		
-		return false;
-	}
-	bool DelCard(BYTE byCard, BYTE num)
-	{
-		if (num <= 0 || num > byNum) 
-			return false;
-
-		BYTE byIndex = getIndexByVal(byCard);
-		if (byIndex < MAX_TOTAL_TYPE)
-		{
-			if (num <= byCardCount[byIndex])
-			{
-				byCardCount[byIndex] -= num;
-				byNum -= num;
-				return true;
-			}
-		}		
-		return false;
-	}
-	bool addCard(stNodeMJ stNode)
-	{
-		return true;
-	}
-	bool DelCard(stNodeMJ stNode)
-	{	
-		return true;
+			byCardOut[byIndex] = byHuCard;
 	}
 };
-
-struct stAnswer
-{
-	BYTE		nNum;
-	stNodeMJ	stNode[5];	//×î¶à5×é
-
-	stAnswer()
-	{
-		memset(this, 0, sizeof(*this));
-	}
-	stAnswer(vector<stNodeMJ> &vctIn)
-	{
-		memset(this, 0, sizeof(*this));
-		nNum = min(5, (int)vctIn.size());
-		memcpy(stNode, &vctIn[0], nNum*sizeof(stNodeMJ));
-	}
-	stAnswer(const stAnswer &stTemp)
-	{
-		memcpy(this, &stTemp, sizeof(stAnswer));
-	}
-
-	bool addNode(stNodeMJ &nodeTemp)
-	{
-		if (nNum < 5)
-		{
-			stNode[nNum] = nodeTemp;
-			++nNum;
-			return true;
-		}
-		return false;
-	}
-	bool addNode(stAnswer &answerTemp)
-	{
-		if (answerTemp.nNum == 0 || nNum + answerTemp.nNum > 5)
-			return false;
-
-		memcpy(&stNode[nNum], answerTemp.stNode, sizeof(stNodeMJ)*answerTemp.nNum);
-		nNum += answerTemp.nNum;
-		return true;
-	}
-	bool delNode()
-	{
-		if (nNum > 0)
-		{
-			--nNum;
-			//memset(&stNode[nNum], 0, sizeof(MJCPGNode));
-			return true;
-		}
-		return false;
-	}
-
-	void getVctNode(vector<stNodeMJ> &vctOut)
-	{
-		memcpy(&vctOut[0], stNode, nNum*sizeof(stNodeMJ));
-	};
-
-	stAnswer & operator=(const stAnswer &t)
-	{
-		memcpy(this, &t, sizeof(stAnswer));
-		return *this;
-	}
-};
-
-//////////////////////////////////////////////////////////////
-//·¢ËÍÌıÅÆÊ±ËøÅÆÁĞ±í + ºúÅÆÌáÊ¾ [ ¶¯Ì¬³¤¶ÈÏûÏ¢£ºsizeof(CMD_S_TingLock_HuTips)+byUnlockNum*sizeof(stHuTips) ]
-#define SUB_S_TING_LOCK_HUTIPS			212							 //ÌıÅÆÊ±Î´ËøÅÆÁĞ±í
-struct CMD_S_TingLock_HuTips
-{
-	BYTE				  byUnlockNum;								 //Î´ËøÅÆÊıÁ¿
-};
-//stHuTips			  stHuInfo[13];									 //byUnlockNumÖÖÌıÅÆ·½Ê½
-
 
 #pragma pack(1)
