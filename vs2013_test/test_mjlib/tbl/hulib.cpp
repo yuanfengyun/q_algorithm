@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <stdio.h>
 #include <string.h>
 #include "hulib.h"
@@ -11,7 +10,7 @@ void log(char*, ...)
 {
 }
 
-bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_card_index, char other_card_index, int gui_index1, int gui_index2)
+bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_card_index, char other_card_index, int gui_index)
 {
     char hand_cards_tmp[34];
     memcpy(hand_cards_tmp, hand_cards, 34);
@@ -25,15 +24,9 @@ bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_car
         hand_cards_tmp[other_card_index]++;
     }
 
-	int gui_num = 0;
-	if (gui_index1 != 34){
-		gui_num += hand_cards_tmp[gui_index1];
-		hand_cards_tmp[gui_index1] = 0;
-	}
-	if (gui_index2 != 34){
-		gui_num += hand_cards_tmp[gui_index2];
-		hand_cards_tmp[gui_index2] = 0;
-	}
+    int gui_num = hand_cards_tmp[gui_index];
+    hand_cards_tmp[gui_index] = 0;
+
     ProbabilityItemTable ptbl;
     if(!split(hand_cards_tmp, gui_num, ptbl))
     {
@@ -133,7 +126,7 @@ bool HuLib::check_probability(ProbabilityItemTable& ptbl, int gui_num)
     return false;
 }
 
-bool HuLib::check_probability_sub(ProbabilityItemTable& ptbl, bool& eye, int& gui_num, int level, int max_level)
+bool HuLib::check_probability_sub(ProbabilityItemTable& ptbl, bool eye, int gui_num, int level, int max_level)
 {
     for(int i=0; i<ptbl.m_num[level]; ++i)
     {
@@ -145,18 +138,10 @@ bool HuLib::check_probability_sub(ProbabilityItemTable& ptbl, bool& eye, int& gu
 
         if(level < max_level - 1)
         {
-            int old_gui_num = gui_num;
-            bool old_eye = eye;
-            gui_num -= item.gui_num;
-            eye = eye || item.eye;
-
-            if(check_probability_sub(ptbl, eye, gui_num, level + 1, ptbl.array_num))
+			if(check_probability_sub(ptbl, eye || item.eye, gui_num - item.gui_num, level + 1, ptbl.array_num))
             {
                 return true;
             }
-
-            eye = old_eye;
-            gui_num = old_gui_num;
             continue;
         }
 

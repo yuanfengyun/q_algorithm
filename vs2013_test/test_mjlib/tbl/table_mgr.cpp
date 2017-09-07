@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <stdio.h>
 #include "table_mgr.h"
 #include "set_table.h"

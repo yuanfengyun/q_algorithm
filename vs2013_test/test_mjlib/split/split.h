@@ -2,7 +2,7 @@
 class split
 {
 public:
-	static bool get_hu_info(char* cards, char cur_card, char gui_index1, char gui_index2);
+	static bool get_hu_info(char* cards, char cur_card, char gui_index);
 private:
 	static bool foreach_eye(char* cards, char gui_num, char max_gui, int eye_color, int* cache);
 

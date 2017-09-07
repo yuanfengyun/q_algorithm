@@ -1,20 +1,12 @@
-#include "stdafx.h"
 #include "split.h"
 
-bool split::get_hu_info(char* cards, char cur_card, char gui_index1, char gui_index2)
+bool split::get_hu_info(char* cards, char cur_card, char gui_index)
 {
 	char gui_num = 0;
-	char gui_num1 = 0;
-	char gui_num2 = 0;
-	if (gui_index1 != 34) {
-		gui_num1 = cards[gui_index1];
-		cards[gui_index1] = 0;
+	if (gui_index != 34) {
+		gui_num = cards[gui_index];
+		cards[gui_index] = 0;
 	}
-	if (gui_index2 != 34) {
-		gui_num2 = cards[gui_index2];
-		cards[gui_index2] = 0;
-	}
-	gui_num = gui_num1 + gui_num2;
 
 	char eye_tbl[34];
 	char eye_num = 0;
@@ -72,11 +64,8 @@ bool split::get_hu_info(char* cards, char cur_card, char gui_index1, char gui_in
 		}
 	}
 
-	if (gui_num1 > 0) {
-		cards[gui_index1] = gui_num1;
-	}
-	if (gui_num2 > 0) {
-		cards[gui_index2] = gui_num2;
+	if (gui_num > 0) {
+		cards[gui_index] = gui_num;
 	}
 	return hu;
 }

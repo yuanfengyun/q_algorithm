@@ -26,7 +26,7 @@ class HuLib
     };
     
 public:
-	static bool get_hu_info(char* const hand_cards, Wave* const waves, char self_card, char other_card, int gui_index1, int gui_index2);
+    static bool get_hu_info(char* const hand_cards, Wave* const waves, char self_card, char other_card, int gui_index);
 private:
 
     static bool list_probability(int color, int gui_num, int num, int key, bool chi, ProbabilityItemTable& ptbl);
@@ -36,7 +36,7 @@ private:
 
     static bool check_probability(ProbabilityItemTable& ptbl, int gui_num);
 
-    static bool check_probability_sub(ProbabilityItemTable& ptbl, bool& eye, int& gui_num, int level, int max_level);
+    static bool check_probability_sub(ProbabilityItemTable& ptbl, bool eye, int gui_num, int level, int max_level);
     static bool check_7dui(char* const hand_cards);
     static bool check_pengpeng(char* const hand_cards, Wave* const waves, char self_card, char other_card);
 };

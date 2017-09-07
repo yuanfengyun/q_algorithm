@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <stdio.h>
 #include <string.h>
 #include "compress_array_table.h"

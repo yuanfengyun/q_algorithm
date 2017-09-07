@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <stdio.h>
 #include <string.h>
 #include "set_table.h"
@@ -15,8 +14,7 @@ SetTable::~SetTable()
 
 bool SetTable::check(int number)
 {
-    std::set<int>::iterator it = m_tbl.find(number);
-    return it != m_tbl.end();
+	return m_tbl.find(number) != m_tbl.end();
 }
 
 void SetTable::add(int key)
@@ -30,12 +28,9 @@ void SetTable::dump(char* name)
 
     int num = m_tbl.size();
 
-    fwrite(&num, 4, 1, fp);
-
     for(std::set<int>::iterator it=m_tbl.begin(); it!=m_tbl.end(); ++it)
     {
-        int key = *it;
-        fwrite(&key, 4, 1, fp);
+        fprintf(fp, "%d\n", *it);
     }
 
     fclose(fp);
