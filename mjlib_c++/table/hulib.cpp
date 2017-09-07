@@ -2,24 +2,18 @@
 #include "hulib.h"
 #include "table_mgr.h"
 
-bool HuLib::get_hu_info(char* const hand_cards, Wave* const waves, char self_card_index, char other_card_index, int gui_index)
+bool HuLib::get_hu_info(char* cards, char cur_card, int gui_index)
 {
-    char hand_cards_tmp[34];
-    memcpy(hand_cards_tmp, hand_cards, 34);
+	int gui_num = 0;
+	if (cur_card != 34) ++cards[cur_card];
+	if (gui_index != 34) gui_num = cards[gui_index];
+	
+	cards[gui_index] = 0;
 
-    if(self_card_index != 34)
-    {
-        hand_cards_tmp[self_card_index]++;
-    }
-    else if(other_card_index != 34)
-    {
-        hand_cards_tmp[other_card_index]++;
-    }
-
-    int gui_num = hand_cards_tmp[gui_index];
-    hand_cards_tmp[gui_index] = 0;
-
-	return split(hand_cards_tmp, gui_num);
+	bool hu = split(cards, gui_num);
+	if (gui_index != 34) cards[gui_index] = gui_num;
+	if (cur_card != 34) --cards[cur_card];
+	return hu;
 }
 
 bool check(int gui, int eye_num, int gui_num, int& gui_sum) {

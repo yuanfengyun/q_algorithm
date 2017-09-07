@@ -6,8 +6,6 @@ public:
 private:
 	static bool get_cache(char* cards, char max_gui, int* cache);
 
-	static bool check_color_zi(char* cards, char max_gui);
-
 	static bool check_color(char* cards, char from, char gui_num);
 
 	static int check_normal(char* cards, int from, int max_gui, int used_gui);
@@ -17,5 +15,5 @@ private:
 	static int one(int n, int gui_num, int max_gui, int used_gui);
 	static int two(int n, int gui_num, int max_gui, int used_gui);
 
-	static inline int check_zi(char* cards, int max_gui);
+	static inline int check_zi(char* cards);
 };

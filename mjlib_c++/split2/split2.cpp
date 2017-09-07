@@ -16,23 +16,19 @@ bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
 	cache[0] = check_normal(cards, 0, gui_num, used_gui);
 	used_gui = cache[0];
 	if(used_gui > 1 + gui_num) return false;
-	if (used_gui > 0) used_gui--;
 
 	cache[1] = check_normal(cards, 9, gui_num, used_gui);
 	used_gui = cache[0] + cache[1];
 	if (used_gui > 1 + gui_num) return false;
-	if (used_gui > 0) used_gui--;
 
 	cache[2] = check_normal(cards, 18, gui_num, used_gui);
 	used_gui = cache[0] + cache[1] + cache[2];
 	if (used_gui > 1 + gui_num) return false;
 
-	cache[3] = check_zi(cards, gui_num);
-	if (cache[0] + cache[1] + cache[2] + cache[3]> 1 + gui_num) return false;
-	
-	
-	bool hu = false;
+	cache[3] = check_zi(cards);
 	int need_sum = cache[0] + cache[1] + cache[2] + cache[3];
+	if (need_sum > 1 + gui_num) return false;
+
 	if (need_sum + 2 <= gui_num){
 		return true;
 	}
@@ -57,27 +53,24 @@ bool split2::get_hu_info(char* hand_cards, char cur_card, char gui_index)
 
 	if (eye_color > 0){
 		if (eye_color == 3){
-			return check_color_zi(cards, gui_num-(need_sum - cache[eye_color]));
+			return true;
 		}
 		else{
 			return check_color(cards, eye_color * 9, gui_num-(need_sum - cache[eye_color]));
 		}
 	}
 
-	for (int i = 3; i >= 0; i--)
+	bool hu = false;
+	for (int i = 0; i < 4; ++i)
 	{
-		// 扣除将以后赖子还不够的
-		if (need_sum - 1 > gui_num) continue;
-
-		if (need_sum - cache[i] <= gui_num){
-			if (i == 3){
-				hu = check_color_zi(cards, gui_num-(need_sum - cache[i]));
-			}
-			else{
-				hu = check_color(cards, i * 9, gui_num-(need_sum - cache[i]));
-			}
-			if (hu) break;
+		if (cache[i] == 0) continue;
+		if (i == 3){
+			return true;
 		}
+		else{
+			hu = check_color(cards, i * 9, gui_num-(need_sum - cache[i]));
+		}
+		if(hu) return true;
 	}
 
 	return hu;
@@ -113,31 +106,6 @@ bool split2::check_color(char* cards, char from, char gui_num)
 	}
 
 	return false;
-}
-
-bool split2::check_color_zi(char* cards, char max_gui)
-{
-	int count1_4 = 0;
-	int count2 = 0;
-	for (int i = 27; i < 34;i++){
-		if (cards[i] == 1 || cards[i] == 4){
-			count1_4++;
-		}
-		else if (cards[i] == 2)
-		{
-			count2++;
-		}
-	}
-
-	if (count2>0){
-		return count2 - 1 + count1_4 * 2 <= max_gui;
-	}
-
-	if (count1_4 > 0){
-		return count1_4 * 2 - 1 <= max_gui;
-	}
-
-	return max_gui >= 2;
 }
 
 int split2::check_normal(char* cards, int from, int max_gui, int used_gui)
@@ -186,9 +154,7 @@ int split2::one(int n, int need_gui, int max_gui, int used_gui)
 
 	if (n == 0) return need_gui;
 
-	if (need_gui + used_gui > max_gui) return max_gui + 1;
-
-	if (need_gui > max_gui) return need_gui;
+	if (need_gui + used_gui > max_gui + 1) return 1000;
 
 	return next_split(n, need_gui, max_gui, used_gui);
 }
@@ -281,25 +247,22 @@ int split2::two(int n, int need_gui, int max_gui, int used_gui)
 
 	if (n == 0) return need_gui;
 
-	if (need_gui + used_gui > max_gui) return max_gui + 1;
-	if (need_gui > max_gui) return need_gui;
+	if (need_gui + used_gui > max_gui+1) return 1000;
 
 	return next_split(n, need_gui, max_gui, used_gui);
 }
 
-int split2::check_zi(char* cards, int max_gui)
+int split2::check_zi(char* cards)
 {
 	int need_gui = 0;
 	for (int i = 27; i < 34;i++) {
-		int c = cards[i];
-		if (c == 0) continue;
-		if (c == 1 || c == 4) {
-			need_gui = need_gui + 2;
+		if (cards[i] == 0) continue;
+		if (cards[i] == 1 || cards[i] == 4) {
+			need_gui += 2;
 		}
-		else if (c == 2) {
-			need_gui = need_gui + 1;
+		else if (cards[i] == 2) {
+			++need_gui;
 		}
-		if (need_gui > max_gui) return need_gui;
 	}
 
 	return need_gui;

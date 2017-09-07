@@ -1,15 +1,15 @@
 #pragma once
 
 #include "table.h"
-#include <set>
+#include <hash_map>
 
-class SetTable : public Table {
+class HashTable : public Table {
 private:
-    std::set<int> m_tbl;
+    std::hash_map<int,int> m_tbl;
 
 public:
-    SetTable();
-    virtual ~SetTable();
+    HashTable();
+    virtual ~HashTable();
 
 public:
     virtual void add(int key);

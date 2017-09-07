@@ -10,6 +10,13 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\mjlib_c++\split2\split2.cpp" />
+    <ClCompile Include="..\..\mjlib_c++\split2\test_split2.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\mjlib_c++\split2\split2.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1EBE3390-D0F8-4387-B5E5-9EFA1A6D2568}</ProjectGuid>
     <RootNamespace>test_split2</RootNamespace>
@@ -63,13 +70,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="split2.cpp" />
-    <ClCompile Include="test_split2.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="split2.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

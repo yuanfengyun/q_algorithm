@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <time.h>
 #include "table_mgr.h"
 #include "hulib.h"
 
@@ -46,7 +47,7 @@ void test_hu()
 	int hu = 0;
 	DWORD dwTimeBegin = GetTickCount();
 	for (int i = 0; i < MAX_COUNT; i++){
-		hu += HuLib::get_hu_info(cards, NULL, 34, 34, 33);
+		hu += HuLib::get_hu_info(cards, 34, 33);
 	}
 
 	cout << "查表法，相同牌型，总次数: " << MAX_COUNT / 10000 << "万次" << endl;
@@ -54,7 +55,7 @@ void test_hu()
 	cout << "hu:" << hu << endl;
 }
 
-int GUI_NUM = 2;
+int GUI_NUM = 4;
 char source[MAX_COUNT * 9 * 34];
 
 void main()
@@ -88,13 +89,13 @@ void main()
 	}
 
 	int hu = 0;
-	DWORD dwTimeBegin = GetTickCount();
+	DWORD dwTimeBegin = clock();
 	for (int n = 0; n<total; ++n)
 	{
 		char* cards = &source[n * 34];
-		hu += HuLib::get_hu_info(cards, NULL, 34, 34, gui_index);
+		hu += HuLib::get_hu_info(cards, 34, gui_index);
 	}
-	cout << "查表法总数:" << 9 * MAX_COUNT/10000 << "万次，time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "查表法总数:" << 9 * MAX_COUNT / 10000 << "万次，time:" << clock() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }

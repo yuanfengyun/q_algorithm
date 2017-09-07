@@ -1,15 +1,15 @@
 #pragma once
 
 #include "table.h"
-#include <unordered_map>
+#include <set>
 
-class HashTable : public Table {
+class ArrayTable : public Table {
 private:
-    std::unordered_map<int,int> m_tbl;
+    unsigned char m_tbl[2<<24];
 
 public:
-    HashTable();
-    virtual ~HashTable();
+    ArrayTable();
+    virtual ~ArrayTable();
 
 public:
     virtual void add(int key);

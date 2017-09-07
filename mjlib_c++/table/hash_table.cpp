@@ -12,7 +12,7 @@ HashTable::~HashTable()
 
 bool HashTable::check(int number)
 {
-    std::unordered_map<int,int>::iterator it = m_tbl.find(number);
+    std::hash_map<int,int>::iterator it = m_tbl.find(number);
     return it != m_tbl.end();
 }
 
@@ -29,7 +29,7 @@ void HashTable::dump(char* name)
 
     fwrite(&num, 4, 1, fp);
 
-    for(std::unordered_map<int,int>::iterator it=m_tbl.begin(); it!=m_tbl.end(); ++it)
+	for (std::hash_map<int, int>::iterator it = m_tbl.begin(); it != m_tbl.end(); ++it)
     {
         int key = it->second;
         fwrite(&key, 4, 1, fp);

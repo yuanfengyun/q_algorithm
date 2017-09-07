@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <time.h>
 
 #include "Define.h"
 #include "DefineHuTip.h"
@@ -61,7 +62,7 @@ void main()
 	stCardData stData;
 	hu = 0;
 	memcpy(s_HuCardAll, g_HuCardAll, sizeof(s_HuCardAll));
-	dwTimeBegin = GetTickCount();
+	dwTimeBegin = clock();
 	for (int n = 0; n<MAX_COUNT; ++n)
 	{
 		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
@@ -77,7 +78,7 @@ void main()
 			hu += m_cAlgorithm.CanWin_Do_Nai(stData, gui_index);
 		}
 	}
-	cout << "rjc递归方法, 总数:" << 9 * MAX_COUNT/10000 << "万次, time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+	cout << "rjc递归方法, 总数:" << 9 * MAX_COUNT / 10000 << "万次, time:" << clock() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }

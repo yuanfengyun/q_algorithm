@@ -2,6 +2,8 @@
 
 #include "table.h"
 
+#define MAX_GUI_NUM 4
+
 class TableMgr
 {
 public:
@@ -21,8 +23,8 @@ public:
 
     bool dump_feng_table();
 
-    Table* m_check_table[9];
-    Table* m_check_eye_table[9];
-    Table* m_check_feng_table[9];
-    Table* m_check_feng_eye_table[9];
+	Table* m_check_table[MAX_GUI_NUM+1];
+	Table* m_check_eye_table[MAX_GUI_NUM+1];
+	Table* m_check_feng_table[MAX_GUI_NUM+1];
+	Table* m_check_feng_eye_table[MAX_GUI_NUM+1];
 };

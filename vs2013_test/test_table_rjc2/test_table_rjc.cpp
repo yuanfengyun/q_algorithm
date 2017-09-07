@@ -2,15 +2,15 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
-#include <time.h>
 
 #include "DefineHuTip.h"
 #include "HuPaiMJ_32.h"
 
 using namespace std;
 
-void print_cards(char* cards)
+void print_cards(bool bSuc1, bool bSuc2, BYTE* cards)
 {
+	printf("%d%d   ", bSuc1, bSuc2);
 	for (int i = 0; i<9; ++i)
 	{
 		printf("%d,", cards[i]);
@@ -42,27 +42,21 @@ CHuPaiMJ stTssss;
 
 void test_repeat()
 {
-	char cards[] = {
-		2, 0, 0, 0, 0, 0, 0, 1, 0,
-		0, 1, 0, 1, 3, 2, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 4
+	BYTE cards[] = {
+		0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
 	};
 	int hu = 0;
-	stCardData stData2;
 	DWORD dwTimeBegin = GetTickCount();
-	for (int i = 0; i < MAX_COUNT; i++){
-		stData2.byNum = 14;
-		memcpy(stData2.byCardNum, cards, sizeof(cards));
-		hu += stTssss.CheckCanHu(stData2, 33);
+	for (int i = 0; i < 10; i++){
+		hu += stTssss.CheckCanHu(cards, 33);
 	}
 
 	cout << "rjc查表法，相同牌型，总次数: " << MAX_COUNT / 10000 << "万次" << endl;
 	cout << "time: " << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "hu:" << hu << endl;
 }
-char source[MAX_COUNT * 9 * 34];
-#define GUI_NUM 4
+BYTE source[MAX_COUNT * 9 * 34];
+#define GUI_NUM 2
 void main()
 {
 	stTssss.TrainAll();
@@ -85,7 +79,7 @@ void main()
 		random_shuffle(g_HuCardAll, g_HuCardAll + 130);		// 这个函数对计算有影响
 		for (int i = 0; i < 9; ++i)	// 136/14 -> 9
 		{
-			char* cards = &source[total++ * 34];
+			BYTE* cards = &source[total++ * 34];
 			memset(cards, 0, 34);
 			for (int j = i * 14; j < i * 14 + 14 - GUI_NUM; j++)
 				++cards[g_HuCardAll[j]];
@@ -99,13 +93,9 @@ void main()
 	DWORD dwTimeBegin = clock();
 	for (int n = 0; n<total; ++n)
 	{
-		char* cards = &source[n * 34];
-		stData2.byNum = 14;
-		memcpy(stData2.byCardNum, cards, 34);
-		hu += stTssss.CheckCanHu(stData2, gui_index);
+		hu += stTssss.CheckCanHu(source + n * 34, gui_index);
 	}
-
-	cout << "rjc查表法总数:" << 9 * MAX_COUNT/10000 << "万次, time:" << clock() - dwTimeBegin << "ms" << endl;
+	cout << "rjc查表法总数:" << 9 * MAX_COUNT / 10000 << "万次, time:" << clock() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }

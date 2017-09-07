@@ -119,7 +119,7 @@ void gen_eye_table()
 
     for(int i=0; i<9; ++i)
     {
-        printf("将%d\n",i);
+        printf("eye %d\n",i);
         cards[i] = 2;
         parse_table(cards, true);
         gen_auto_table_sub(cards, 1, true);
