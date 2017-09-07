@@ -5,7 +5,7 @@
 #include "array_table.h"
 #include "binary_array_table.h"
 
-#define TABLECLASS BinaryArrayTable
+#define TABLECLASS HashTable
 
 TableMgr::TableMgr()
 {

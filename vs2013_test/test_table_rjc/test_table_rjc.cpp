@@ -56,10 +56,11 @@ void test_repeat()
 		hu += stTssss.CheckCanHu(stData2, 33);
 	}
 
-	cout << "rjcæŸ¥è¡¨æ³•ï¼Œç›¸åŒç‰Œåž‹ï¼Œæ€»æ¬¡æ•°: " << MAX_COUNT / 10000 << "ä¸‡æ¬¡" << endl;
+	cout << "rjc²é±í·¨£¬ÏàÍ¬ÅÆÐÍ£¬×Ü´ÎÊý: " << MAX_COUNT / 10000 << "Íò´Î" << endl;
 	cout << "time: " << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "hu:" << hu << endl;
 }
+char source[MAX_COUNT * 9 * 34];
 
 void main()
 {
@@ -75,33 +76,35 @@ void main()
 		g_HuCardAll[i * 4+3] = i;
 	}
 	
-	int gui_index = 33;
-	int hu = 0;
-	char cards[34] = { 0 };
-
-	// rjcæŸ¥è¡¨æ³•
-	stCardData stData2;
+	int gui_index = 5;
+	int total = 0;
 	srand(1);
-	DWORD dwTimeBegin = GetTickCount();
-	for (int n = 0; n<MAX_COUNT; ++n)
+	for (int n = 0; n < MAX_COUNT; ++n)
 	{
-		random_shuffle(g_HuCardAll, g_HuCardAll + 126);		// è¿™ä¸ªå‡½æ•°å¯¹è®¡ç®—æœ‰å½±å“
-		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		random_shuffle(g_HuCardAll, g_HuCardAll + 130);		// Õâ¸öº¯Êý¶Ô¼ÆËãÓÐÓ°Ïì
+		for (int i = 0; i < 9; ++i)	// 136/14 -> 9
 		{
-			stData2.byNum = 14;
-			memset(cards, 0, sizeof(cards));
+			char* cards = &source[total++ * 34];
+			memset(cards, 0, 34);
 			for (int j = i * 14; j < i * 14 + 14 - GUI_NUM; j++)
 				++cards[g_HuCardAll[j]];
-			cards[33] = GUI_NUM;
-			memcpy(stData2.byCardNum, cards, sizeof(cards));
-
-			if (stTssss.CheckCanHu(stData2, gui_index))
-			{
-				hu++;
-			}
+			cards[gui_index] = GUI_NUM;
 		}
 	}
-	cout << "rjcæŸ¥è¡¨æ³•æ€»æ•°:" << 9 * MAX_COUNT << "  time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
+
+	// rjc²é±í·¨
+	int hu = 0;
+	stCardData stData2;
+	DWORD dwTimeBegin = GetTickCount();
+	for (int n = 0; n<total; ++n)
+	{
+		char* cards = &source[n * 34];
+		stData2.byNum = 14;
+		memcpy(stData2.byCardNum, cards, 34);
+		hu += stTssss.CheckCanHu(stData2, gui_index);
+	}
+
+	cout << "rjc²é±í·¨×ÜÊý:" << 9 * MAX_COUNT/10000 << "Íò´Î, time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;
 	cin >> hu;
 }

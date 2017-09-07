@@ -30,13 +30,7 @@ public:
 private:
 
     static bool list_probability(int color, int gui_num, int num, int key, bool chi, ProbabilityItemTable& ptbl);
+	static bool split(char* const cards, int gui_num);
 
-    static bool split(char* const cards, int gui_num, ProbabilityItemTable& ptbl);
-    static bool _split(char* const cards, int gui_num, int color, int min, int max, bool chi, ProbabilityItemTable& ptbl);
-
-    static bool check_probability(ProbabilityItemTable& ptbl, int gui_num);
-
-    static bool check_probability_sub(ProbabilityItemTable& ptbl, bool eye, int gui_num, int level, int max_level);
-    static bool check_7dui(char* const hand_cards);
-    static bool check_pengpeng(char* const hand_cards, Wave* const waves, char self_card, char other_card);
+	static int _split(char* const cards, int gui_num, int min, int max, bool chi, int& eye_num);
 };

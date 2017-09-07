@@ -32,7 +32,7 @@ void print_cards(char* cards)
 	printf("\n");
 }
 
-#define MAX_COUNT (1000 * 10000)
+#define MAX_COUNT (100 * 10000)
 static BYTE s_HuCardAll[136];
 
 void test_hu()
@@ -54,12 +54,14 @@ void test_hu()
 	cout << "hu:" << hu << endl;
 }
 
+int GUI_NUM = 0;
+char source[MAX_COUNT * 9 * 34];
 
 void main()
 {
 	TableMgr::get_instance()->load();
 
-	test_hu();
+	//test_hu();
 	
 	for (int i = 0; i < 34; i++)
 	{
@@ -69,25 +71,28 @@ void main()
 		s_HuCardAll[i * 4 + 3] = i;
 	}
 	
-	int hu = 0;
-	char cards[34] = { 0 };
-	
+	int gui_index = 5;
+	int total = 0;
 	srand(1);
-	DWORD dwTimeBegin = GetTickCount();
-	for (int n = 0; n<MAX_COUNT; ++n)
+	for (int n = 0; n < MAX_COUNT; ++n)
 	{
-		random_shuffle(s_HuCardAll, s_HuCardAll + 126);		// 这个函数对计算有影响
-		for (int i = 0; i<9; ++i)	// 136/14 -> 9
+		random_shuffle(s_HuCardAll, s_HuCardAll + 130);		// 这个函数对计算有影响
+		for (int i = 0; i < 9; ++i)	// 136/14 -> 9
 		{
-			memset(cards, 0, sizeof(cards));
-			for (int j = i * 14; j < i * 14 + 10; j++)
+			char* cards = &source[total++ * 34];
+			memset(cards, 0, 34);
+			for (int j = i * 14; j < i * 14 + 14 - GUI_NUM; j++)
 				++cards[s_HuCardAll[j]];
-			cards[33] = 4;
-			if(HuLib::get_hu_info(cards, NULL, 34, 34, 33))
-			{
-				hu++;
-			}
+			cards[gui_index] = GUI_NUM;
 		}
+	}
+
+	int hu = 0;
+	DWORD dwTimeBegin = GetTickCount();
+	for (int n = 0; n<total; ++n)
+	{
+		char* cards = &source[n * 34];
+		hu += HuLib::get_hu_info(cards, NULL, 34, 34, gui_index);
 	}
 	cout << "查表法总数:" << 9 * MAX_COUNT/10000 << "万次，time:" << GetTickCount() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;

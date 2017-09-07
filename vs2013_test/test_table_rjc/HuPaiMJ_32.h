@@ -227,7 +227,7 @@ public:
 				}
 			}
 		}
-		//		cout << (int)sizeof(*(g_setSingleFZ.begin())) << endl;
+		cout << (int)sizeof(*(g_setSingleFZ.begin())) << endl;
 		// 		cout << "pino:" << dec << g_setSingleFZ.size() << endl;
 		// 		cout << "pino:" << dec << g_usetHuAllFZ.size() << endl;
 		// 		cout << "pino:" << dec << g_usetHuAllJiangFZ.size() << endl;
@@ -275,30 +275,37 @@ public:
 				}
 			}
 		}
-		//cout << endl;
-		//cout << "pino:" << dec << g_setSingle.size() << endl;
+		cout << endl;
+		cout << "pino:" << dec << g_setSingle.size() << endl;
 		//cout << "pino:" << dec << g_usetHuAll.size() << endl;
 		//cout << "pino:" << dec << g_usetHuAllJiang.size() << endl;
 	}
 
-	static bool CheckCanHuSingle(stColorData &stColor, BYTE byNaiNum)
+	static bool CheckCanHuSingle(stColorData &stColor, BYTE &byNaiNum, BYTE byNaiMax)
 	{
-		BYTE byAll = stColor.byNum + byNaiNum;
-		BYTE byLeftNum = byAll % 3;
-		if (byLeftNum == 1)
-			return false;
-
 		if (stColor.byNum == 0)
 			return true;
 
-		int nFlag = (int)(byNaiNum & BIT_VAL_FLAG) << (BIT_VAL_NUM * 9);
-		int nKey = getKey2ByIndex(stColor.byCount) + nFlag;
+		bool bSuc = false;
+		int nVal = getKey2ByIndex(stColor.byCount);
+		for (byNaiNum = 0; byNaiNum <= byNaiMax; ++byNaiNum)
+		{
+			BYTE byAll = stColor.byNum + byNaiNum;
+			BYTE byLeftNum = byAll % 3;
+			if (byLeftNum == 1)
+				continue;
 
-		if (stColor.byCorType == enColorMJ_FenZi)
-			return g_usetHuAllFZ[byAll].find(nKey) != g_usetHuAllFZ[byAll].end();
-		else
-			return g_usetHuAll[byAll].find(nKey) != g_usetHuAll[byAll].end();
+			int nKey = nVal + ((int)(byNaiNum & BIT_VAL_FLAG) << (BIT_VAL_NUM * 9));
 
+			if (stColor.byCorType == enColorMJ_FenZi)
+				bSuc = g_usetHuAllFZ[byAll].find(nKey) != g_usetHuAllFZ[byAll].end();
+			else
+				bSuc = g_usetHuAll[byAll].find(nKey) != g_usetHuAll[byAll].end();
+
+			if (bSuc)
+				return true;
+		}
+		byNaiNum = 0;
 		return false;
 	}
 
@@ -308,64 +315,43 @@ public:
 			return false;
 
 		int nNaiZiNum = 0;
-		if (byNaiIndex < MAX_TOTAL_TYPE)
+		if (byNaiIndex != INVALID_VAL)
 		{
 			nNaiZiNum = stData.byCardNum[byNaiIndex];
 			stData.byCardNum[byNaiIndex] = 0;
 			stData.byNum -= nNaiZiNum;
 		}
 
-		int nNaiZiMax[enColorMJ_Max] = { 4, 4, 4, 4 };
 		stColorData stColorTemp[enColorMJ_Max];
-		for (int cor = 0; cor<enColorMJ_Max; ++cor)
+		for (int cor = 0; cor < enColorMJ_Max; ++cor)
 		{
 			stColorTemp[cor].byCorType = cor;
 			int nAll = (cor == enColorMJ_FenZi) ? 7 : MAX_VAL_NUM;
 			if (cor*MAX_VAL_NUM + nAll <= MAX_TOTAL_TYPE)
 			{
 				memcpy(stColorTemp[cor].byCount, stData.byCardNum + cor*MAX_VAL_NUM, nAll);
-				for (int i = 0; i<nAll; ++i)
+				for (int i = 0; i < nAll; ++i)
 					stColorTemp[cor].byNum += stColorTemp[cor].byCount[i];
 			}
-			if (stColorTemp[cor].byNum == 0)
-				nNaiZiMax[cor] = 0;
 		}
 
-		BYTE byLeftNum[enColorMJ_Max] = {};
-		for (int i1 = 0; i1 <= min(nNaiZiMax[0], nNaiZiNum); ++i1)
+		BYTE byJiangNum = 0;
+		BYTE nNaiTry[4] = {};
+		for (int cor = 0; cor < enColorMJ_Max; ++cor)
 		{
-			byLeftNum[enColorMJ_WAN] = (stColorTemp[0].byNum + i1) % 3;
-			if (byLeftNum[enColorMJ_WAN] == 1) continue;
-			for (int i2 = 0; i2 <= min(nNaiZiMax[1], nNaiZiNum - i1); ++i2)
-			{
-				byLeftNum[enColorMJ_TONG] = (stColorTemp[1].byNum + i2) % 3;
-				if (byLeftNum[enColorMJ_TONG] == 1) continue;
-				for (int i3 = 0; i3 <= min(nNaiZiMax[2], nNaiZiNum - i1 - i2); ++i3)
-				{
-					byLeftNum[enColorMJ_TIAO] = (stColorTemp[2].byNum + i3) % 3;
-					if (byLeftNum[enColorMJ_TIAO] == 1) continue;
-					int i4 = nNaiZiNum - i1 - i2 - i3;
-					if (i4 <= nNaiZiMax[3])
-					{
-						byLeftNum[enColorMJ_FenZi] = (stColorTemp[3].byNum + i4) % 3;
-						if (byLeftNum[enColorMJ_FenZi] == 1 || byLeftNum[0] + byLeftNum[1] + byLeftNum[2] + byLeftNum[3] != 2) continue;
+			if (stColorTemp[cor].byNum == 0)
+				continue;
 
-						if (stColorTemp[0].byNum>0 && !CheckCanHuSingle(stColorTemp[0], i1))
-							continue;
-						if (stColorTemp[1].byNum>0 && !CheckCanHuSingle(stColorTemp[1], i2))
-							continue;
-						if (stColorTemp[2].byNum>0 && !CheckCanHuSingle(stColorTemp[2], i3))
-							continue;
-						if (stColorTemp[3].byNum>0 && !CheckCanHuSingle(stColorTemp[3], i4))
-							continue;
+			if (!CheckCanHuSingle(stColorTemp[cor], nNaiTry[cor], nNaiZiNum))
+				return false;
 
-						return true;
-					}
-				}
-			}
+			nNaiZiNum -= nNaiTry[cor];
+			byJiangNum += (stColorTemp[cor].byNum + nNaiTry[cor]) == 2;
+			if (byJiangNum > nNaiZiNum + 1)
+				return false;
 		}
-		return false;
-	};
+		return true;
+	}
 };
 
-#endif  //__CPLAYER_H__
+#endif //__CPLAYER_H__
