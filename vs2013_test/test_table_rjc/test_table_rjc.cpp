@@ -33,7 +33,7 @@ void print_cards(char* cards)
 	printf("\n");
 }
 
-#define GUI_NUM 0
+
 #define MAX_COUNT (100 * 10000)
 static BYTE g_HuCardAll[136];
 
@@ -61,7 +61,7 @@ void test_repeat()
 	cout << "hu:" << hu << endl;
 }
 char source[MAX_COUNT * 9 * 34];
-
+#define GUI_NUM 2
 void main()
 {
 	stTssss.TrainAll();
@@ -76,7 +76,7 @@ void main()
 		g_HuCardAll[i * 4+3] = i;
 	}
 	
-	int gui_index = 5;
+	int gui_index = 33;
 	int total = 0;
 	srand(1);
 	for (int n = 0; n < MAX_COUNT; ++n)

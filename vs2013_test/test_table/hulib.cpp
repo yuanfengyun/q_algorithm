@@ -42,13 +42,13 @@ bool HuLib::split(char* const cards, int gui_num)
 	gui = _split(cards, gui_num, 0, 8, true, eye_num);
 	if (!check(gui, eye_num, gui_num, gui_sum)) return false;
 	
-	gui = _split(cards, gui_num, 9, 17, true, eye_num);
+	gui = _split(cards, gui_num-gui_sum, 9, 17, true, eye_num);
 	if (!check(gui, eye_num, gui_num, gui_sum)) return false;
 
-	gui = _split(cards, gui_num, 18, 26, true, eye_num);
+	gui = _split(cards, gui_num-gui_sum, 18, 26, true, eye_num);
 	if (!check(gui, eye_num, gui_num, gui_sum)) return false;
 
-	gui = _split(cards, gui_num, 27, 33, false, eye_num);
+	gui = _split(cards, gui_num-gui_sum, 27, 33, false, eye_num);
 	if (!check(gui, eye_num, gui_num, gui_sum)) return false;
 
 	if (eye_num == 0)

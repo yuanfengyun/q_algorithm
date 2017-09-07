@@ -54,7 +54,7 @@ void test_hu()
 	cout << "hu:" << hu << endl;
 }
 
-int GUI_NUM = 0;
+int GUI_NUM = 2;
 char source[MAX_COUNT * 9 * 34];
 
 void main()
@@ -71,7 +71,7 @@ void main()
 		s_HuCardAll[i * 4 + 3] = i;
 	}
 	
-	int gui_index = 5;
+	int gui_index = 33;
 	int total = 0;
 	srand(1);
 	for (int n = 0; n < MAX_COUNT; ++n)
