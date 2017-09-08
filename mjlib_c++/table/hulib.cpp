@@ -71,7 +71,7 @@ int HuLib::_split(char* const cards, int gui_num, int min, int max, bool chi, in
 		int yu = (num + i) % 3;
 		if (yu == 1) continue;
 		bool eye = (yu == 2);
-		if (TableMgr::get_instance()->check(key, i, eye, chi))
+		if (TableMgr::check(key, i, eye, chi))
 		{
 			if (eye) eye_num++;
 			return i;

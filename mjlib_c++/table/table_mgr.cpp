@@ -7,7 +7,12 @@
 
 #define TABLECLASS ArrayTable
 
-TableMgr::TableMgr()
+Table* TableMgr::m_check_table[MAX_GUI_NUM + 1];
+Table* TableMgr::m_check_eye_table[MAX_GUI_NUM + 1];
+Table* TableMgr::m_check_feng_table[MAX_GUI_NUM + 1];
+Table* TableMgr::m_check_feng_eye_table[MAX_GUI_NUM + 1];
+
+void TableMgr::init()
 {
 	for (int i = 0; i<MAX_GUI_NUM + 1; ++i)
     {
@@ -30,7 +35,7 @@ TableMgr::TableMgr()
     }
 }
 
-TableMgr::~TableMgr()
+void TableMgr::destory()
 {
 	for (int i = 0; i<MAX_GUI_NUM + 1; ++i)
     {
@@ -51,12 +56,6 @@ TableMgr::~TableMgr()
     {
         delete m_check_feng_eye_table[i];
     }
-}
-
-TableMgr* TableMgr::get_instance()
-{
-    static TableMgr mgr;
-    return &mgr;
 }
 
 bool TableMgr::check(int key, int gui_num, bool eye, bool chi)

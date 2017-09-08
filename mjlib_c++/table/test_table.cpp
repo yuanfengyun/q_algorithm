@@ -60,7 +60,8 @@ char source[MAX_COUNT * 9 * 34];
 
 void main()
 {
-	TableMgr::get_instance()->load();
+	TableMgr::init();
+	TableMgr::load();
 
 	//test_hu();
 	

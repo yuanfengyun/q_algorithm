@@ -56,7 +56,7 @@ void test_repeat()
 	cout << "hu:" << hu << endl;
 }
 BYTE source[MAX_COUNT * 9 * 34];
-#define GUI_NUM 2
+#define GUI_NUM 4
 void main()
 {
 	stTssss.TrainAll();
