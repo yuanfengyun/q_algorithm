@@ -44,9 +44,14 @@ end
 
 function M:_dump(file, tbl)
     local f = io.open(file, "w+")
+	local t = {}
     for k,_ in pairs(tbl) do
-        f:write(k.."\n")
-    end
+		table.insert(t, tonumber(k))
+	end
+	table.sort(t)
+	for _, v in ipairs(t) do
+		f:write(v.."\n")
+	end
     f:close()
 end
 
