@@ -1,36 +1,37 @@
 local table_mgr = require "table_mgr"
+local tconcat = table.concat
 
 local tested_tbl = {}
 
+local function dump_t(t)
+	return tconcat(t, "")
+end
+
 local function add_to_table(t)
-    local num = 0
-    for i=1,9 do
-        num = num * 10 + t[i]
-    end
+	local num = tonumber(dump_t(t))
 
     if tested_tbl[num] then
         return
     end
 
     tested_tbl[num] = true
-    local key = 0
-    for i=1,9 do
-        if t[i] > 0 then
-            key = key*10 + t[i]
-        else
-            if key > 0 then
-                table_mgr:add(key)
-                key = 0
-            end
-        end
-    end
 
-    if key > 0 then
-        table_mgr:add(key)
-    end
+	string.gsub(num..'', '([1-9]+)', function(key)
+		table_mgr:add(key)
+	end)
 end
 
-local function gen_table_sub(t, num)
+local do_add
+local gen_table_sub
+
+do_add = function(t, num)
+	add_to_table(t)
+	if num < 4 then
+		gen_table_sub(t, num + 1)
+	end
+end
+
+gen_table_sub = function(t, num)
     for j=1,16 do
         repeat
             local index
@@ -39,29 +40,25 @@ local function gen_table_sub(t, num)
                     break
                 end
                 t[j] = t[j] + 3
+
+				do_add(t, num)
+
+                t[j] = t[j] - 3
             elseif j<= 16 then
                 index = j - 9
                 if t[index] >= 4 or t[index+1] >= 4 or t[index+2] >= 4 then
                     break
                 end
-            end
-            if index then
-                t[index] = t[index] + 1
-                t[index + 1] = t[index + 1] + 1
-                t[index + 2] = t[index + 2] + 1
-            end
 
-            add_to_table(t)
-            if num < 4 then
-                gen_table_sub(t, num + 1)
-            end
+				t[index] = t[index] + 1
+				t[index + 1] = t[index + 1] + 1
+				t[index + 2] = t[index + 2] + 1
 
-            if j<= 9 then
-                t[j] = t[j] - 3
-            else
-                t[index] = t[index] - 1
-                t[index + 1] = t[index + 1] - 1
-                t[index + 2] = t[index + 2] - 1
+				do_add(t, num)
+
+				t[index] = t[index] - 1
+				t[index + 1] = t[index + 1] - 1
+				t[index + 2] = t[index + 2] - 1
             end
         until(true)
     end
@@ -86,8 +83,8 @@ end
 
 local function main()
     gen_table()
-    gen_eye_table()
-    table_mgr:dump()
+	gen_eye_table()
+	table_mgr:dump()
 end
 
 main()
