@@ -1,23 +1,7 @@
 local table_mgr = require "table_mgr"
 local M = {}
 
-function M.check_7dui(hand_cards, waves)
-    if #waves > 0 then return false end
-
-    for _,c in ipairs(hand_cards) do
-        if c % 2 ~= 0 then
-            return false
-        end
-    end
-
-    return true
-end
-
-function M.check_pengpeng()
-
-end
-
-function M.get_hu_info(hand_cards, waves, cur_card)
+function M.get_hu_info(hand_cards, cur_card)
     local cards = {}
     for i,v in ipairs(hand_cards) do
         cards[i] = v
@@ -32,7 +16,7 @@ function M.get_hu_info(hand_cards, waves, cur_card)
     }
 
     -- 字牌（东西南北中发白)
-    if not M.check_color(cards, 28, 34, first_info) then
+    if not M.check_color(cards, first_info) then
         return false
     -- 万
     elseif not M.check_color_chi(cards, 1, 9, first_info) then
@@ -48,7 +32,7 @@ function M.get_hu_info(hand_cards, waves, cur_card)
 end
 
 function M.check_color(cards, min, max, info)
-    for i = min, max do
+    for i = 28, 34 do
         local count = cards[i]
 
         if count == 1 or count == 4 then
@@ -73,7 +57,9 @@ function M.check_color_chi(cards, min, max, info)
         local c = cards[i]
         if c > 0 then
             key = key * 10 + c
-        elseif key > 0 then
+		end
+
+        if key > 0 and (c == 0 or i == max) then
             local eye = (key%3 == 2)
             if info.eye and eye then
                 return false

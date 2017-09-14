@@ -9,7 +9,7 @@ local function test_one()
         0,0,0,   3,0,0,   0,0,0,
         0,0,0,   2,2,2,   0,0,0,
         0,0,0,0, 0,2,0}
-    if not hulib.get_hu_info(t, nil, 0) then
+    if not hulib.get_hu_info(t, 0) then
         print("测试失败")
     end
 end
