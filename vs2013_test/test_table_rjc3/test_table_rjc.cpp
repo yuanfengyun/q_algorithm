@@ -2,9 +2,9 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <time.h>
 
-#include "DefineHuTip.h"
-#include "HuPaiMJ_32.h"
+#include "HuPaiMJ3.h"
 
 using namespace std;
 
@@ -37,8 +37,7 @@ void print_cards(bool bSuc1, bool bSuc2, BYTE* cards)
 
 #define MAX_COUNT (100 * 10000)
 static BYTE g_HuCardAll[136];
-
-CHuPaiMJ stTssss;
+ArrayMJ::CHuPaiArrayMJ stArray;
 
 void test_repeat()
 {
@@ -48,7 +47,7 @@ void test_repeat()
 	int hu = 0;
 	DWORD dwTimeBegin = GetTickCount();
 	for (int i = 0; i < 10; i++){
-		hu += stTssss.CheckCanHu(cards, 33);
+		hu += stArray.CheckCanHu(cards, 33);
 	}
 
 	cout << "rjc查表法，相同牌型，总次数: " << MAX_COUNT / 10000 << "万次" << endl;
@@ -59,7 +58,7 @@ BYTE source[MAX_COUNT * 9 * 34];
 #define GUI_NUM 1
 void main()
 {
-	stTssss.TrainAll();
+	stArray.TrainAll();
 
 	//test_repeat();
 	
@@ -89,11 +88,12 @@ void main()
 
 	// rjc查表法
 	int hu = 0;
-	stCardData stData2;
+	
+	stArray.TrainAll();
 	DWORD dwTimeBegin = clock();
 	for (int n = 0; n<total; ++n)
 	{
-		hu += stTssss.CheckCanHu(source + n * 34, gui_index);
+		hu += stArray.CheckCanHu(source + n * 34, gui_index);
 	}
 	cout << "rjc查表法总数:" << 9 * MAX_COUNT / 10000 << "万次, time:" << clock() - dwTimeBegin << "ms" << endl;
 	cout << "Hu: " << hu << endl;

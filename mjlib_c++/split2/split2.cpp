@@ -110,60 +110,60 @@ bool split2::check_color(char* cards, char from, char gui_num)
 
 int split2::check_normal(char* cards, int from, int max_gui, int used_gui)
 {
+	char index = 0;
+	char cards_tmp[9];
 	int n = 0;
 	for (int i = from; i <= from + 8; i++) {
+
 		n = n * 10 + cards[i];
+		cards_tmp[index++] = cards[i];
 	}
 	
 	if (n == 0) return 0;
 
-	return next_split(n, 0, max_gui, used_gui);
+	return next_split(cards_tmp, 0, max_gui, used_gui);
 }
 
-int split2::next_split(int n, int need_gui, int max_gui, int used_gui)
+int split2::next_split(char* cards, int need_gui, int max_gui, int used_gui)
 {
-	int c=0;
-	while(true){
-		if (n == 0) return need_gui;
-
-		while (n > 0) {
-			c = n % 10;
-			n = n / 10;
-			if (c != 0) break;
-		}
+	int index = 0;
+	while(index < 9){
+		int c = cards[index++];
+		if (c == 0) continue;
+				
 		if (c == 1 || c == 4) {
-			return one(n, need_gui, max_gui, used_gui);
+			one(cards, index, need_gui, max_gui, used_gui);
 		}
 		else if (c == 2) {
-			return two(n, need_gui, max_gui, used_gui);
+			two(cards, index, need_gui, max_gui, used_gui);
 		}
 	}
 	return need_gui;
 }
 
-int split2::one(int n, int need_gui, int max_gui, int used_gui)
+void split2::one(char* cards, int& index, int& need_gui, int max_gui, int used_gui)
 {
-	int c1 = n % 10;
-	int c2 = (n % 100) / 10;
+	int c1 = cards[index];
+	int c2 = cards[index+1];
 
 	if (c1 == 0) ++need_gui;
-	else n -= 1;
+	else cards[index]--;
 
 	if (c2 == 0) ++need_gui;
-	else n -= 10;
+	else cards[index+1]--;
 
-	if (n == 0) return need_gui;
-
-	if (need_gui + used_gui > max_gui + 1) return 1000;
-
-	return next_split(n, need_gui, max_gui, used_gui);
+	if (need_gui + used_gui > max_gui + 1) {
+		index = 9;
+		need_gui = 1000;
+	}
 }
 
-int split2::two(int n, int need_gui, int max_gui, int used_gui)
+void split2::two(char* cards, int& index, int& need_gui, int max_gui, int used_gui)
 {
-	int c1 = n % 10;
-	int c2 = (n % 100) / 10;
-	int c3 = (n % 1000) / 100;
+	int c1 = cards[index];;
+	int c2 = cards[index+1];
+	int c3 = cards[index+2];
+	int c4 = cards[index+3];
 
 	bool choose_ke = true;
 	if (c1 == 0) {
@@ -230,26 +230,24 @@ int split2::two(int n, int need_gui, int max_gui, int used_gui)
 	{
 		if (c1 < 2) {
 			need_gui += (2 - c1);
-			n -= c1;
+			cards[index] -= c1;
 		}
 		else {
-			n -= 2;
+			cards[index] -= 2;
 		}
 
 		if (c2 < 2) {
 			need_gui += (2 - c2);
-			n -= c2;
+			cards[index+1] -= c2;
 		}
 		else {
-			n -= 20;
+			cards[index+1] -= 2;
 		}
 	}
 
-	if (n == 0) return need_gui;
-
-	if (need_gui + used_gui > max_gui+1) return 1000;
-
-	return next_split(n, need_gui, max_gui, used_gui);
+	if (need_gui + used_gui > max_gui + 1) {
+		index = 9;
+	}
 }
 
 int split2::check_zi(char* cards)

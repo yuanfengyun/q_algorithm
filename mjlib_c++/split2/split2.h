@@ -10,10 +10,10 @@ private:
 
 	static int check_normal(char* cards, int from, int max_gui, int used_gui);
 
-	static int next_split(int n, int gui_num, int max_gui, int used_gui);
+	static int next_split(char* cards, int gui_num, int max_gui, int used_gui);
 
-	static int one(int n, int gui_num, int max_gui, int used_gui);
-	static int two(int n, int gui_num, int max_gui, int used_gui);
+	static void one(char* cards, int& index, int& need_gui, int max_gui, int used_gui);
+	static void two(char* cards, int& index, int& need_gui, int max_gui, int used_gui);
 
 	static inline int check_zi(char* cards);
 };
