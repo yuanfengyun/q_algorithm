@@ -1,4 +1,26 @@
+-- 方块(Diamond): 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0a 0x0b 0x0c 0x0d 方块A-10 J Q K
+-- 梅花(Club)   : 0x11 0x12 0x13 0x14 0x15 0x16 0x17 0x18 0x19 0x1a 0x1b 0x1c 0x1d 梅花A-10 J Q K
+-- 红桃(Heart)  : 0x21 0x22 0x23 0x24 0x25 0x26 0x27 0x28 0x29 0x2a 0x2b 0x2c 0x2d 红桃A-10 J Q K
+-- 黑桃(Spade)  : 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x3a 0x3b 0x3c 0x3d 黑桃A-10 J Q K
+-- 王(Joker)    : 0x4E 0x4F 大小王
 -- 牌型定义
+
+local card_pool = {
+    -- 16张玩法(只有一张黑桃2，去除黑桃A外的三张A，无大小王)
+	[45] = {
+		0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+		0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d,
+		0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
+		0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d
+    },
+    [48] = {
+		0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+		0x11, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d,
+		0x21, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
+		0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d
+    }
+}
+
 local M = {}
 
 M.type = {
@@ -19,15 +41,31 @@ M.type = {
     t_king = "t_king",  -- 王炸
 }
 
-function M.shuffle()
+function M.shuffle(max)
     
+end
+
+function M.get_card_index(card)
+	local c = card & 0x0f
+	if c == 0x01 then 
+		return 14
+	elseif c == 0x02 then
+		return 16
+	elseif c == 0x0e then
+		return 17
+	elseif c == 0x0f then
+		return 18
+	end
+
+	return c
 end
 
 -- 获取牌型
 function M.get_type(out_cards)
     local tmp_cards = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     for _,c in ipairs(out_cards) do
-        tmp_cards[c] = tmp_cards[c] + 1
+		local index = M.get_card_index(c)
+        tmp_cards[index] = tmp_cards[index] + 1
     end
 
     local counts = {0,0,0,0}
@@ -85,6 +123,7 @@ function M.get_type3(counts, cards)
         return
     end
 
+	-- 三带一，或三带二
     if count3 == 1 then
          if count2 > 0 then
             return {t = M.type.t_32, card = card}
@@ -95,14 +134,10 @@ function M.get_type3(counts, cards)
          return {t = M.type.t_3, card = card}
     end
 
-    local last
-    for _,c in ipairs(cards[3]) do
-        if last and last+1 ~= c then
-            return
-        end
+    if not M.is_continue(cards[3]) then
+		return false
+	end
 
-        last = c 
-    end
     -- 飞机
     if count2 > 0 then
         return {t = M.type.t_32n, card = card, n = count3}
@@ -123,14 +158,9 @@ function M.get_type2(counts, cards)
         return {t = M.type.t_2, card = card}
     end
 
-    local last
-    for _,c in ipairs(cards[2]) do
-        if last and last+1 ~= c then
-            return
-        end
-
-        last = c 
-    end
+    if not M.is_continue(cards[2]) then
+		return false
+	end
 
     return  {t = M.type.t_2n, card = card, n = counts[2]}
 end
@@ -141,14 +171,9 @@ function M.get_type1(counts, cards)
         return
     end
 
-    local last
-    for _,c in ipairs(cards[1]) do
-        if last and last+1 ~= c then
-            return
-        end
-
-        last = c 
-    end
+    if not M.is_continue(cards[1]) then
+		return false
+	end
 
     local card = cards[1][1]
     -- 判断王炸
@@ -162,6 +187,18 @@ function M.get_type1(counts, cards)
     end
 
     return {t=M.type.t_1n, card = card, n = count}
+end
+
+function M.is_continue(cards)
+	local last
+    for _,c in ipairs(cards) do
+        if last and last+1 ~= c then
+            return
+        end
+
+        last = c 
+    end
+	return true
 end
 
 -- 牌型2是否管得起牌型1
