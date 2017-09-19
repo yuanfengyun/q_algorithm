@@ -1,5 +1,4 @@
 -- 牌型定义
-
 local M = {}
 
 M.type = {
@@ -24,18 +23,18 @@ function M.shuffle()
     
 end
 
+-- 获取牌型
 function M.get_type(out_cards)
-    local tmp_cards = {0,0,0,0,0,0,0,0,0,0,0,0,0}
+    local tmp_cards = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     for _,c in ipairs(out_cards) do
-        tmp_cards[c] = cards[c] + 1
+        tmp_cards[c] = tmp_cards[c] + 1
     end
 
-    local sum = 0
     local counts = {0,0,0,0}
     local cards = {{},{},{},{}}
-    for i = 1,13 do
-        local c = cards[i]
-        if c ~= 0 then
+    for i,_ in ipairs(tmp_cards) do
+        local c = tmp_cards[i]
+        if c and c ~= 0 then
             counts[c] = counts[c] + 1
             table.insert(cards[c], i)
         end
@@ -179,11 +178,11 @@ function M.is_big(info1, info2)
         return info1.card < info2.card
     end
 
-    if info1.n ~= info2.n then
+    if info1.t ~= info2.t or info1.n ~= info2.n then
         return
     end
 
     return info1.card < info2.card
 end
 
-return
+return M
