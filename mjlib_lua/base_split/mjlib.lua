@@ -1,91 +1,150 @@
-local utils = require "utils"
-
 local M = {}
 
--- 检查胡
-function M.check_hu(cards)
-    -- 找出能做将的牌
-    local eye_tbl = {}
-
-    M._find_eye(cards, eye_tbl, 1,   9)
-    M._find_eye(cards, eye_tbl, 10, 18)
-    M._find_eye(cards, eye_tbl, 19, 27)
-
-    local hu = false
-    for i,_ in pairs(eye_tbl) do
-        repeat
-            cards[i] = cards[i] - 2
-            if not M._check_color(cards, 1, 9) then
-                break
-            end
-            if not M._check_color(cards, 10, 18) then
-                break
-            end
-            if not M._check_color(cards, 19, 27) then
-                break
-            end
-
-            hu = true
-        until(true)
-        if hu then
-            return true
-        end
-        cards[i] = cards[i] + 2
+function M.get_hu_info(hand_cards)
+    local cards = {}
+    for card, num in pairs(hand_cards) do
+        cards[card] = num
     end
-    return hu
+
+    local success, eye = M.check_zi(cards)
+    if not success then
+        return false
+    end
+
+    success, eye = M.check_color(cards, 1, eye)
+    if not success then
+        return false
+    end
+    success, eye = M.check_color(cards, 10, eye)
+    if not success then
+        return false
+    end
+    success = M.check_color(cards, 19, eye)
+    return success
 end
 
-function M._find_eye(cards, eye_tbl, from, to)
-    local key = 0
+function M.check_color(cards, from, eye)
+    local sum = 0
+    for i=from,from+8 do
+        sum = sum + cards[i]
+    end
+
+    if sum == 0 then
+        return true, eye
+    end
+
+    local yu = sum % 3
+    if yu == 1 then
+        return false
+    elseif yu == 2 then
+        if eye then
+            return false
+        end
+        eye = true
+        return M.split_eye(cards, from), eye
+    end
+    return M.split(cards, from), eye
+end
+
+function M.split_eye(cards, from)
+    local eye_tbl = M.find_eye(cards, from)
+    if not eye_tbl then
+        return false
+    end
+
+    for _, eye in pairs(eye_tbl.eyes) do
+        cards[eye] = cards[eye] - 2
+        if M.split(cards, eye_tbl.from, eye_tbl.to) then
+            return true
+        end
+        cards[eye] = cards[eye] + 2
+    end
+
+    return false
+end
+
+function M.find_eye(cards, from)
+    local sum = 0
     local t = {}
+    local eye_tbl
+    local begin
     for i=from,to do
         local c = cards[i]
         if c > 0 then
-            key = key * 10 + c
-            if c >= 2 then
+            sum = sum + c
+            if not eye_tbl and c >= 2 then
                 t[i] = true
+            end
+            if not begin then
+                begin = i
             end
         end
 
         if c == 0 or i == to then
-            if (key%3) == 2 then
-                for k,_ in pairs(t) do
-                    eye_tbl[k] = true
+            local yu = sum%3 
+            if yu == 1 then
+                return
+            elseif yu == 2 then
+                eye_tbl = {eyes = t, from=begin, to = i}
+            else
+                if sum > 0 and not M.split(cards, begin, i) then
+                    return
                 end
-            end
-            if key > 0 and next(t) then
                 t = {}
+                begin = nil
+                sum = 0
             end
         end
     end
+    return eye_tbl
 end
 
--- 检查单一花色
-function M._check_color(cards, min, max)
-    local t = {}
-    for i=min,max do
-        table.insert(t, cards[i])
-    end
-    for i=min,max do
+function M.split(cards, from, to)
+    for i=from,to do
         local n
-        if t[i] == 1 or t[i] == 4 then
+        local c = cards[i]
+        if c == 1 or c == 4 then
             n = 1
-        elseif t[i] == 2 then
+        elseif c == 2 then
             n = 2
         end
 
         if n then
-            if i + 2 > max or t[i+1] < n or t[i+2] < n then
+            if c + 2 > to then
                 return false
             end
-
-            t[i] = t[i] - n
-            t[i+1] = t[i+1] - n
-            t[i+2] = t[i+2] - n
+            local c1 = cards[i+1]
+            if c1 == 0 then
+                return false
+            end
+            local c2 = cards[i+2]
+            if c2 == 0 then
+                return false
+            end
+            cards[i+1] = c1-n
+            cards[i+2] = c2-n
         end
     end
 
     return true
+end
+
+-- 检查字牌
+function M.check_zi(cards)
+    local eye = false
+    for i=28,34 do
+        local c = cards[i]
+        if c == 1 or c == 4 then
+            return false
+        elseif c == 2 then
+            if not eye then
+                eye = true
+            else
+                return false
+            end
+        end
+    end
+    return true, eye
 end
 
 return M
