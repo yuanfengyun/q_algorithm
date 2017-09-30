@@ -54,32 +54,38 @@ function M.check_color(cards, from, eye)
         return M.split_eye(cards, from), eye
     end
     -- 调用不带将的拆分
-    return M.split(cards, from), eye
+    return M.split(cards, from, from+8), eye
 end
 
 function M.split_eye(cards, from)
     -- 找出本花色所有可能的将
-    local eye_tbl = M.find_eye(cards, from)
+    local eye_tbl = M.find_eye(cards, from, from+8)
     if not eye_tbl then
         return false
     end
 
     -- 遍历每种将，有一种将能满足，则花色满足胡牌条件
-    for _, eye in pairs(eye_tbl.eyes) do
+	local tmp_cards = {0,0,0,0,0,0,0,0,0}
+    for i, _ in pairs(eye_tbl.eyes) do
         -- 扣除将
-        cards[eye] = cards[eye] - 2
+        cards[i] = cards[i] - 2
+		local index = 0
+		for j=eye_tbl.from, eye_tbl.to do
+			index = index + 1
+			tmp_cards[index] = cards[j]
+		end
         -- 拆分剩余牌
-        if M.split(cards, eye_tbl.from, eye_tbl.to) then
+        if M.split(tmp_cards, 1, index) then
             return true
         end
         -- 把扣除的将加回来
-        cards[eye] = cards[eye] + 2
+        cards[i] = cards[i] + 2
     end
 
     return false
 end
 
-function M.find_eye(cards, from)
+function M.find_eye(cards, from, to)
     local sum = 0
     local t = {}
     local eye_tbl
@@ -104,7 +110,12 @@ function M.find_eye(cards, from)
                 return
             -- 连续的牌除3余2才能产生将
             elseif yu == 2 then
-                eye_tbl = {eyes = t, from=begin, to = i}
+				if not next(t) then
+					return
+				end
+				sum = 0
+				eye_tbl = {eyes = t, from=begin, to = i}
+				begin = nil
             else
                 -- 连续的牌，能整除3，判断是否能进行拆分，如果不能，则不能胡
                 if sum > 0 and not M.split(cards, begin, i) then
@@ -132,15 +143,15 @@ function M.split(cards, from, to)
         end
 
         if n then
-            if c + 2 > to then
+            if i + 2 > to then
                 return false
             end
             local c1 = cards[i+1]
-            if c1 == 0 then
+            if c1 < n then
                 return false
             end
             local c2 = cards[i+2]
-            if c2 == 0 then
+            if c2 < n then
                 return false
             end
             cards[i+1] = c1-n
