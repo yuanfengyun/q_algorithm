@@ -6,19 +6,25 @@ function M.get_hu_info(hand_cards)
         cards[card] = num
     end
 
+    -- 检查东南西北中发白
     local success, eye = M.check_zi(cards)
     if not success then
         return false
     end
 
+    -- 检查万
     success, eye = M.check_color(cards, 1, eye)
     if not success then
         return false
     end
+    
+    -- 检查筒
     success, eye = M.check_color(cards, 10, eye)
     if not success then
         return false
     end
+    
+    -- 检查条
     success = M.check_color(cards, 19, eye)
     return success
 end
@@ -34,29 +40,39 @@ function M.check_color(cards, from, eye)
     end
 
     local yu = sum % 3
+    -- 牌总数除3余1，不能胡（多出的一张，既不能做将，也不能做刻子）
     if yu == 1 then
         return false
+    -- 余两张牌，只能做将
     elseif yu == 2 then
+        -- 如果已经有将，不能出现两对将，不能胡了
         if eye then
             return false
         end
         eye = true
+        -- 调用带将的拆分
         return M.split_eye(cards, from), eye
     end
+    -- 调用不带将的拆分
     return M.split(cards, from), eye
 end
 
 function M.split_eye(cards, from)
+    -- 找出本花色所有可能的将
     local eye_tbl = M.find_eye(cards, from)
     if not eye_tbl then
         return false
     end
 
+    -- 遍历每种将，有一种将能满足，则花色满足胡牌条件
     for _, eye in pairs(eye_tbl.eyes) do
+        -- 扣除将
         cards[eye] = cards[eye] - 2
+        -- 拆分剩余牌
         if M.split(cards, eye_tbl.from, eye_tbl.to) then
             return true
         end
+        -- 把扣除的将加回来
         cards[eye] = cards[eye] + 2
     end
 
@@ -72,6 +88,7 @@ function M.find_eye(cards, from)
         local c = cards[i]
         if c > 0 then
             sum = sum + c
+            -- 没有将，牌张数大于等于2，才可能做将
             if not eye_tbl and c >= 2 then
                 t[i] = true
             end
@@ -81,12 +98,15 @@ function M.find_eye(cards, from)
         end
 
         if c == 0 or i == to then
-            local yu = sum%3 
+            local yu = sum%3
+            -- 连续的牌除3余1，不能胡牌了
             if yu == 1 then
                 return
+            -- 连续的牌除3余2才能产生将
             elseif yu == 2 then
                 eye_tbl = {eyes = t, from=begin, to = i}
             else
+                -- 连续的牌，能整除3，判断是否能进行拆分，如果不能，则不能胡
                 if sum > 0 and not M.split(cards, begin, i) then
                     return
                 end
@@ -103,8 +123,10 @@ function M.split(cards, from, to)
     for i=from,to do
         local n
         local c = cards[i]
+        -- 1张牌或4张牌，拆1个顺子
         if c == 1 or c == 4 then
             n = 1
+        -- 2张牌，拆两个顺子
         elseif c == 2 then
             n = 2
         end
