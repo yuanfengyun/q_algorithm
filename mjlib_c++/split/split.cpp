@@ -187,7 +187,7 @@ int split::two(int n, int need_gui, int max_gui)
 				choose_ke = false;
 		}
 		else if(c2 == 3){
-			if c3 == 0 || c3 == 2 || c3 == 1 || c3 == 4:
+			if(c3 == 0 || c3 == 2 || c3 == 1 || c3 == 4)
 				choose_ke = false;
 		}
 		else if(c2 == 4){
