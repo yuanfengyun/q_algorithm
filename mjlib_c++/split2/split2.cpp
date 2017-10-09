@@ -167,59 +167,63 @@ void split2::two(char* cards, int& index, int& need_gui, int max_gui, int used_g
 
 	bool choose_ke = true;
 	if (c1 == 0) {
-		// c1 == 0 全拆刻子
 	}
-	else if (c1 == 1)
-	{
-		// 刻子
+	else if (c1 == 1) {
 		if (c2 == 0 || c2 == 1)
 		{
-
 		}
 		else if (c2 == 2) {
-			if (c3 == 0 || c3 == 1 || c3 == 3 || c3 == 4) {
-				choose_ke = false;
+			if (c3 == 2) {
+				if (c4 == 2) choose_ke = false;
 			}
+			else if (c3 == 3)
+				if (c4 != 2) choose_ke = false;
+				else
+					choose_ke = false;
 		}
 		else if (c2 == 3) {
-			if (c3 == 0 || c3 == 1)
+			if (c3 == 0 || c3 == 2 || c3 == 1 || c3 == 4)
+				choose_ke = false;
+		}
+		else if (c2 == 4) {
+			if (c3 == 2) {
+				if (c4 == 2 || c4 == 3 || c4 == 4)
+					choose_ke = false;
+			}
+			else if (c3 == 3)
 			{
 				choose_ke = false;
 			}
 		}
-		else if (c2 == 4) {
-			if (c3 == 3) {
-				choose_ke = false;
-			}
-		}
 	}
-	else if (c1 == 2)
-	{
+	else if (c1 == 2) {
 		choose_ke = false;
 	}
 	else if (c1 == 3) {
 		if (c2 == 2) {
-			if (c3 == 1) {
+			if (c3 == 1 || c3 == 4)
 				choose_ke = false;
+			else if (c3 == 2) {
+				if (c4 != 2)
+					choose_ke = false;
 			}
 		}
-		if (c2 == 3) {
+		else if (c2 == 3)
 			choose_ke = false;
-		}
-		else if (c2 == 4) {
-			if (c3 == 2) {
-				choose_ke = false;
-			}
+		else if (c2 == 4)
+		{
+			if (c3 == 2) choose_ke = false;
 		}
 	}
 	else if (c1 == 4) {
-		if (c2 == 2) {
+		if (c2 == 2 && c3 != 2)
 			choose_ke = false;
-		}
 		else if (c2 == 3) {
-			if (c3 == 2) {
+			if (c3 == 0 || c3 == 1 || c3 == 2)
 				choose_ke = false;
-			}
+		}
+		else if (c2 == 4) {
+			if (c3 == 2) choose_ke = false;
 		}
 	}
 
