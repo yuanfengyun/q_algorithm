@@ -168,90 +168,92 @@ int split::two(int n, int need_gui, int max_gui)
 	int c1 = n % 10;
 	int c2 = (n % 100) / 10;
 	int c3 = (n % 1000) / 100;
-
+	int c4 = (n % 10000) / 1000;
+    
 	bool choose_ke = true;
-	if (c1 == 0) {
-		// c1 == 0 全拆刻子
+	if(c1 == 0){
 	}
-	else if (c1 == 1)
-	{
-		// 刻子
-		if (c2 == 0 || c2 == 1)
+	else if(c1 == 1){
+		if(c2 == 0 || c2 == 1)
 		{
-
 		}
-		else if (c2 == 2) {
-			if (c3 == 0 || c3 == 1 || c3 == 3 || c3 == 4) {
-				choose_ke = false;
+		else if(c2 == 2){
+			if(c3 == 2){
+				if(c4 == 2) choose_ke = false;
 			}
+			else if(c3 == 3)
+				if(c4 != 2) choose_ke = false;
+			else
+				choose_ke = false;
 		}
-		else if (c2 == 3) {
-			if (c3 == 0 || c3 == 1)
+		else if(c2 == 3){
+			if c3 == 0 || c3 == 2 || c3 == 1 || c3 == 4:
+				choose_ke = false;
+		}
+		else if(c2 == 4){
+			if(c3 == 2){
+				if(c4 == 2 || c4 == 3 || c4 == 4)
+					choose_ke = false;
+			}
+			else if(c3 == 3)
 			{
 				choose_ke = false;
 			}
 		}
-		else if (c2 == 4) {
-			if (c3 == 3) {
-				choose_ke = false;
-			}
-		}
 	}
-	else if (c1 == 2)
-	{
+	else if(c1 == 2){
 		choose_ke = false;
 	}
-	else if (c1 == 3) {
-		if (c2 == 2) {
-			if (c3 == 1) {
+	else if(c1 == 3){
+		if(c2 == 2){
+			if(c3 == 1 || c3 == 4)
 				choose_ke = false;
+			else if(c3 == 2){
+				if(c4 != 2)
+					choose_ke = false;
 			}
 		}
-		if (c2 == 3) {
+		else if(c2 == 3)
 			choose_ke = false;
-		}
-		else if (c2 == 4) {
-			if (c3 == 2) {
-				choose_ke = false;
-			}
+		else if(c2 == 4)
+		{
+			if(c3 == 2) choose_ke = false;
 		}
 	}
-	else if (c1 == 4) {
-		if (c2 == 2) {
+	else if(c1 == 4){
+		if(c2 == 2 && c3 != 2)
 			choose_ke = false;
-		}
-		else if (c2 == 3) {
-			if (c3 == 2) {
+		else if(c2 == 3){
+			if(c3 == 0 || c3 == 1 || c3 == 2)
 				choose_ke = false;
-			}
+		}
+		else if (c2 == 4){
+			if(c3 == 2) choose_ke = false;
 		}
 	}
 
-	if (choose_ke) {
-		need_gui += 1;
-	}
-	else
-	{
-		if (c1 < 2) {
-			need_gui += (2 - c1);
-			n -= c1;
+	if(choose_ke) need_gui = need_gui + 1;
+	else{
+		if(c1 < 2){
+			need_gui = need_gui + (2 - c1);
+			n = n - c1;
 		}
-		else {
-			n -= 2;
+		else{
+			n = n - 2;
 		}
-
-		if (c2 < 2) {
-			need_gui += (2 - c2);
-			n -= c2;
+		if(c2 < 2){
+			need_gui = need_gui + (2 - c2);
+			n = n - c2;
 		}
-		else {
-			n -= 20;
+		else
+		{
+			n = n - 20;
 		}
 	}
 
-	if (n == 0) return need_gui;
+	if(n == 0) return need_gui;
 
-	if (need_gui > max_gui) return need_gui;
+	if(need_gui > max_gui) return need_gui;
 
 	return next_split(n, need_gui, max_gui);
 }
