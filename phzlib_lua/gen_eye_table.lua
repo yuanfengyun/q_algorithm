@@ -1,31 +1,24 @@
 local MIN_HUXI = 10
 local table_mgr = require "table_mgr"
 
-local cache_table = {
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {}
-}
+local cache_table = {}
 function add_to_table(cards, level, huxi)
     local big_key=0
     local small_key=0
+	local kan
     for i=10,1,-1 do
         big_key = big_key*10 + cards[i]
         small_key = small_key*10 + cards[i+10]
     end
 
     local key = string.format("%d-%d", big_key, small_key)
-    local t = cache_table[level]
-    if t[key] then
+    local t = cache_table[key]
+    if t and t >= huxi then
         return true
     end
 
-    table_mgr:add(big_key, small_key, huxi)
-    t[key] = true
+    table_mgr:add_eye(key, huxi)
+    cache_table[key] = huxi
     return false
 end
 
@@ -68,35 +61,31 @@ function add_menzi(cards, level, huxi)
             tmp[3]=20
         end
         local add = true
-        for _,index in ipairs(tmp) do
-            if cards[index] >= 2 then
-                add = false
-                break
-            end
-        end
+		for _,index in ipairs(tmp) do
+			cards[index] = cards[index]+1
+			if add and cards[index] >= 3 then
+				add = false
+			end
+		end
+		
+		if add then
+			if i == 1 or i==37 then
+				add_huxi = 6
+			elseif i == 9 or i==38 then
+				add_huxi = 3
+			end
+			local added = add_to_table(cards, level, huxi + add_huxi)
+			if not added then
+				if level < 5 then
+					add_menzi(cards, level+1, huxi+add_huxi)
+				end
+			end
+		end
 
-        if add then
-            if i == 1 or i==37 then
-                add_huxi = 6
-            elseif i == 9 or i==38 then
-                add_huxi = 3
-            end
+		for _,index in ipairs(tmp) do
+			cards[index] = cards[index]-1
+		end
 
-            for _,index in ipairs(tmp) do
-                cards[index] = cards[index]+1
-            end
-
-            local added = add_to_table(cards, level, huxi + add_huxi)
-            if not added then
-                if level < 5 then
-                    add_menzi(cards, level+1, huxi+add_huxi)
-                end
-            end
-
-            for _,index in ipairs(tmp) do
-                cards[index] = cards[index]-1
-            end
-        end
     end
 end
 
@@ -106,15 +95,16 @@ function main()
         0,0,0,0,0,0,0,0,0,0
     }
     local begin = os.time()
-    print("生成将牌表开始")
+    print("generate start")
     for i=1,20 do
         cards[i]=2
+		print("eye", i)
         add_to_table(cards, 1, 0)
         add_menzi(cards, 1, 0)
         cards[i]=0
     end
     table_mgr:dump_eye_tbl()
-    print("生成将牌表结束,耗时",os.time()-begin)
+    print("generate end, use",os.time()-begin,"S")
 end
 
 main()

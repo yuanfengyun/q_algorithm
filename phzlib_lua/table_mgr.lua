@@ -3,14 +3,12 @@ local M = {
     eye_tbl = {}
 }
 
-function M:add(big_key, small_key, huxi)
-    local key = string.format("%d-%d", big_key, small_key)
-    local not_eye = (big_key+small_key)%3 == 0
-    if not_eye then
-        self.tbl[key] = huxi
-    else
-        self.eye_tbl[key] = huxi
-    end
+function M:add(key, huxi)
+    self.tbl[key] = huxi
+end
+
+function M:add_eye(key, huxi)
+    self.eye_tbl[key] = huxi
 end
 
 function M:check(big_key, small_key)
