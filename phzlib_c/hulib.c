@@ -10,12 +10,34 @@ int get_huxi(char* cards)
 {
 	int huxi = get_kan_huxi(cards);
 
-	// 除坎以外的顺子的胡息
-	int other_huxi = get_shun_huxi_xiao(cards);
-	if (other_huxi < 0) {
-		return -1;
+	int sum = 0;
+	for (int i = 0; i < 20; i++) {
+		sum += cards[i];
 	}
-	return huxi + other_huxi;
+
+	// 不带将
+	if (sum % 3 == 0) {
+		// 除坎以外的顺子的胡息
+		int other_huxi = get_shun_huxi_xiao(cards);
+		if (other_huxi < 0) {
+			return -1;
+		}
+		return huxi + other_huxi;
+	}
+
+	// 带将
+	int max_huxi = -1;
+	for (int i = 0; i < 20; i++) {
+		if (cards[i] != 2) continue;
+		cards[i] = 0;
+		int other_huxi = get_shun_huxi_xiao(cards);
+		if (other_huxi > max_huxi) max_huxi = other_huxi;
+		cards[i] = 2;
+	}
+
+	if (max_huxi < 0) return -1;
+
+	return max_huxi + huxi;
 }
 
 // 获取坎牌的胡息，大坎6，小坎3
@@ -181,17 +203,29 @@ int get_shun_huxi_xiao(char* cards) {
 int get_shun_huxi_da(char* cards) {
 	if (cards[10] > cards[11] || cards[10] > cards[12]) return -1;
 	
+	int sum = 0;
+	for (int i = 10; i < 20; ++i) {
+		sum += cards[i];
+	}
+
+	if (sum == 0) {
+		return 0;
+	}
+
 	// 只需要拆2 7 10 和顺子
 	char tmp_cards[10];
 	memcpy(tmp_cards, &cards[10], 10);
 
-	int n_123 = tmp_cards[1];
+	int n_123 = tmp_cards[0];
 	tmp_cards[0] = 0;
 	tmp_cards[1] -= n_123;
 	tmp_cards[2] -= n_123;
-	int max_huxi = n_123 * 6;
+	int max_huxi = -1;
 
 	for (int i = 0; i < 5; ++i) {
+		if (cards[11] < i || cards[16] < i || cards[19] < i) {
+			break;
+		}
 		int huxi = get_shun_huxi_da_without_2_7_10(tmp_cards, i);
 		if (huxi < 0) continue;
 		if (huxi + n_123 * 6 > max_huxi) max_huxi = huxi + n_123 * 6;
@@ -201,19 +235,16 @@ int get_shun_huxi_da(char* cards) {
 
 int get_shun_huxi_da_without_2_7_10(char* cards, int num)
 {
-	if (cards[11] < num || cards[16] < num || cards[19] < num) {
-		return -1;
-	}
 	char tmp_cards[10];
-	memcpy(tmp_cards, &cards[10], 10);
-	cards[1] -= num;
-	cards[6] -= num;
-	cards[9] -= num;
+	memcpy(tmp_cards, cards, 10);
+	tmp_cards[1] -= num;
+	tmp_cards[6] -= num;
+	tmp_cards[9] -= num;
 	
 	for (int i = 0; i < 10; ++i) {
 		int n = tmp_cards[i];
 		if (n == 0) continue;
-		if (n + 2 >= 10) return -1;
+		if (i + 2 >= 10) return -1;
 		if (tmp_cards[i + 1] < n || tmp_cards[i + 2] < tmp_cards[i + 1]) return -1;
 
 		tmp_cards[i + 1] -= n;
