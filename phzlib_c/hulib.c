@@ -5,7 +5,6 @@ int get_shun_huxi_xiao(char* cards);
 int get_shun_huxi_da(char* cards);
 int get_shun_huxi_da_without_2_7_10(char* cards, int num);
 
-
 int get_huxi(char* cards)
 {
 	int huxi = get_kan_huxi(cards);
@@ -27,12 +26,13 @@ int get_huxi(char* cards)
 
 	// 带将
 	int max_huxi = -1;
+	char tmp_cards[20];
 	for (int i = 0; i < 20; i++) {
 		if (cards[i] != 2) continue;
-		cards[i] = 0;
-		int other_huxi = get_shun_huxi_xiao(cards);
+		memcpy(tmp_cards, cards, 20);
+		tmp_cards[i] -= 2;
+		int other_huxi = get_shun_huxi_xiao(tmp_cards);
 		if (other_huxi > max_huxi) max_huxi = other_huxi;
-		cards[i] = 2;
 	}
 
 	if (max_huxi < 0) return -1;
@@ -79,7 +79,7 @@ int get_shun_huxi_xiao(char* cards) {
 		if (find) {
 			find = 0;
 			int finded = 0;
-			if (cur_item == 6) {
+			if (cur_item == 7) {
 				*(int*)0 = 0;
 			}
 			// 找到第一张牌
@@ -112,7 +112,7 @@ int get_shun_huxi_xiao(char* cards) {
 		// 顺子
 		if (items[cur_item].i == 0) {
 			items[cur_item].i = 1;
-			if (cur_card < 8 && cards[cur_card + 1] > 0 && cards[cur_card + 1] > 0) {
+			if (cur_card < 8 && cards[cur_card + 1] > 0 && cards[cur_card + 2] > 0) {
 				items[cur_item].j = 1;
 				items[cur_item].card = cur_card;
 				--cards[cur_card];
@@ -129,7 +129,7 @@ int get_shun_huxi_xiao(char* cards) {
 		// 小小大绞
 		if (items[cur_item].i == 1) {
 			items[cur_item].i = 2;
-			if (cards[cur_card + 1] >= 2 && cards[cur_card + 10] >= 1) {
+			if (cards[cur_card] == 2 && cards[cur_card + 10] >= 1) {
 				items[cur_item].j = 2;
 				cards[cur_card] -= 2;
 				--cards[cur_card + 10];
@@ -141,7 +141,7 @@ int get_shun_huxi_xiao(char* cards) {
 		// 大大小绞
 		if (items[cur_item].i == 2) {
 			items[cur_item].i = 3;
-			if (cards[cur_card + 10] >= 2) {
+			if (cards[cur_card + 10] == 2) {
 				items[cur_item].j = 3;
 				cards[cur_card+10] -= 2;
 				--cards[cur_card];
@@ -166,11 +166,13 @@ int get_shun_huxi_xiao(char* cards) {
 		}
 
 	huisu:	// 回溯
-		if (cur_item == 0) break;
+		if (cur_item < 0) goto finish;
 
-		if (items[cur_item].i == 0 || items[cur_item].i == 4) {
+		if (items[cur_item].i == 0 || (items[cur_item].i == 4 && items[cur_item].j != 4)) {
 			memset(&items[cur_item], 0, sizeof(struct Item));
+			if (cur_item == 0) goto finish;
 			--cur_item;
+			goto huisu;
 		}
 
 		cur_card = items[cur_item].card;
@@ -193,9 +195,14 @@ int get_shun_huxi_xiao(char* cards) {
 				++cards[1];
 				++cards[6];
 				++cards[9];
+				memset(&items[cur_item], 0, sizeof(struct Item));
+				if (cur_item == 0) goto finish;
+				--cur_item;
+				goto huisu;
 			}
 		}
 	}
+finish:
 
 	return max_huxi;
 }
@@ -223,9 +230,14 @@ int get_shun_huxi_da(char* cards) {
 	int max_huxi = -1;
 
 	for (int i = 0; i < 5; ++i) {
-		if (cards[11] < i || cards[16] < i || cards[19] < i) {
+		memcpy(tmp_cards, &cards[10], 10);
+		tmp_cards[0] = 0;
+		tmp_cards[1] -= n_123;
+		tmp_cards[2] -= n_123;
+		if (tmp_cards[1] < i || tmp_cards[6] < i || tmp_cards[9] < i) {
 			break;
 		}
+
 		int huxi = get_shun_huxi_da_without_2_7_10(tmp_cards, i);
 		if (huxi < 0) continue;
 		if (huxi + n_123 * 6 > max_huxi) max_huxi = huxi + n_123 * 6;
@@ -233,6 +245,7 @@ int get_shun_huxi_da(char* cards) {
 	return max_huxi;
 }
 
+//
 int get_shun_huxi_da_without_2_7_10(char* cards, int num)
 {
 	char tmp_cards[10];
