@@ -1,3 +1,5 @@
+代码路径：https://github.com/yuanfengyun/qipai/tree/master/mjlib_lua/gui_table
+
 核心思想：
 1、名词解释：eye(将），字牌（feng、东南西北中发白），花色（万、筒、条、字牌）
 2、分而治之：检查手牌是否能胡是依次检查万、筒、条、字牌四种花色是否能组成胡牌的一部分。
