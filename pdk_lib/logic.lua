@@ -31,9 +31,9 @@ M.type = {
     t_3  = "t_3",       -- 三个
     t_3n = "t_3n",      -- 多组三个
     t_31 = "t_31",      -- 三带1
-    t_31n= "t_31n",     -- 飞机
+    t_31n= "t_31n",     -- 三带一飞机
     t_32 = "t_32",      -- 三带2
-    t_32n= "t_32n",     -- 飞机
+    t_32n= "t_32n",     -- 三带二飞机
     t_4  = "t_4",       -- 炸弹
     t_41 = "t_41",      -- 四带一
     t_42 = "t_42",      -- 四带二
@@ -42,7 +42,7 @@ M.type = {
 }
 
 function M.shuffle(max)
-    
+    return math.random_shuffle(card_pool[max])
 end
 
 function M.get_card_index(card)
@@ -62,14 +62,14 @@ end
 
 -- 获取牌型
 function M.get_type(out_cards)
-    local tmp_cards = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    local tmp_cards = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}    --a-k  大小王  15张序列
     for _,c in ipairs(out_cards) do
 		local index = M.get_card_index(c)
         tmp_cards[index] = tmp_cards[index] + 1
     end
 
-    local counts = {0,0,0,0}
-    local cards = {{},{},{},{}}
+    local counts = {0,0,0,0}      --1,2,3,4组合的数目
+    local cards = {{},{},{},{}}   --数目分别为1,2,3,4的牌的序列
     for i,_ in ipairs(tmp_cards) do
         local c = tmp_cards[i]
         if c and c ~= 0 then
@@ -90,9 +90,26 @@ function M.get_type(out_cards)
 end
 
 function M.get_type4(counts, cards)
-    if counts[4] > 1 then
+    if counts[4] > 1 then    --两个炸弹不能一起出？
         return
     end
+	
+	-- 飞机
+	if counts[3] > 1 then
+		if not M.is_continue(cards[3]) then   --修改
+			return
+		end
+		
+		if counts[3] == 4 then       --炸弹做单牌
+			if counts[2] + counts[1] ~= 0 then
+				return
+			end
+			return {t = M.type.t_31n, card = cards[3][1], n = counts[3]}     --card 开始的牌是多少
+		elseif counts[3] == 2 + counts[2] and counts[1] == 0 then    --炸弹做对子
+			return {t = M.type.t_32n, card = cards[3][1], n = counts[3]}	
+		end
+		return
+	end
 
     local sum = counts[3] + counts[2] + counts[1]
     if sum > 1 then
@@ -105,47 +122,50 @@ function M.get_type4(counts, cards)
     end
 
     if counts[3] == 1 then
-        return {t = M.type.t_43, card = card}
+        return {t = M.type.t_43, card = card}  --四带三
     elseif counts[2] == 1 then
-        return {t = M.type.t_42, card = card}
+        return {t = M.type.t_42, card = card}  --四带二
     elseif counts[1] == 1 then
-        return {t = M.type.t_41, card = card}
+        return {t = M.type.t_41, card = card}  --四带一
     end
 end
 
 function M.get_type3(counts, cards)
-    local card = cards[3][1]
+    local card = cards[3][#cards[3]]    --结尾的牌是多少     好像就是飞机是最大开始
     local count3 = counts[3]
     local count2 = counts[2]
     local count1 = counts[1]
+	local sum = count1 + count2 + count3
 
-    if count2 > 0 and count1 > 0 then
-        return
-    end
-
-	-- 三带一，或三带二
+	-- 三带一，或三带二，三个不带
     if count3 == 1 then
-         if count2 > 0 then
-            return {t = M.type.t_32, card = card}
-         elseif count1 > 0 then
-            return {t = M.type.t_31, card = card}
-         end
+		if count2 == 1 and count1 == 0 then
+			return {t = M.type.t_32, card = card}
+		elseif count2 == 0 and count1 == 1 then
+			return {t = M.type.t_31, card = card}
+		elseif count2 == 0 and count1 == 0 then
+			return {t = M.type.t_3, card = card}
+		end
 
-         return {t = M.type.t_3, card = card}
+		return
     end
-
-    if not M.is_continue(cards[3]) then
-		return false
+  
+    if M.is_continue(cards[3]) then
+		if sum % 4 == 0 then
+			return {t = M.type.t_31n, card = card, n = count3}
+		elseif sum % 5 == 0 and count1 == 0 then
+			return {t = M.type.t_32n, card = card, n = count3}
+		elseif count2 == 0 and count1 == 0 then
+			return {t = M.type.t_3n, card = card, n = count3}    --修改
+		end
+		return
 	end
 
-    -- 飞机
-    if count2 > 0 then
-        return {t = M.type.t_32n, card = card, n = count3}
-    elseif count1 > 0 then
-        return {t = M.type.t_31n, card = card, n = count3}
-    end
-
-    return {t = M.type.t_3n, card = card, n = count3}
+    local count   
+	count, card = M.get_max_continue(cards[3])     --如 444555666999   三带一飞机
+	if count * 4 == sum then
+		return {t = M.type.t_31n, card = card, n = count}
+	end
 end
 
 function M.get_type2(counts, cards)
@@ -153,7 +173,7 @@ function M.get_type2(counts, cards)
         return
     end
 
-    local card = cards[3][1]
+    local card = cards[2][1]
     if counts[2] == 1 then
         return {t = M.type.t_2, card = card}
     end
@@ -178,7 +198,6 @@ function M.get_type1(counts, cards)
     local card = cards[1][1]
     -- 判断王炸
     if count == 2 then
-        
         if card ~= "小王" then
             return
         end
@@ -199,6 +218,37 @@ function M.is_continue(cards)
         last = c 
     end
 	return true
+end
+
+function M.get_max_continue(cards)
+	local t = {}
+	local last
+	local tmp
+    for _,c in ipairs(cards) do
+        if last and last+1 ~= c then
+            table.insert(t, tmp)
+			tmp = nil
+        end
+
+		tmp = tmp or {}
+		table.insert(tmp, c)
+        last = c 
+    end
+
+	if tmp then
+		table.insert(t, tmp)
+	end
+	
+	local m
+	for _,v in ipairs(t) do
+		if not m then
+			m = v
+		elseif #v >= #m then
+			m = v
+		end
+	end
+	
+	return #m, table.remove(m)
 end
 
 -- 牌型2是否管得起牌型1
