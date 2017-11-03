@@ -1,4 +1,4 @@
-local MIN_HUXI = 10
+local MIN_HUXI = 15
 local table_mgr = require "table_mgr"
 
 local cache_table = {}
@@ -7,12 +7,16 @@ function add_to_table(cards, level, huxi)
     if level == 7 and huxi < MIN_HUXI then
         return true
     end
+	
+	if level == 6 and huxi < 3 then
+        return true
+    end
 
     local big_key=0
     local small_key=0
-    for i=10,1,-1 do
-        big_key = big_key*10 + cards[i]
-        small_key = small_key*10 + cards[i+10]
+    for i=1,10 do
+        big_key = (big_key<<2) + cards[i]
+        small_key = (small_key<<2) + cards[i+10]
     end
 
     local key = string.format("%d-%d", big_key, small_key)

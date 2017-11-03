@@ -6,7 +6,7 @@ function add_to_table(cards, level, huxi)
     local big_key=0
     local small_key=0
 	local kan
-    for i=10,1,-1 do
+    for i=1,10 do
         big_key = big_key*10 + cards[i]
         small_key = small_key*10 + cards[i+10]
     end
