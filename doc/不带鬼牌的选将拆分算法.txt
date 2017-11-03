@@ -1,5 +1,7 @@
 拆分法(不带赖子）
 
+代码路径：https://github.com/yuanfengyun/qipai/tree/master/mjlib_lua/base_split
+
 1、收集能做将的所有牌作为集合A（优化手段，牌堆为3*n+2的牌才能产生将）
 
 2、遍历每种能做将的牌，扣除后，判断剩余牌是否能胡
