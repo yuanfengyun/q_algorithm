@@ -1,4 +1,7 @@
 mjlib胡牌思路 注意：不带鬼牌
+
+代码路径：https://github.com/yuanfengyun/qipai/tree/master/mjlib_lua/base_table
+
 1、不同花色分开处理，分别校验是否能满足 将、顺子、刻子
 2、分析东南西北风中发白时，不需要分析顺子的情况，简单很多
 3、分析单一花色时，按连续性将麻将切割成小段
@@ -20,18 +23,18 @@ c段变成 131
 查表wave_tbl_eye判断是否满足带将的拆分，例，c的key为131
 查不到表示不满足拆分，不能胡
 
-附：
-组合表，以长度3为示例
+7、组合表例子:
 wave_tbl = {
     [111] = true,[222]=true,[333]=true,[444]=true,
     [114] = true, [141]=true, [411]=true,
     [144] = true, [414]=true, [441]=true,
 }
 
-wave_tbl_eye则是在wave_tbl表中通过三种方式加上一对牌:
-1、头部加一对牌 如, 2111
-2、尾部加一对牌 如, 1112
-3、中部加一对牌 如, 311, 131, 113
-4、连接两组如：323， 1112111
+8、带将的组合表例子：
+wave_eye_tbl = {[2] = true, [2111] = true}
 
-
+9、表生成：
+  代码：https://github.com/yuanfengyun/qipai/blob/master/mjlib_lua/base_table/gen_table.lua
+  思路：
+      穷举单种花色所有不带将组合情况（依次放次1组、2组、3组、4组顺子或刻子，将最到得到的牌按连续性切分放入wave表中）
+      穷举单种花色所有带将组合情况（先放入一对将，然后依次放次1组、2组、3组、4组顺子或刻子，将最到得到的牌按连续性切分放入wave表或wave_eye表中）
