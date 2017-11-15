@@ -25,7 +25,7 @@ func (this *HuLib) GetHuInfo(cards []int, cur_card int, gui_1 int, gui_2 int) bo
         cards[gui_2] = 0
     }
 
-    hu := this._split(cards, gui_num_1 + gui_num_2)
+    hu := this.split(cards, gui_num_1 + gui_num_2)
 
 	if gui_1 != MAX_CARD {
         cards[gui_1] = gui_num_1
@@ -36,13 +36,13 @@ func (this *HuLib) GetHuInfo(cards []int, cur_card int, gui_1 int, gui_2 int) bo
     }
 
 	if cur_card != MAX_CARD {
-        --cards[cur_card]
+        cards[cur_card]--
     }
 
     return hu
 }
 
-func check(gui int, eye_num int, gui_num int, gui_sum) (bool, int) {
+func check(gui int, eye_num int, gui_num int, gui_sum int) (bool, int) {
 	if gui < 0 {
 		return false, 0
 	}
@@ -65,29 +65,31 @@ func (this *HuLib) split(cards []int, gui_num int) bool {
 	gui := 0
 	ret := false
 	
-	gui, eye_num = _split(cards, gui_num, 0, 8, true, eye_num)
+	gui, eye_num = this._split(cards, gui_num, 0, 8, true, eye_num)
 	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
 	if ret == false {
 		return false
 	}
 	
-	gui, eye_num = _split(cards, gui_num-gui_sum, 9, 17, true, eye_num)
+	gui, eye_num = this._split(cards, gui_num-gui_sum, 9, 17, true, eye_num)
 	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
 	if ret == false {
 		return false
 	}
 
-	gui, eye_num = _split(cards, gui_num-gui_sum, 18, 26, true, eye_num)
+	gui, eye_num = this._split(cards, gui_num-gui_sum, 18, 26, true, eye_num)
 	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
 	if ret == false {
 		return false
 	}
 
-	gui, eye_num = _split(cards, gui_num-gui_sum, 27, 33, false, eye_num)
-	if (!check(gui, eye_num, gui_num, gui_sum)) return false
+	gui, eye_num = this._split(cards, gui_num-gui_sum, 27, 33, false, eye_num)
+	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
+	if ret == false {
+		return false
+	}
 
-	if (eye_num == 0)
-	{
+	if eye_num == 0{
 		return gui_sum + 2 <= gui_num
 	}
 
@@ -98,20 +100,22 @@ func (this *HuLib) _split(cards []int, gui_num int, min int, max int, chi bool, 
     key := 0
     num := 0
 
-    for i := min; i <= max; ++i {
+    for i := min; i <= max; i++ {
         key = key*10 + cards[i]
         num = num + cards[i]
     }
 
-	if (num == 0) return 0, eye_num
+	if num == 0 {
+		return 0, eye_num
+	}
 
-	for i := 0; i <= gui_num; ++i {
+	for i := 0; i <= gui_num; i++ {
 		yu := (num + i) % 3
 		if yu == 1 {
 			continue
 		}
 		eye := (yu == 2)
-		if TableMgr::check(key, i, eye, chi){
+		if MTableMgr.check(key, i, eye, chi){
 			if eye {
 				eye_num++
 			}

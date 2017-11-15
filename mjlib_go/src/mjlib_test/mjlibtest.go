@@ -149,10 +149,12 @@ func test_time(count int) {
         1, 0, 0, 0, 0, 4, 4,
     }
 
+	print_cards(cards)
     start := time.Now().Unix()
     for i:=0;i<count;i++{
         mjlib.MHuLib.GetHuInfo(cards, 34, 32, 33)
     }
+	print_cards(cards)
     fmt.Println("count=",count,"use time=",time.Now().Unix()-start)
 }
 
