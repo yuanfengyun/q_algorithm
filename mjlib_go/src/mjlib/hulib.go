@@ -5,173 +5,121 @@ import (
 
 const MAX_CARD = 34
 
-type ProbabilityItem struct {
-    eye     bool
-    gui_num int
-}
-
-type ProbabilityItemTable struct {
-    m         [4][9]ProbabilityItem
-    array_num int
-    m_num     [4]int
-}
-
 type HuLib struct {
 }
 
 func (this *HuLib) GetHuInfo(cards []int, cur_card int, gui_1 int, gui_2 int) bool {
-    var tmp_cards = cards
-
     if cur_card != MAX_CARD {
-        tmp_cards[cur_card]++
+        cards[cur_card]++
     }
 
-    var gui_num = 0
+    gui_num_1 := 0
+	gui_num_2 := 0
     if gui_1 != MAX_CARD {
-        gui_num = tmp_cards[gui_1]
-        tmp_cards[gui_1] = 0
+        gui_num_1 = cards[gui_1]
+        cards[gui_1] = 0
     }
 
     if gui_2 != MAX_CARD {
-        gui_num = gui_num + tmp_cards[gui_2]
-        tmp_cards[gui_2] = 0
+        gui_num_2 = cards[gui_2]
+        cards[gui_2] = 0
     }
 
-    var ptbl ProbabilityItemTable
-    if !this._split(tmp_cards, gui_num, &ptbl) {
-        //fmt.Println(ptbl)
-        return false
+    hu := this._split(cards, gui_num_1 + gui_num_2)
+
+	if gui_1 != MAX_CARD {
+        cards[gui_1] = gui_num_1
     }
 
-    return this.check_probability(&ptbl, gui_num)
+    if gui_2 != MAX_CARD {
+        cards[gui_2] = gui_num_2
+    }
+
+	if cur_card != MAX_CARD {
+        --cards[cur_card]
+    }
+
+    return hu
 }
 
-func (this *HuLib) _split(cards []int, gui_num int, ptbl *ProbabilityItemTable) bool {
-    if !this._split_color(cards, gui_num, 0, 0, 8, true, ptbl) {
-        return false
-    }
-    if !this._split_color(cards, gui_num, 1, 9, 17, true, ptbl) {
-        return false
-    }
-    if !this._split_color(cards, gui_num, 2, 18, 26, true, ptbl) {
-        return false
-    }
-    if !this._split_color(cards, gui_num, 3, 27, 33, false, ptbl) {
-        return false
-    }
+func check(gui int, eye_num int, gui_num int, gui_sum) (bool, int) {
+	if gui < 0 {
+		return false, 0
+	}
 
-    return true
+	gui_sum += gui
+	if gui_sum > gui_num {
+		return false, 0
+	}
+
+	if eye_num == 0{
+		return true, gui_sum
+	}
+
+	return gui_sum + (eye_num - 1) <= gui_num, gui_sum
 }
 
-func (this *HuLib) _split_color(cards []int, gui_num int, color int, min int, max int, chi bool, ptbl *ProbabilityItemTable) bool {
+func (this *HuLib) split(cards []int, gui_num int) bool {
+    eye_num := 0
+	gui_sum := 0
+	gui := 0
+	ret := false
+	
+	gui, eye_num = _split(cards, gui_num, 0, 8, true, eye_num)
+	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
+	if ret == false {
+		return false
+	}
+	
+	gui, eye_num = _split(cards, gui_num-gui_sum, 9, 17, true, eye_num)
+	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
+	if ret == false {
+		return false
+	}
+
+	gui, eye_num = _split(cards, gui_num-gui_sum, 18, 26, true, eye_num)
+	ret, gui_sum = check(gui, eye_num, gui_num, gui_sum)
+	if ret == false {
+		return false
+	}
+
+	gui, eye_num = _split(cards, gui_num-gui_sum, 27, 33, false, eye_num)
+	if (!check(gui, eye_num, gui_num, gui_sum)) return false
+
+	if (eye_num == 0)
+	{
+		return gui_sum + 2 <= gui_num
+	}
+
+	return true
+}
+
+func (this *HuLib) _split(cards []int, gui_num int, min int, max int, chi bool, eye_num int) (int, int) {
     key := 0
     num := 0
 
-    for i := min; i <= max; i++ {
+    for i := min; i <= max; ++i {
         key = key*10 + cards[i]
         num = num + cards[i]
     }
 
-    if num == 0 {
-        return true
-    }
+	if (num == 0) return 0, eye_num
 
-    if !this.list_probability(color, gui_num, num, key, chi, ptbl) {
-        return false
-    }
+	for i := 0; i <= gui_num; ++i {
+		yu := (num + i) % 3
+		if yu == 1 {
+			continue
+		}
+		eye := (yu == 2)
+		if TableMgr::check(key, i, eye, chi){
+			if eye {
+				eye_num++
+			}
+			return i, eye_num
+		}
+	}
 
-    return true
-}
-
-func (this *HuLib) list_probability(color int, gui_num int, num int, key int, chi bool, ptbl *ProbabilityItemTable) bool {
-    find := false
-    anum := ptbl.array_num
-    for i := 0; i <= gui_num; i++ {
-        eye := false
-        var yu int = (num + i) % 3
-        if yu == 1 {
-            continue
-        } else if yu == 2 {
-            eye = true
-        }
-        if find || MTableMgr.check(key, i, eye, chi) {
-            item := &(ptbl.m[anum][ptbl.m_num[anum]])
-            ptbl.m_num[anum]++
-
-            item.eye = eye
-            item.gui_num = i
-            find = true
-        }
-    }
-
-    //fmt.Printf("color = %d,  gui_num = %d,  key = %d,  可能性=%d\n", color, gui_num, key, ptbl.m_num[anum])
-
-    if ptbl.m_num[anum] <= 0 {
-        return false
-    }
-
-    ptbl.array_num++
-
-    return true
-}
-
-func (this *HuLib) check_probability(ptbl *ProbabilityItemTable, gui_num int) bool {
-    // 全是鬼牌
-    if ptbl.array_num == 0 {
-        return gui_num >= 2
-    }
-
-    // 只有一种花色的牌的鬼牌
-    if ptbl.array_num == 1 {
-        return true
-    }
-
-    // 尝试组合花色，能组合则胡
-    for i := 0; i < ptbl.m_num[0]; i++ {
-        item := &ptbl.m[0][i]
-        eye := item.eye
-        gui := gui_num - item.gui_num
-        if this.check_probability_sub(ptbl, &eye, &gui, 1, ptbl.array_num) {
-            return true
-        }
-    }
-    return false
-}
-
-func (this *HuLib) check_probability_sub(ptbl *ProbabilityItemTable, eye *bool, gui_num *int, level int, max_level int) bool {
-    for i := 0; i < ptbl.m_num[level]; i++ {
-        item := &ptbl.m[level][i]
-
-        if *eye && item.eye {
-            continue
-        }
-
-        if *gui_num < item.gui_num {
-            continue
-        }
-
-        if level < max_level-1 {
-            old_gui_num := gui_num
-            old_eye := eye
-            *gui_num -= item.gui_num
-            *eye = *eye || item.eye
-
-            if this.check_probability_sub(ptbl, eye, gui_num, level+1, ptbl.array_num) {
-                return true
-            }
-
-            eye = old_eye
-            gui_num = old_gui_num
-            continue
-        }
-
-        if !*eye && !item.eye && item.gui_num+2 > *gui_num {
-            continue
-        }
-        return true
-    }
-
-    return false
+	return -1, 0
 }
 
 func (this *HuLib) check_7dui(cards []int, gui_num int) bool {
