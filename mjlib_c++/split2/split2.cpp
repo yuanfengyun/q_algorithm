@@ -176,10 +176,11 @@ void split2::two(char* cards, int& index, int& need_gui, int max_gui, int used_g
 			if (c3 == 2) {
 				if (c4 == 2) choose_ke = false;
 			}
-			else if (c3 == 3)
+			else if (c3 == 3) {
 				if (c4 != 2) choose_ke = false;
-				else
-					choose_ke = false;
+			}
+			else
+				choose_ke = false;
 		}
 		else if (c2 == 3) {
 			if (c3 == 0 || c3 == 2 || c3 == 1 || c3 == 4)
