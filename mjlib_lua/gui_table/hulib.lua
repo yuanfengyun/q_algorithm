@@ -27,10 +27,11 @@ function M.check(cards, gui_num)
 			to = from + 6
 		end
 		
-		local need_gui, eye = M.get_need_gui(cards, from, to, i==3, gui_num)
-		if need_gui then
-			total_need_gui = total_need_gui + need_gui
+		local need_gui, eye = M.get_need_gui(cards, from, to, i<3, gui_num)
+		if not need_gui then
+		    return false
 		end
+		total_need_gui = total_need_gui + need_gui
 		if eye then
 			eye_num = eye_num + 1
 		end
@@ -50,6 +51,11 @@ function M.get_need_gui(cards, from, to, chi, gui_num)
 	local key = 0
 	for i=from,to do
 		key = key * 10 + cards[i]
+		num = num + cards[i]
+	end
+	
+	if num == 0 then
+	    return 0, false
 	end
 
     for i=0, gui_num do
