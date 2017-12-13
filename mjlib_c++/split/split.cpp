@@ -245,7 +245,7 @@ int split::two(int n, int need_gui, int max_gui)
 		}
 		if(c2 < 2){
 			need_gui = need_gui + (2 - c2);
-			n = n - c2;
+			n = n - c2*10;
 		}
 		else
 		{
