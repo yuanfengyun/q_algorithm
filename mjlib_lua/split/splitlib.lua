@@ -10,9 +10,9 @@ function M.get_hu_info(cards, gui_index)
   
 	local eye_tbl = {}
 	local empty = -1
-	--for循环选出将牌
+	--for寰幆閫夊嚭灏嗙墝
 	for i = 1, 34 do 
-		--优化手段，三不靠的牌，必做将
+		--浼樺寲鎵嬫锛屼笁涓嶉潬鐨勭墝锛屽繀鍋氬皢
 		local min = math.floor((i-1) / 9) * 9 + 1
 		local max = min + 8
 		if min == 28 then
@@ -46,7 +46,7 @@ function M.get_hu_info(cards, gui_index)
 
 	local hu = false
 	local cache = { 0,0,0,0 }
-	-- 减去将牌 3*n
+	-- 鍑忓幓灏嗙墝 3*n
 	for _, eye in ipairs(eye_tbl) do
 		if eye == empty then
 			hu = M.foreach_eye(cards, gui_num - 2, gui_num, 1000, cache)
@@ -80,7 +80,7 @@ function M.foreach_eye(cards, gui_num, max_gui, eye_color, cache)
 	for i = 0, 2 do
 		local cache_index = -1
 		if eye_color ~= i then
-			-- 代表将的花色
+			-- 浠ｈ〃灏嗙殑鑺辫壊
 		    cache_index = i
 		end
  
@@ -195,9 +195,9 @@ function M.two(n, need_gui, max_gui)
     
 	local choose_ke = true
 	if c1 == 0 then
-		-- c1 == 0 全拆刻子
+		-- c1 == 0 鍏ㄦ媶鍒诲瓙
 	elseif c1 == 1 then
-		-- 刻子
+		-- 鍒诲瓙
 		if c2 == 0 or c2 == 1 then
 			
 		elseif c2 == 2 then
@@ -270,7 +270,7 @@ function M.two(n, need_gui, max_gui)
 
 		if c2 < 2 then
 			need_gui = need_gui + (2 - c2)
-			n = n - c2
+			n = n - c2*10
 		else
 			n = n - 20
 		end
