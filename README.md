@@ -44,6 +44,8 @@ tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：
 
 郑州胜讯
 
+5、喜欢本项目可以打赏作者
+
 ![Alt text][dasang]
 
 [dasang]: https://github.com/yuanfengyun/qipai/blob/master/doc/%E6%89%93%E8%B5%8F.png  "Optional title"
