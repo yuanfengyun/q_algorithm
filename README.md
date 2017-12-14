@@ -24,9 +24,13 @@
 
 4、特殊牌型判断：一条龙、掐张、七对、碰碰胡、十三幺、单吊、大吊车、清一色、缺门、门清。
 
-tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：273461474。觉得好的话，别忘了点上一个星 ^_^
+5、觉得好的话，别忘了点上一个星 ^_^，喜欢本项目可以打赏作者。
 
-已使用的项目或公司(不完全统计)：
+ <img src="https://github.com/yuanfengyun/qipai/blob/master/doc/%E6%89%93%E8%B5%8F.png" width = "200" height = "280" alt="图片名称" align=center />
+
+6、tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：273461474。
+
+7、已使用的项目或公司(不完全统计)：
 
 易县麻将: https://fir.im/yizhouqipai (8个赖子）
 
@@ -47,6 +51,4 @@ tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：
 郑州胜讯
 
 
-5、喜欢本项目可以打赏作者
 
- <img src="https://github.com/yuanfengyun/qipai/blob/master/doc/%E6%89%93%E8%B5%8F.png" width = "200" height = "280" alt="图片名称" align=center />
