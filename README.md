@@ -42,7 +42,7 @@ tips: 深圳、广州范围提供上门讲解、替换现有算法服务，QQ：
 
 东溪控股有限公司: http://www.dxbloc.com
 
-信阳麻将 http://www.hlf100.com 
+信阳麻将 : http://www.hlf100.com 
 
 郑州胜讯
 
