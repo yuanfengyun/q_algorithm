@@ -48,5 +48,5 @@
 
 7、觉得好的话，别忘了点上一个星 ^_^，喜欢本项目可以打赏作者。
 
- <img src="https://github.com/yuanfengyun/qipai/blob/master/doc/%E6%89%93%E8%B5%8F.png" style="zoom:30%" align=center />
+ <img src="https://github.com/yuanfengyun/qipai/blob/master/doc/%E6%89%93%E8%B5%8F.png" style="zoom:10%" align=center />
 
