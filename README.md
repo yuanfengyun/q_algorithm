@@ -42,7 +42,9 @@
 
 东溪控股有限公司: http://www.dxbloc.com
 
-河南欢乐符（信阳麻将）: http://www.hlf100.com 
+河南欢乐符（信阳麻将）: http://www.hlf100.com
+
+上海博羡软件: www.sbxgame.com
 
 郑州胜讯
 
