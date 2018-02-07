@@ -64,6 +64,10 @@ function M.check_color_chi(cards, min, max, info)
             if info.eye and eye then
                 return false
             end
+			
+            if eye then
+                info.eye = true
+            end
 
             if not table_mgr:check(key) then
                 return false
