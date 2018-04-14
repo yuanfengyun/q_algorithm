@@ -9,3 +9,6 @@
 *.suo
 *.log
 *.pch
+.idea
+mjlib_go/tbl
+mjlib_go/tbl1
