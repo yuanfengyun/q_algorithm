@@ -41,7 +41,7 @@ function M.check(cards, gui_num)
 		return total_need_gui + 2 <= gui_num
 	elseif eye_num == 1 then
 		return total_need_gui <= gui_num
-	elseif
+	else
 		return total_need_gui + eye_num - 1 <= gui_num
 	end
 end
