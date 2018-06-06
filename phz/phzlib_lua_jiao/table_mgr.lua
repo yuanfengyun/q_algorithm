@@ -21,6 +21,14 @@ function M:check(big_key, small_key)
     return self.eye_tbl[key]
 end
 
+function M:get_table()
+	return self.tbl
+end
+
+function M:get_eye_table()
+	return self.eye_tbl
+end
+
 function M:load()
     self:load_tbl()
     self:load_eye_tbl()
@@ -58,15 +66,15 @@ end
 function M:_load(file, tbl)
     local f = io.open(file, "r")
     while true do
-        local str = f:read("*|")
+        local str = f:read("*line")
         if not str then
             break
         end
-        local split = string.find("str","=")
+        local split = string.find(str,"=")
         if not split then
             break
         end
-        local key = string.sub(str, 1, split-1)
+        local key = tonumber(string.sub(str, 1, split-1))
         local huxi = tonumber(string.sub(str, split+1))
         tbl[key] = huxi
     end
