@@ -17,7 +17,7 @@ function add_to_table(cards, shun)
 		return true
     end
 
-    table_mgr:add_eye(key, (shun<<8) + num)
+    table_mgr:add_eye(key, shun)
     cache_table[key] = shun
     return false
 end
