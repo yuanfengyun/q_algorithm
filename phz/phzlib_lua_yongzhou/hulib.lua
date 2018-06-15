@@ -59,7 +59,7 @@ function M:get_huxi(big_cards,big_num,small_cards,small_num,gui_num,valid_jiaos)
 	local tbl = table_mgr:get_table()
 	local eye_tbl = table_mgr:get_eye_table()
 	
-	for _,v in pairs(jiao_tbl) do
+	for _,v in ipairs(jiao_tbl) do
 		local big = big_cards
 		local small = small_cards
 		local big_n = big_num

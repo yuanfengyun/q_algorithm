@@ -16,7 +16,7 @@ local function add_jiao(tt, result, cached)
 		end
 	end
 
-	result[key] = t
+	table.insert(result,t)
 	
 	return true
 end
