@@ -1,7 +1,7 @@
 mjlib胡牌思路 注意：不带鬼牌
 
 代码路径：https://github.com/yuanfengyun/qipai/tree/master/mjlib_lua/base_table
-
+2A + n*ABC + n*AAA
 1、不同花色分开处理，分别校验是否能满足 将、顺子、刻子
 2、分析东南西北风中发白时，不需要分析顺子的情况，简单很多
 3、分析单一花色时，按连续性将麻将切割成小段
