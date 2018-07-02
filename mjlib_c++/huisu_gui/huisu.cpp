@@ -36,11 +36,11 @@ HUISU_ITEM* get_huisu_ops(char cur_num, int* op_num)
 {
 	*op_num = 0;
 	if (cur_num == 1) {
-		*op_num = 1;
+		*op_num = 2;
 		return huisu_items1;
 	}
 	if (cur_num == 2) {
-		*op_num = 2;
+		*op_num = 3;
 		return huisu_items2;
 	}
 	if (cur_num == 3) {
@@ -48,7 +48,7 @@ HUISU_ITEM* get_huisu_ops(char cur_num, int* op_num)
 		return huisu_items3;
 	}
 	if (cur_num == 4) {
-		*op_num = 2;
+		*op_num = 3;
 		return huisu_items4;
 	}
 }
