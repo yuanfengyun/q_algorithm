@@ -111,7 +111,7 @@ bool split2::check_color(char* cards, char from, char gui_num)
 int split2::check_normal(char* cards, int from, int max_gui, int used_gui)
 {
 	char index = 0;
-	char cards_tmp[9];
+	char cards_tmp[14]={0};
 	int n = 0;
 	for (int i = from; i <= from + 8; i++) {
 
@@ -164,6 +164,7 @@ void split2::two(char* cards, int& index, int& need_gui, int max_gui, int used_g
 	int c2 = cards[index+1];
 	int c3 = cards[index+2];
 	int c4 = cards[index+3];
+	int c5 = cards[index+5];
 
 	bool choose_ke = true;
 	if (c1 == 0) {
@@ -174,7 +175,10 @@ void split2::two(char* cards, int& index, int& need_gui, int max_gui, int used_g
 		}
 		else if (c2 == 2) {
 			if (c3 == 2) {
-				if (c4 == 2) choose_ke = false;
+				if (c4 == 2){
+					if(c5==1 || c5==4) choose_ke = true;
+					else choose_ke = false;
+				}
 			}
 			else if (c3 == 3) {
 				if (c4 != 2) choose_ke = false;
