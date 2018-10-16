@@ -67,12 +67,16 @@ local tbl_split = {
 }
 
 local function can_hu(cards,i)
+	if i > 10 then
+		return true
+	end
 	while cards[i] == 0 do
 		if i == 10 then
 			return true
 		end
 		i = i + 1
 	end
+	print("i=",i)
 	for _,split in ipairs(tbl_split) do
 		if split[0]==cards[i] and split[10]==cards[i+10] then
 			local can = true
@@ -158,6 +162,7 @@ end
 function M._get_huinfo(cards,need_huxi)
 	for k,v in ipairs(tbl_huxi) do
 		if v.huxi < need_huxi then
+			print("v.huxi < need_huxi",need_huxi)
 			return -1
 		end
 		-- 检查相应牌
