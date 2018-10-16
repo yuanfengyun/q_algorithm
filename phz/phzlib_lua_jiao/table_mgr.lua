@@ -63,6 +63,16 @@ function M:_dump(file, tbl)
     f:close()
 end
 
+function M:_dumpfile(file,tbl)
+	local f = io.open(file, "w+")
+	f:write("{\n")
+    for key,huxi in pairs(tbl) do
+        f:write("["..key.."]="..huxi..",\n")
+    end
+	f:write("}\n")
+    f:close()
+end
+
 function M:_load(file, tbl)
     local f = io.open(file, "r")
     while true do

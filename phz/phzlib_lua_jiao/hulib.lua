@@ -125,9 +125,7 @@ function M:gethuxi(cards1,cards1_num,shun_huxi1,cards2,cards2_num,shun_huxi2,tbl
 				bit = bit + 2
 				mask = mask << 2
 			end
-
 			if not fail then
-				--print("not fail",k,c2,ca)
 				local shun1 = (v & 0xff00) >> 8
 				local shun2
 				if c2_n == 0 then
