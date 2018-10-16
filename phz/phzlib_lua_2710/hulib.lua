@@ -63,22 +63,26 @@ local tbl_split = {
 	{[0]=2,[10]=1},
 	-- 1绞一顺
 	{[0]=2,[10]=2,[11]=1,[12]=1},
-	{[0]=2,[1]=1,[2]=1,[10]=2}
+	{[0]=2,[1]=1,[2]=1,[10]=2},
+	-- 1绞1顺
+	{[0]=1,[10]=3,[11]=1,[12]=1},
+	{[0]=3,[1]=1,[2]=1,[10]=1},
 }
 
 local function can_hu(cards,i)
 	if i > 10 then
 		return true
 	end
-	while cards[i] == 0 do
+	while cards[i] + cards[i+10] == 0 do
 		if i == 10 then
 			return true
 		end
 		i = i + 1
 	end
 	print("i=",i)
-	for _,split in ipairs(tbl_split) do
+	for sk,split in ipairs(tbl_split) do
 		if split[0]==cards[i] and split[10]==cards[i+10] then
+			print(split[0],split[10])
 			local can = true
 			if (split[2] and (i+2>10 or cards[i+2]<split[2])) or (split[1] and (i+1>10 or cards[i+1]<split[1])) then
 				can = false
@@ -88,6 +92,7 @@ local function can_hu(cards,i)
 				can = false
 			end
 			if can then
+				print("sk=",sk)
 				-- 扣除相关牌
 				for k,v in pairs(split) do
 					cards[i+k] = cards[i+k] - v
@@ -106,7 +111,22 @@ local function can_hu(cards,i)
 	return false
 end
 
-function M.get_huinfo(cards,need_huxi)
+function M.get_huinfo(cards,need_huxi,c)
+    if not c or cards[c] < 3 then
+        return M.get_huinfo_self(cards,need_huxi,c)
+    end
+
+    local self_huxi = M.get_huinfo_self(cards,need_huxi,c)
+    local other_huxi = M.get_huinfo_other(cards,need_huxi,c)
+
+    local max = self_huxi
+    if other_huxi > self_huxi then
+        max = other_huxi
+    end
+    return max
+end
+
+function M.get_huinfo_self(cards,need_huxi,c)
 	local tcards = {
 		0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0
@@ -142,6 +162,62 @@ function M.get_huinfo(cards,need_huxi)
 				return ret + kan_huxi
 			end
 			tcards[i] = 2
+		end
+	end
+	
+	for i=20,11,-1 do
+		if tcards[i] == 2 then
+			tcards[i] = 0
+			local ret = M._get_huinfo(tcards,need_huxi)
+			if ret >= 0 then
+				return ret + kan_huxi
+			end
+			tcards[i] = 2
+		end
+	end
+	
+	return -1
+end
+
+function M.get_huinfo_other(cards,need_huxi,c)
+	local tcards = {
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0
+	}
+	local sum = 0
+	local kan_huxi = 0
+	for i,v in pairs(cards) do
+		if v < 3 or i==c then
+			tcards[i] = v
+		else
+			kan_huxi = kan_huxi + 3
+			if i > 10 then
+				kan_huxi = kan_huxi + 3
+			end
+		end
+		sum = sum + v
+	end
+	
+	if sum % 3 == 0 then
+		local ret = M._get_huinfo(tcards,need_huxi)
+		if ret >= 0 then
+			return ret + kan_huxi
+		end
+		return -1
+	end
+
+	-- 有将的情况
+	for i=10,1,-1 do
+		if tcards[i] == 2 or i == c then
+			tcards[i] = 0
+			local ret = M._get_huinfo(tcards,need_huxi)
+			if ret >= 0 then
+				return ret + kan_huxi
+			end
+			tcards[i] = 2
+			if i == c then
+				tcards[i]=3
+			end
 		end
 	end
 	
