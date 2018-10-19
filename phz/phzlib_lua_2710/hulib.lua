@@ -1,79 +1,239 @@
 local utils = require "utils"
+local tbl_huxi = require "tbl_huxi"
+local tbl_split = require "tbl_split"
+
+-- 默认可以胡牌的胡息
+local HU_HUXI = 15
 
 local M = {}
---[[
-local tbl_huxi = {
-	-- 大2小2  1-9
-	{[11]=2,[12]=2,[13]=2,[1]=2,[2]=2,[3]=2,huxi=18},
-	{[11]=2,[12]=2,[13]=2,[2]=2,[7]=2,[10]=2,huxi=18},
-	{[11]=2,[12]=2,[13]=2,[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=18},
-	{[12]=2,[17]=2,[20]=2,[1]=2,[2]=2,[3]=2,huxi=18},
-	{[12]=2,[17]=2,[20]=2,[2]=2,[7]=2,[10]=2,huxi=18},
-	{[12]=2,[17]=2,[20]=2,[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=18},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,[1]=2,[2]=2,[3]=2,huxi=18},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,[2]=2,[7]=2,[10]=2,huxi=18},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=18},
-	-- 大2小1  10-15
-	{[11]=2,[12]=2,[13]=2,[1]=1,[2]=1,[3]=1,huxi=15},
-	{[11]=2,[12]=2,[13]=2,[2]=1,[7]=1,[10]=1,huxi=15},
-	{[12]=2,[17]=2,[20]=2,[1]=1,[2]=1,[3]=1,huxi=15},
-	{[12]=2,[17]=2,[20]=2,[2]=1,[7]=1,[10]=1,huxi=15},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,[1]=1,[2]=1,[3]=1,huxi=15},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,[2]=1,[7]=1,[10]=1,huxi=15},
-	-- 大2小0 16-18
-	{[11]=2,[12]=2,[13]=2,huxi=12},
-	{[12]=2,[17]=2,[20]=2,huxi=12},
-	{[11]=1,[12]=2,[13]=1,[17]=1,[20]=1,huxi=12},
-	-- 大1小2 19-24
-	{[11]=1,[12]=1,[13]=1,[1]=2,[2]=2,[3]=2,huxi=12},
-	{[11]=1,[12]=1,[13]=1,[2]=1,[7]=1,[10]=1,huxi=12},
-	{[11]=1,[12]=1,[13]=1,[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=12},
-	{[12]=1,[17]=1,[20]=1,[1]=2,[2]=2,[3]=2,huxi=12},
-	{[12]=1,[17]=1,[20]=1,[2]=2,[7]=2,[10]=2,huxi=12},
-	{[12]=1,[17]=1,[20]=1,[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=12},
-	-- 大1小1  25-28
-	{[11]=1,[12]=1,[13]=1,[1]=1,[2]=1,[3]=1,huxi=9},
-	{[11]=1,[12]=1,[13]=1,[2]=1,[7]=1,[10]=1,huxi=9},
-	{[12]=1,[17]=1,[20]=1,[1]=1,[2]=1,[3]=1,huxi=9},
-	{[12]=1,[17]=1,[20]=1,[2]=1,[7]=1,[10]=1,huxi=9},
-	-- 大1小0  29-30
-	{[11]=1,[12]=1,[13]=1,huxi=6},
-	{[12]=1,[17]=1,[20]=1,huxi=6},
-	-- 大0小2  31-33
-	{[1]=2,[2]=2,[3]=2,huxi=6},
-	{[2]=2,[7]=2,[10]=2,huxi=6},
-	{[1]=1,[2]=2,[3]=1,[7]=1,[10]=1,huxi=6},
-	-- 大0小1  34-35
-	{[1]=1,[2]=1,[3]=1,huxi=3},
-	{[2]=1,[7]=1,[10]=1,huxi=3},
-	-- 大0小0
-}
-]]--
-local tbl_huxi = require "tbl_huxi"
 
-local tbl_split = {
-	-- 1顺子
-	{[0]=0,[10]=1,[11]=1,[12]=1},
-	{[0]=1,[1]=1,[2]=1,[10]=0},
-	-- 2顺子
-	{[0]=0,[10]=2,[11]=2,[12]=2},
-	{[0]=2,[1]=2,[2]=2,[10]=0},
-	{[0]=1,[1]=1,[2]=1,[10]=1,[11]=1,[12]=1},
-	-- 3顺子
-	{[0]=1,[1]=1,[2]=1,[10]=2,[11]=2,[12]=2},
-	{[0]=2,[1]=2,[2]=2,[10]=1,[11]=1,[12]=1},
-	-- 1绞
-	{[0]=1,[10]=2},
-	{[0]=2,[10]=1},
-	-- 1绞一顺
-	{[0]=2,[10]=2,[11]=1,[12]=1},
-	{[0]=2,[1]=1,[2]=1,[10]=2},
-	-- 1绞1顺
-	{[0]=1,[10]=3,[11]=1,[12]=1},
-	{[0]=3,[1]=1,[2]=1,[10]=1},
-}
+-- 获取特定类型，特定牌胡息
+function M.get_group_huxi(t,card)
+	if t == "peng" then		-- 碰
+		if card <= 10 then
+			return 1
+		else
+			return 3
+		end
+	elseif t == "wei" then	-- 偎
+		if card <= 10 then
+			return 3
+		else
+			return 6
+		end
+	elseif t == "pao" then	-- 跑
+		if card <= 10 then
+			return 6
+		else
+			return 9
+		end
+	elseif t == "ti" then	-- 提
+		if card <= 10 then
+			return 9
+		else
+			return 12
+		end
+	end
+	return 0
+end
 
-local function can_hu(cards,i)
+-- 获取坎外手牌、坎牌胡息、桌面牌胡息
+function M.get_huxi_pre(cards,groups)
+	local tcards = {
+		0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0
+	}
+
+	local kan_huxi = 0
+	-- 计算牌张数、坎的胡息
+	for i,v in pairs(cards) do
+		if v == 3 then
+			kan_huxi = kan_huxi + M.get_group_huxi("wei",i)
+		else
+			tcards[i] = v
+		end
+	end
+
+	local tipao = false
+	local groups_huxi = 0
+	-- 获取桌上吃、碰、偎、跑、提的总胡息
+	for _,group in ipairs(groups) do
+		groups_huxi = groups_huxi + M.get_group_huxi(group.t,group.card)
+		if group.t == "pao" or group.t == "ti" then
+			tipao = true
+		end
+	end
+	return tcards,kan_huxi,groups_huxi,tipao
+end
+
+-- 获取所有能听的牌
+function M.get_ting_cards(cards,groups)
+	local t = {}
+	for i=1,20 do
+		if M.get_huxi_self(cards,groups,i) > 0 or M.get_huxi_other(cards,groups,i) > 0 then
+			table.insert(t,i)
+		end
+	end
+	return t
+end
+
+-- 若能胡，返回胡息，若不能胡，返回-1
+-- cards 表示手牌
+-- groups 表示吃、碰、跑、提的牌
+-- c表示自己摸到的牌
+function M.get_huxi_self(cards,groups,c)
+	local tcards,kan_huxi,groups_huxi,tipao = M.get_huxi_pre(cards,groups)
+
+	-- 提胡
+	if not tipao and cards[c] == 3 then
+		local add_huxi = M.get_group_huxi("ti",i) - M.get_group_huxi("wei",i)
+		return M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+	end
+
+	-- 跑胡、破跑胡
+	for _,group in pairs(groups) do
+		if (group.t == "peng" or group.t == "wei") and group.card == c then
+			-- 跑胡
+			if not tipao then
+				local add_huxi = M.get_group_huxi("pao",c)-M.get_group_huxi(group.t,c)
+				local r = M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+				if r > 0 then
+					return r
+				end
+			end
+			-- 破跑胡
+			tcards[c] = 1
+			return M.get_huinfo(tcards,kan_huxi+groups_huxi)
+		end
+	end
+
+	-- 偎胡
+	if cards[c] == 2 then
+		tcards[c] = 0
+		local add_huxi = M.get_group_huxi("wei",c)
+		return M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+	end
+
+	-- 吃胡
+	tcards[c] = tcards[c] + 1
+	return M.get_huinfo(tcards,kan_huxi+groups_huxi)
+end
+
+-- 若能胡，返回胡息，若不能胡，返回-1
+-- cards 表示手牌
+-- groups 表示吃、碰、跑、提的牌
+-- c表示别人摸、打的牌
+function M.get_huxi_other(cards,groups,c)
+	local tcards,kan_huxi,groups_huxi,tipao = M.get_huxi_pre(cards,groups)
+
+	-- 跑胡、破跑胡
+	if cards[c] == 3 then
+		if not tipao then
+			local add_huxi = M.get_group_huxi("pao",i) - M.get_group_huxi("wei",i)
+			local r = M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+			if r > 0 then
+				return r
+			end
+		end
+		-- 破跑胡
+		tcards[c] = 1
+		return M.get_huinfo(tcards,kan_huxi+groups_huxi)
+	end
+
+	-- 跑胡、破跑胡
+	for _,group in pairs(groups) do
+		if (group.t == "peng" or group.t == "wei") and group.card == c then
+			-- 跑胡
+			if not tipao then
+				local add_huxi = M.get_group_huxi("pao",c)-M.get_group_huxi(group.t,c)
+				local r = M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+				if r > 0 then
+					return r
+				end
+			end
+			-- 破跑胡
+			tcards[c] = 1
+			return M.get_huinfo(tcards,kan_huxi+groups_huxi)
+		end
+	end
+
+	-- 碰胡
+	if cards[c] == 2 then
+		tcards[c] = 0
+		local add_huxi = M.get_group_huxi("wei",c)
+		local r = M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
+		tcards[c] = 2
+		if r > 0 then
+			return r
+		end
+	end
+
+	-- 吃胡
+	tcards[c] = tcards[c] + 1
+	return M.get_huinfo(tcards,kan_huxi+groups_huxi)
+end
+
+-- 判断剩余的手牌是否能胡
+function M.get_huinfo(cards,huxi)
+	local need_huxi = HU_HUXI - huxi
+	
+	local sum = 0
+	for _,n in ipairs(cards) do
+		sum = sum + n
+	end
+	if sum == 0 then
+		return huxi
+	end
+	-- 不需要将的情况
+	local need_eye = (sum % 3 == 2)
+
+	for k,v in ipairs(tbl_huxi) do
+		if v.huxi < need_huxi then
+			return -1
+		end
+
+		-- 检查相应牌
+		local check = true
+		for card,num in pairs(v) do
+			if type(card)=="number" and cards[card] < num then
+				check = false
+				break
+			end
+		end
+
+		if check then
+			-- 扣除相应牌
+			for card,num in pairs(v) do
+				if type(card) == "number" then
+					cards[card] = cards[card] - num
+				end
+			end
+
+			local canhu = M.can_hu(cards,1,need_eye)
+
+			-- 加回相应牌
+			for card,num in pairs(v) do
+				if type(card) == "number" then
+					cards[card] = cards[card] + num
+				end
+			end
+			
+			if canhu then
+				return v.huxi + huxi
+			end
+		end
+	end
+	if need_huxi > 0 then
+		return -1
+	end
+	if M.can_hu(cards,1,need_eye) then
+		return huxi
+	end
+	return -1
+end
+
+-- 尝试各种拆分方式，只要有一种能胡，则能胡
+function M.can_hu(cards,i,need_eye)
 	if i > 10 then
 		return true
 	end
@@ -83,10 +243,8 @@ local function can_hu(cards,i)
 		end
 		i = i + 1
 	end
-	print("i=",i)
 	for sk,split in ipairs(tbl_split) do
-		if split[0]==cards[i] and split[10]==cards[i+10] then
-			print(split[0],split[10])
+		if (not split.eye or need_eye) and split[0]==cards[i] and split[10]==cards[i+10] then
 			local can = true
 			if (split[2] and (i+2>10 or cards[i+2]<split[2])) or (split[1] and (i+1>10 or cards[i+1]<split[1])) then
 				can = false
@@ -96,337 +254,27 @@ local function can_hu(cards,i)
 				can = false
 			end
 			if can then
-				print("sk=",sk)
 				-- 扣除相关牌
 				for k,v in pairs(split) do
-					cards[i+k] = cards[i+k] - v
+					if type(k)=="number" then
+						cards[i+k] = cards[i+k] - v
+					end
 				end
-				if can_hu(cards,i+1) then
-					return true
-				end
+				local canhu = M.can_hu(cards,i+1,need_eye)
 				-- 加回相关牌
 				for k,v in pairs(split) do
-					cards[i+k] = cards[i+k] + v
+					if type(k)=="number" then
+						cards[i+k] = cards[i+k] + v
+					end
+				end
+				if canhu then
+					return true
 				end
 			end
 		end
 	end
 
 	return false
-end
-
-function M.get_huinfo(cards,need_huxi,c)
-    if not c or cards[c] < 3 then
-        return M.get_huinfo_self(cards,need_huxi,c)
-    end
-
-    local self_huxi = -1 -- M.get_huinfo_self(cards,need_huxi,c)
-    local other_huxi = M.get_huinfo_other(cards,need_huxi,c)
-
-    local max = self_huxi
-    if other_huxi > self_huxi then
-        max = other_huxi
-    end
-    return max
-end
-
-function M.get_huinfo_self(cards,need_huxi,c)
-	local tcards = {
-		0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0
-	}
-	local sum = 0
-	local kan_huxi = 0
-	for i,v in pairs(cards) do
-		if v < 3 then
-			tcards[i] = v
-		else
-			kan_huxi = kan_huxi + 3
-			if i > 10 then
-				kan_huxi = kan_huxi + 3
-			end
-		end
-		sum = sum + v
-	end
-	
-	if sum % 3 == 0 then
-		local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-		if ret >= 0 then
-			return ret + kan_huxi
-		end
-		return -1
-	end
-
-	-- 有将的情况
-	for i=10,1,-1 do
-		if tcards[i] == 2 then
-			tcards[i] = 0
-			local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-			if ret >= 0 then
-				return ret + kan_huxi
-			end
-			tcards[i] = 2
-		end
-	end
-	
-	for i=20,11,-1 do
-		if tcards[i] == 2 then
-			tcards[i] = 0
-			local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-			if ret >= 0 then
-				return ret + kan_huxi
-			end
-			tcards[i] = 2
-		end
-	end
-	
-	return -1
-end
-
-function M.get_huinfo_other(cards,need_huxi,c)
-	local tcards = {
-		0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0
-	}
-	local sum = 0
-	local kan_huxi = 0
-	for i,v in pairs(cards) do
-		if v < 3 or i==c then
-			tcards[i] = v
-		else
-			kan_huxi = kan_huxi + 3
-			if i > 10 then
-				kan_huxi = kan_huxi + 3
-			end
-		end
-		sum = sum + v
-	end
-	
-	if sum % 3 == 0 then
-		local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-		if ret >= 0 then
-			return ret + kan_huxi
-		end
-		return -1
-	end
-
-	-- 有将的情况
-	for i=10,1,-1 do
-		if tcards[i] == 2 or i == c then
-			tcards[i] = tcards[i] - 2
-			utils.print(tcards)
-			local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-			if ret >= 0 then
-				return ret + kan_huxi
-			end
-			tcards[i] = tcards[i] + 2
-		end
-	end
-	
-	for i=20,11,-1 do
-		if tcards[i] == 2 or i == c then
-			tcards[i] = tcards[i] - 2
-			local ret = M._get_huinfo(tcards,need_huxi-kan_huxi)
-			if ret >= 0 then
-				return ret + kan_huxi
-			end
-			tcards[i] = tcards[i] + 2
-		end
-	end
-	
-	return -1
-end
-
-function M._get_huinfo(cards,need_huxi)
-	for k,v in ipairs(tbl_huxi) do
-		if v.huxi < need_huxi then
-			return -1
-		end
-		-- 检查相应牌
-		local check = true
-		for card,num in pairs(v) do
-			if type(card)=="number" and cards[card] < num then
-				check = false
-				break
-			end
-		end
-		
-		if check then
-			print("check",k)
-			-- 扣除相应牌
-			for card,num in pairs(v) do
-				if type(card) == "number" then
-					cards[card] = cards[card] - num
-				end
-			end
-			
-			if can_hu(cards,1) then
-				return v.huxi
-			end
-
-			-- 加回相应牌
-			for card,num in pairs(v) do
-				if type(card) == "number" then
-					cards[card] = cards[card] + num
-				end
-			end
-		end
-	end
-	if need_huxi > 0 then
-		return -1
-	end
-	if can_hu(cards,1) then
-		return 0
-	end
-	return -1
-end
-
-function M.is_piao(cards,need_huxi,c)
-	if need_huxi < 10 then
-		return false
-	end
-
-    if not c or cards[c] < 3 then
-        return M.get_huinfo_self_piao(cards,c)
-    end
-
-    local self_huxi = M.get_huinfo_self_piao(cards,c)
-    local other_huxi = M.get_huinfo_other_piao(cards,c)
-
-    local max = self_huxi
-    if other_huxi > self_huxi then
-        max = other_huxi
-    end
-    return max
-end
-
-function M.get_huinfo_self_piao(cards,c)
-	local tcards = {
-		0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0
-	}
-	local sum = 0
-	for i,v in pairs(cards) do
-		if v >= 3 then
-			return -1
-		end
-		tcards[i] = v
-		sum = sum + v
-	end
-	
-	if sum % 3 == 0 then
-		local ret = M._get_huinfo_piao(tcards)
-		if ret >= 0 then
-			return 0
-		end
-		return -1
-	end
-
-	-- 有将的情况
-	for i=10,1,-1 do
-		if tcards[i] == 2 then
-			tcards[i] = 0
-			local ret = M._get_huinfo_piao(tcards)
-			if ret >= 0 then
-				return 0
-			end
-			tcards[i] = 2
-		end
-	end
-	
-	for i=20,11,-1 do
-		if tcards[i] == 2 then
-			tcards[i] = 0
-			local ret = M._get_huinfo_piao(tcards)
-			if ret >= 0 then
-				return 0
-			end
-			tcards[i] = 2
-		end
-	end
-	
-	return -1
-end
-
-function M.get_huinfo_other_piao(cards,c)
-	local tcards = {
-		0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0
-	}
-	local sum = 0
-	for i,v in pairs(cards) do
-		if v >= 3 and i~=c then
-			return -1
-		end
-		tcards[i] = v
-		sum = sum + v
-	end
-	
-	if sum % 3 == 0 then
-		local ret = M._get_huinfo_piao(tcards)
-		if ret >= 0 then
-			return 0
-		end
-		return -1
-	end
-
-	-- 有将的情况
-	for i=10,1,-1 do
-		if tcards[i] == 2 or i == c then
-			tcards[i] = tcards[i] - 2
-			local ret = M._get_huinfo_piao(tcards)
-			tcards[i] = tcards[i] + 2
-			if ret >= 0 then
-				return 0
-			end
-		end
-	end
-	
-	for i=20,11,-1 do
-		if tcards[i] == 2 or i == c then
-			tcards[i] = tcards[i] - 2
-			local ret = M._get_huinfo_piao(tcards)
-			tcards[i] = tcards[i] + 2
-			if ret >= 0 then
-				return 0
-			end
-		end
-	end
-	
-	return -1
-end
-
-function M._get_huinfo_piao(cards)
-	if cards[1] > 0 and cards[2] > 0 and cards[3] > 0 then
-		cards[1] = cards[1] - 1
-		cards[2] = cards[2] - 1
-		cards[3] = cards[3] - 1
-		local ret = can_hu(cards,1)
-		cards[1] = cards[1] + 1
-		cards[2] = cards[2] + 1
-		cards[3] = cards[3] + 1
-		if ret then
-			return -1
-		end
-	end
-	
-	if cards[11] > 0 and cards[12] > 0 and cards[13] > 0 then
-		cards[11] = cards[11] - 1
-		cards[12] = cards[12] - 1
-		cards[13] = cards[13] - 1
-		local ret = can_hu(cards,1)
-		cards[11] = cards[11] + 1
-		cards[12] = cards[12] + 1
-		cards[13] = cards[13] + 1
-		if ret then
-			return -1
-		end
-	end
-
-	if can_hu(cards,1) then
-		return 0
-	end
-	return -1
 end
 
 return M
