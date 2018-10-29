@@ -86,7 +86,7 @@ function M.get_huxi_self(cards,groups,c)
 
 	-- 提胡
 	if not tipao and cards[c] == 3 then
-		local add_huxi = M.get_group_huxi("ti",i) - M.get_group_huxi("wei",i)
+		local add_huxi = M.get_group_huxi("ti",c) - M.get_group_huxi("wei",c)
 		return M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
 	end
 
@@ -129,7 +129,7 @@ function M.get_huxi_other(cards,groups,c)
 	-- 跑胡、破跑胡
 	if cards[c] == 3 then
 		if not tipao then
-			local add_huxi = M.get_group_huxi("pao",i) - M.get_group_huxi("wei",i)
+			local add_huxi = M.get_group_huxi("pao",c) - M.get_group_huxi("wei",c)
 			local r = M.get_huinfo(tcards,kan_huxi+groups_huxi+add_huxi)
 			if r > 0 then
 				return r
