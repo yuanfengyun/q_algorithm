@@ -152,7 +152,7 @@ bool HuLib::check_7dui(char* const cards)
         c += cards[i];
     }
 
-    if(c != 34) return false;
+    if(c != 14) return false;
 
     return true;
 }
