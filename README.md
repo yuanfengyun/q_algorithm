@@ -2,7 +2,7 @@
 
 棋牌的胡牌算法，特殊牌型判断算法
 
-腾讯课堂直播：https://ke.qq.com/course/305608?tuin=104cb0e2
+腾讯课堂视频讲解：https://ke.qq.com/course/360581?tuin=104cb0e2
 
 
 1、跑胡子算法
