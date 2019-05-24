@@ -39,8 +39,6 @@
 
 探娱互动： http://www.tanyu.mobi/
 
-雪狼网络： http://www.23xl.com/
-
 深圳大麦网络科技：http://www.59iwan.cn
 
 东溪控股有限公司: http://www.dxbloc.com
@@ -50,7 +48,3 @@
 上海博羡软件: www.sbxgame.com
 
 长沙麻将：http://www.ngqp123.com/
-
-郑州胜讯
-
-广州休休互娱
